@@ -2,1083 +2,857 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SAP Activate | Governance & Tracking Tool</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>SAP Activate | Governance Tool</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
-:root {
-  --bg: #F0F2F7;
-  --surface: #FFFFFF;
-  --surface-2: #F8F9FC;
-  --border: #E2E6EF;
-  --text: #0F172A;
-  --text-2: #475569;
-  --text-3: #94A3B8;
-  --navy: #0F172A;
-  --discover: #7C3AED; --discover-light: #EDE9FE;
-  --prepare: #1D4ED8;  --prepare-light: #DBEAFE;
-  --explore: #0891B2;  --explore-light: #CFFAFE;
-  --realize: #D97706;  --realize-light: #FEF3C7;
-  --deploy: #DC2626;   --deploy-light: #FEE2E2;
-  --run: #16A34A;      --run-light: #DCFCE7;
-  --radius: 10px; --radius-sm: 6px;
-  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.04);
-  --shadow-lg: 0 4px 24px rgba(0,0,0,0.14);
-  --font: 'Lexend', sans-serif;
-  --mono: 'JetBrains Mono', monospace;
+:root{
+  --bg:#F0F2F7;--surface:#fff;--sf2:#F8F9FC;--bd:#E2E6EF;
+  --tx:#0F172A;--tx2:#475569;--tx3:#94A3B8;--navy:#0F172A;
+  --r:10px;--rs:6px;
+  --sh:0 1px 3px rgba(0,0,0,.08),0 4px 16px rgba(0,0,0,.04);
+  --sh2:0 4px 24px rgba(0,0,0,.14);
+  --fn:'Lexend',sans-serif;--mo:'JetBrains Mono',monospace;
 }
-* { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:var(--font); background:var(--bg); color:var(--text); min-height:100vh; font-size:14px; line-height:1.5; }
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:var(--fn);background:var(--bg);color:var(--tx);min-height:100vh;font-size:14px;line-height:1.5;}
 
-/* ── HEADER ── */
-.header {
-  background: var(--navy); color: white; height: 54px;
-  display: flex; align-items: center; padding: 0 20px; gap: 14px;
-  position: sticky; top: 0; z-index: 200;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.25);
-}
-.logo { font-size: 15px; font-weight: 800; letter-spacing: -0.4px; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
-.logo-sap { color: #F0AB00; }
-.logo-div { width:1px; height:18px; background:rgba(255,255,255,0.2); }
-.logo-sub { font-size: 12px; font-weight: 400; color: rgba(255,255,255,0.55); }
-.header-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
-.phase-chips { display: flex; gap: 5px; }
-.phase-chip {
-  padding: 3px 9px; border-radius: 20px; font-size: 10px; font-weight: 700;
-  cursor: pointer; transition: opacity 0.15s; white-space: nowrap;
-}
-.phase-chip:hover { opacity: 0.8; }
+/* HEADER */
+.hdr{background:var(--navy);color:#fff;height:54px;display:flex;align-items:center;padding:0 20px;gap:14px;position:sticky;top:0;z-index:200;box-shadow:0 2px 12px rgba(0,0,0,.25);}
+.logo{font-size:15px;font-weight:800;letter-spacing:-.4px;display:flex;align-items:center;gap:6px;}
+.logo-sap{color:#F0AB00;}
+.logo-div{width:1px;height:18px;background:rgba(255,255,255,.2);}
+.logo-sub{font-size:12px;font-weight:400;color:rgba(255,255,255,.5);}
+.hdr-r{margin-left:auto;display:flex;align-items:center;gap:8px;}
+.pchip{padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer;color:#fff;white-space:nowrap;}
+.pchip:hover{opacity:.8;}
 
-/* ── NAV BAR ── */
-.nav-bar {
-  background: var(--surface); border-bottom: 1px solid var(--border);
-  padding: 0 20px; display: flex; align-items: center; height: 42px; gap: 8px;
-}
-.breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 12px; }
-.bc-link { color: #1D4ED8; cursor: pointer; font-weight: 500; }
-.bc-link:hover { text-decoration: underline; }
-.bc-sep { color: var(--text-3); }
-.bc-current { color: var(--text-2); font-weight: 500; }
-.nav-right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+/* LEGEND */
+.lgnd{background:var(--surface);border-bottom:1px solid var(--bd);padding:6px 20px;display:flex;align-items:center;gap:16px;font-size:11px;}
+.li{display:flex;align-items:center;gap:5px;color:var(--tx2);}
+.ldot{width:10px;height:10px;border-radius:50%;}
 
-/* ── BUTTONS ── */
-.btn {
-  padding: 6px 14px; border-radius: var(--radius-sm); font-size: 12px; font-weight: 600;
-  font-family: var(--font); cursor: pointer; border: none; transition: all 0.15s;
-  display: inline-flex; align-items: center; gap: 5px; white-space: nowrap;
-}
-.btn-primary { background: #1D4ED8; color: white; }
-.btn-primary:hover { background: #1e40af; }
-.btn-secondary { background: var(--surface-2); color: var(--text-2); border: 1px solid var(--border); }
-.btn-secondary:hover { background: var(--border); }
-.btn-gold { background: #F0AB00; color: var(--navy); }
-.btn-gold:hover { background: #d99e00; }
-.btn-success { background: #DCFCE7; color: #16A34A; }
-.btn-danger { background: #FEE2E2; color: #DC2626; }
-.btn-full { width: 100%; justify-content: center; }
+/* NAV */
+.nav{background:var(--surface);border-bottom:1px solid var(--bd);padding:0 20px;display:flex;align-items:center;height:42px;}
+.bc{display:flex;align-items:center;gap:6px;font-size:12px;}
+.bcl{color:#1D4ED8;cursor:pointer;font-weight:500;}.bcl:hover{text-decoration:underline;}
+.bcs{color:var(--tx3);}
+.bcc{color:var(--tx2);font-weight:500;}
+.nav-r{margin-left:auto;display:flex;gap:8px;}
 
-/* ── MAIN ── */
-.main { padding: 18px 20px; }
+/* BUTTONS */
+.btn{padding:6px 14px;border-radius:var(--rs);font-size:12px;font-weight:600;font-family:var(--fn);cursor:pointer;border:none;transition:all .15s;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;}
+.btn-p{background:#1D4ED8;color:#fff;}.btn-p:hover{background:#1e40af;}
+.btn-s{background:var(--sf2);color:var(--tx2);border:1px solid var(--bd);}.btn-s:hover{background:var(--bd);}
+.btn-g{background:#F0AB00;color:var(--navy);}.btn-g:hover{background:#d99e00;}
+.btn-ok{background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0;}
+.btn-w{width:100%;justify-content:center;}
 
-/* ── SUMMARY CARDS ── */
-.summary-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-bottom: 18px; }
-.summary-card {
-  background: var(--surface); border-radius: var(--radius); padding: 13px 14px;
-  box-shadow: var(--shadow); border-top: 3px solid; cursor: pointer;
-  transition: transform 0.15s, box-shadow 0.15s;
-}
-.summary-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
-.sc-phase { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 3px; }
-.sc-pct { font-size: 24px; font-weight: 800; font-family: var(--mono); line-height: 1.1; }
-.sc-meta { font-size: 10px; color: var(--text-3); margin-top: 2px; }
-.sc-bar { margin-top: 8px; height: 4px; border-radius: 2px; background: var(--bg); overflow: hidden; }
-.sc-bar-fill { height: 100%; border-radius: 2px; transition: width 0.5s; }
+/* MAIN */
+.main{padding:18px 20px;}
 
-/* ── MATRIX ── */
-.matrix-wrap { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
-.matrix-head { display: grid; grid-template-columns: 200px repeat(6, 1fr); border-bottom: 2px solid var(--border); }
-.mh-corner {
-  padding: 10px 14px; font-size: 11px; font-weight: 700; color: var(--text-3);
-  text-transform: uppercase; letter-spacing: 0.5px; border-right: 1px solid var(--border);
-  background: var(--surface-2); display: flex; align-items: center;
-}
-.mh-phase {
-  padding: 10px 10px; text-align: center; cursor: pointer;
-  transition: filter 0.15s; border-right: 1px solid rgba(255,255,255,0.15);
-}
-.mh-phase:last-child { border-right: none; }
-.mh-phase:hover { filter: brightness(1.1); }
-.mph-name { font-size: 13px; font-weight: 800; color: white; }
-.mph-desc { font-size: 10px; color: rgba(255,255,255,0.65); margin-top: 2px; }
-.qg-tag {
-  display: inline-flex; align-items: center; gap: 3px;
-  background: rgba(255,255,255,0.18); padding: 2px 7px; border-radius: 10px;
-  font-size: 10px; font-weight: 700; color: white; margin-top: 5px; border: 1px solid rgba(255,255,255,0.25);
-}
-.matrix-body {}
-.matrix-row { display: grid; grid-template-columns: 200px repeat(6, 1fr); border-bottom: 1px solid var(--border); }
-.matrix-row:last-child { border-bottom: none; }
-.ws-label {
-  padding: 8px 14px; border-right: 1px solid var(--border);
-  background: var(--surface-2); display: flex; align-items: center;
-  gap: 7px; font-size: 11px; font-weight: 500; color: var(--text);
-}
-.ws-icon { font-size: 13px; }
-.m-cell {
-  padding: 7px 8px; border-right: 1px solid var(--border); cursor: pointer;
-  transition: background 0.12s; min-height: 62px; position: relative;
-}
-.m-cell:last-child { border-right: none; }
-.m-cell:hover { background: #F1F5FF; }
-.m-cell.empty {
-  cursor: default;
-  background: repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(0,0,0,0.012) 5px, rgba(0,0,0,0.012) 10px);
-}
-.m-cell.empty:hover { background: repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(0,0,0,0.012) 5px, rgba(0,0,0,0.012) 10px); }
-.cell-items { display: flex; flex-direction: column; gap: 2px; }
-.cell-item { display: flex; align-items: center; gap: 4px; font-size: 10px; color: var(--text-2); line-height: 1.3; }
-.cdot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
-.cell-more { font-size: 9px; color: var(--text-3); margin-top: 1px; }
-.cell-pct { position: absolute; bottom: 4px; right: 6px; font-size: 9px; font-family: var(--mono); color: var(--text-3); }
-.cell-prog { position: absolute; bottom: 0; left: 0; right: 0; height: 3px; }
-.cell-prog-fill { height: 100%; transition: width 0.3s; }
+/* SUMMARY */
+.srow{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:18px;}
+.scard{background:var(--surface);border-radius:var(--r);padding:13px 14px;box-shadow:var(--sh);border-top:3px solid;cursor:pointer;transition:transform .15s,box-shadow .15s;}
+.scard:hover{transform:translateY(-2px);box-shadow:var(--sh2);}
+.sc-ph{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:3px;}
+.sc-pct{font-size:24px;font-weight:800;font-family:var(--mo);line-height:1.1;}
+.sc-mt{font-size:10px;color:var(--tx3);margin-top:2px;}
+.sc-bar{margin-top:8px;height:4px;border-radius:2px;background:var(--bg);overflow:hidden;}
+.sc-fill{height:100%;border-radius:2px;transition:width .5s;}
 
-/* ── DETAIL VIEW ── */
-.detail-layout { display: grid; grid-template-columns: 260px 1fr; gap: 14px; }
-.dv-phase-label { padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; color: white; }
+/* MATRIX */
+.mx{background:var(--surface);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;}
+.mxh{display:grid;grid-template-columns:200px repeat(6,1fr);border-bottom:2px solid var(--bd);}
+.mhc{padding:10px 14px;font-size:11px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;border-right:1px solid var(--bd);background:var(--sf2);display:flex;align-items:center;}
+.mhp{padding:10px;text-align:center;cursor:pointer;border-right:1px solid rgba(255,255,255,.15);}
+.mhp:last-child{border-right:none;}
+.mhp:hover{filter:brightness(1.1);}
+.mhpn{font-size:13px;font-weight:800;color:#fff;}
+.mhpd{font-size:10px;color:rgba(255,255,255,.6);margin-top:2px;}
+.qgt{display:inline-flex;align-items:center;gap:3px;background:rgba(255,255,255,.18);padding:2px 7px;border-radius:10px;font-size:10px;font-weight:700;color:#fff;margin-top:5px;border:1px solid rgba(255,255,255,.25);}
+.mxr{display:grid;grid-template-columns:200px repeat(6,1fr);border-bottom:1px solid var(--bd);}
+.mxr:last-child{border-bottom:none;}
+.wsl{padding:8px 14px;border-right:1px solid var(--bd);background:var(--sf2);display:flex;align-items:center;gap:7px;font-size:11px;font-weight:500;}
+.wsi{font-size:13px;}
+.mc{padding:7px 8px;border-right:1px solid var(--bd);cursor:pointer;transition:background .12s;min-height:62px;position:relative;}
+.mc:last-child{border-right:none;}
+.mc:hover{background:#F1F5FF;}
+.mc.emp{cursor:default;background:repeating-linear-gradient(45deg,transparent,transparent 5px,rgba(0,0,0,.012) 5px,rgba(0,0,0,.012) 10px);}
+.mc.emp:hover{background:repeating-linear-gradient(45deg,transparent,transparent 5px,rgba(0,0,0,.012) 5px,rgba(0,0,0,.012) 10px);}
+.cis{display:flex;flex-direction:column;gap:2px;}
+.ci{display:flex;align-items:center;gap:4px;font-size:10px;line-height:1.3;}
+.cin{color:var(--tx2);}
+.ciy{color:#92400E;font-weight:600;}
+.cig{color:#14532D;font-weight:600;}
+.cdot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+.cm{font-size:9px;color:var(--tx3);margin-top:1px;}
+.cpct{position:absolute;bottom:4px;right:6px;font-size:9px;font-family:var(--mo);color:var(--tx3);}
+.cpb{position:absolute;bottom:0;left:0;right:0;height:3px;}
+.cpbf{height:100%;transition:width .3s;}
 
-.delivs-panel { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; display: flex; flex-direction: column; }
-.dp-hdr { padding: 12px 14px; border-bottom: 1px solid var(--border); background: var(--surface-2); display: flex; align-items: center; justify-content: space-between; font-size: 12px; font-weight: 700; }
-.dp-badge { background: var(--navy); color: white; padding: 2px 7px; border-radius: 10px; font-size: 10px; font-family: var(--mono); }
-.deliv-item { padding: 10px 14px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.1s; }
-.deliv-item:hover { background: var(--surface-2); }
-.deliv-item.sel { background: #EFF6FF; border-left: 3px solid #1D4ED8; padding-left: 11px; }
-.deliv-item:last-child { border-bottom: none; }
-.di-name { font-size: 11px; font-weight: 500; margin-bottom: 5px; line-height: 1.4; }
-.di-row { display: flex; align-items: center; gap: 7px; }
-.di-bar { flex: 1; height: 3px; background: var(--bg); border-radius: 2px; overflow: hidden; }
-.di-bar-fill { height: 100%; border-radius: 2px; }
-.di-num { font-size: 10px; font-family: var(--mono); color: var(--text-3); min-width: 26px; text-align: right; }
+/* DETAIL */
+.dtl{display:grid;grid-template-columns:260px 1fr;gap:14px;}
+.dpl{padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;color:#fff;}
+.dvp{background:var(--surface);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;display:flex;flex-direction:column;}
+.dvph{padding:12px 14px;border-bottom:1px solid var(--bd);background:var(--sf2);display:flex;align-items:center;justify-content:space-between;font-size:12px;font-weight:700;}
+.dvpbg{background:var(--navy);color:#fff;padding:2px 7px;border-radius:10px;font-size:10px;font-family:var(--mo);}
+.di{padding:10px 14px;border-bottom:1px solid var(--bd);cursor:pointer;transition:background .1s;}
+.di:hover{background:var(--sf2);}
+.di.sel{background:#EFF6FF;border-left:3px solid #1D4ED8;padding-left:11px;}
+.di:last-child{border-bottom:none;}
+.din{font-size:11px;font-weight:500;margin-bottom:5px;line-height:1.4;}
+.din.hy{color:#92400E;}.din.hg{color:#14532D;}
+.dir{display:flex;align-items:center;gap:7px;}
+.dib{flex:1;height:3px;background:var(--bg);border-radius:2px;overflow:hidden;}
+.dibf{height:100%;border-radius:2px;}
+.din2{font-size:10px;font-family:var(--mo);color:var(--tx3);min-width:26px;text-align:right;}
 
-.right-panel { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); display: flex; flex-direction: column; overflow: hidden; }
-.rp-empty { display: flex; align-items: center; justify-content: center; min-height: 200px; color: var(--text-3); font-size: 12px; }
-.rp-header { padding: 14px 18px; border-bottom: 1px solid var(--border); background: var(--surface-2); }
-.rph-name { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
-.rph-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+/* RIGHT PANEL */
+.rp{background:var(--surface);border-radius:var(--r);box-shadow:var(--sh);display:flex;flex-direction:column;overflow:hidden;}
+.rpe{display:flex;align-items:center;justify-content:center;min-height:200px;color:var(--tx3);font-size:12px;}
+.rph{padding:14px 18px;border-bottom:1px solid var(--bd);background:var(--sf2);}
+.rphn{font-size:13px;font-weight:700;margin-bottom:6px;}
+.rphm{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 
-/* ── TABS ── */
-.tabs { display: flex; border-bottom: 1px solid var(--border); background: var(--surface-2); }
-.tab { padding: 9px 15px; font-size: 11px; font-weight: 600; cursor: pointer; border-bottom: 2px solid transparent; color: var(--text-2); transition: all 0.15s; white-space: nowrap; }
-.tab:hover { color: var(--text); }
-.tab.active { color: #1D4ED8; border-bottom-color: #1D4ED8; background: var(--surface); }
+/* TABS */
+.tabs{display:flex;border-bottom:1px solid var(--bd);background:var(--sf2);}
+.tab{padding:9px 15px;font-size:11px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;color:var(--tx2);transition:all .15s;white-space:nowrap;}
+.tab:hover{color:var(--tx);}
+.tab.act{color:#1D4ED8;border-bottom-color:#1D4ED8;background:var(--surface);}
+.tc{padding:18px;overflow-y:auto;flex:1;max-height:calc(100vh - 290px);}
 
-.tab-content { padding: 18px; overflow-y: auto; flex: 1; max-height: calc(100vh - 280px); }
+/* STATUS BADGES */
+.sb{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;}
+.sns{background:#F1F5F9;color:#64748B;}
+.sip{background:#FEF3C7;color:#D97706;}
+.sdn{background:#DCFCE7;color:#16A34A;}
+.sbl{background:#FEE2E2;color:#DC2626;}
+.srv{background:#EDE9FE;color:#7C3AED;}
+.sdf{background:#FEF3C7;color:#92400E;border:1px solid #FDE68A;}
+.sap{background:#DCFCE7;color:#14532D;border:1px solid #BBF7D0;}
 
-/* ── STATUS ── */
-.sbadge { display: inline-flex; align-items: center; gap: 3px; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 600; }
-.s-ns { background: #F1F5F9; color: #64748B; }
-.s-ip { background: #FEF3C7; color: #D97706; }
-.s-done { background: #DCFCE7; color: #16A34A; }
-.s-blk { background: #FEE2E2; color: #DC2626; }
-.s-rev { background: #EDE9FE; color: #7C3AED; }
+/* TASKS */
+.stt{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--tx3);margin-bottom:10px;}
+.tl{list-style:none;}
+.ti{display:flex;align-items:flex-start;gap:9px;padding:7px 0;border-bottom:1px solid var(--bd);font-size:12px;}
+.ti:last-child{border-bottom:none;}
+.tck{width:15px;height:15px;border:1.5px solid var(--bd);border-radius:4px;cursor:pointer;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all .15s;font-size:9px;}
+.tck.dn{background:#22C55E;border-color:#22C55E;color:#fff;}
+.tsd{text-decoration:line-through;color:var(--tx3);}
 
-/* ── TASKS TAB ── */
-.sec-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-3); margin-bottom: 10px; }
-.task-list { list-style: none; }
-.task-item { display: flex; align-items: flex-start; gap: 9px; padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 12px; }
-.task-item:last-child { border-bottom: none; }
-.tchk {
-  width: 15px; height: 15px; border: 1.5px solid var(--border); border-radius: 4px;
-  cursor: pointer; flex-shrink: 0; margin-top: 1px; display: flex; align-items: center;
-  justify-content: center; transition: all 0.15s; font-size: 9px;
-}
-.tchk.done { background: #22C55E; border-color: #22C55E; color: white; }
-.task-done { text-decoration: line-through; color: var(--text-3); }
+/* PROGRESS */
+.str{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:14px;}
+.sbn{padding:4px 11px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid transparent;font-family:var(--fn);transition:all .15s;}
+.sbns{background:#F1F5F9;color:var(--tx2);border-color:var(--bd);}
+.sbip{background:#FEF3C7;color:#D97706;border-color:#F59E0B;}
+.sbdn{background:#DCFCE7;color:#16A34A;border-color:#22C55E;}
+.sbbl{background:#FEE2E2;color:#DC2626;border-color:#EF4444;}
+.sbrv{background:#EDE9FE;color:#7C3AED;border-color:#8B5CF6;}
+.sbn.act{box-shadow:0 0 0 2px currentColor;}
+.slr{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.psl{flex:1;-webkit-appearance:none;height:6px;border-radius:3px;background:var(--bg);outline:none;}
+.psl::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#1D4ED8;cursor:pointer;}
+.pv{font-family:var(--mo);font-size:13px;font-weight:600;width:38px;text-align:right;}
+.ff{margin-bottom:11px;}
+.fl{font-size:11px;font-weight:600;color:var(--tx2);margin-bottom:4px;display:block;}
+.fi,.fta{width:100%;padding:7px 10px;border:1px solid var(--bd);border-radius:var(--rs);font-family:var(--fn);font-size:12px;background:var(--surface);color:var(--tx);outline:none;transition:border-color .15s;}
+.fi:focus,.fta:focus{border-color:#1D4ED8;}
+.fta{resize:vertical;min-height:72px;}
 
-/* ── PROGRESS TAB ── */
-.status-row { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 14px; }
-.sbtn {
-  padding: 4px 11px; border-radius: 20px; font-size: 11px; font-weight: 600;
-  cursor: pointer; border: 1.5px solid transparent; font-family: var(--font); transition: all 0.15s;
-}
-.sbtn-ns { background: #F1F5F9; color: var(--text-2); border-color: var(--border); }
-.sbtn-ip { background: #FEF3C7; color: #D97706; border-color: #F59E0B; }
-.sbtn-done { background: #DCFCE7; color: #16A34A; border-color: #22C55E; }
-.sbtn-blk { background: #FEE2E2; color: #DC2626; border-color: #EF4444; }
-.sbtn-rev { background: #EDE9FE; color: #7C3AED; border-color: #8B5CF6; }
-.sbtn.active { box-shadow: 0 0 0 2px currentColor; }
-.slider-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
-.pslider { flex: 1; -webkit-appearance: none; height: 6px; border-radius: 3px; background: var(--bg); outline: none; }
-.pslider::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: #1D4ED8; cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,0.2); }
-.pct-val { font-family: var(--mono); font-size: 13px; font-weight: 600; width: 38px; text-align: right; }
-.form-field { margin-bottom: 11px; }
-.f-label { font-size: 11px; font-weight: 600; color: var(--text-2); margin-bottom: 4px; display: block; }
-.f-input, .f-textarea {
-  width: 100%; padding: 7px 10px; border: 1px solid var(--border); border-radius: var(--radius-sm);
-  font-family: var(--font); font-size: 12px; background: var(--surface); color: var(--text);
-  outline: none; transition: border-color 0.15s;
-}
-.f-input:focus, .f-textarea:focus { border-color: #1D4ED8; }
-.f-textarea { resize: vertical; min-height: 72px; }
+/* BEST PRACTICE */
+.bph{background:linear-gradient(135deg,#0F172A,#1D4ED8);border-radius:var(--rs);padding:14px 16px;margin-bottom:14px;color:#fff;}
+.bpht{font-size:13px;font-weight:700;margin-bottom:4px;}
+.bphs{font-size:11px;color:rgba(255,255,255,.65);}
+.bpfc{border:1px solid var(--bd);border-radius:var(--rs);overflow:hidden;margin-bottom:12px;}
+.bpfh{padding:10px 13px;background:var(--sf2);display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--bd);}
+.bpfi{font-size:16px;}
+.bpfn{font-size:12px;font-weight:600;flex:1;}
+.bpft{font-size:10px;padding:2px 6px;border-radius:4px;background:#EFF6FF;color:#1D4ED8;font-weight:600;}
+.bpfb{padding:13px;}
+.bps{margin-bottom:12px;}
+.bpst{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#1D4ED8;margin-bottom:7px;}
+.bpcl{list-style:none;}
+.bpci{display:flex;align-items:flex-start;gap:7px;padding:5px 0;border-bottom:1px solid var(--bd);font-size:11px;color:var(--tx2);}
+.bpci:last-child{border-bottom:none;}
+.bpico{color:#1D4ED8;flex-shrink:0;margin-top:1px;}
+.bptb{width:100%;border-collapse:collapse;font-size:11px;}
+.bptb th{background:var(--sf2);padding:6px 8px;text-align:left;font-weight:600;border:1px solid var(--bd);color:var(--tx2);}
+.bptb td{padding:5px 8px;border:1px solid var(--bd);color:var(--tx2);}
 
-/* ── ACCELERATORS TAB ── */
-.acc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
-.acc-item {
-  padding: 9px 11px; border: 1px solid var(--border); border-radius: var(--radius-sm);
-  font-size: 11px; cursor: pointer; transition: all 0.15s; display: flex; align-items: center;
-  gap: 7px; background: var(--surface);
-}
-.acc-item:hover { border-color: #1D4ED8; background: #EFF6FF; color: #1D4ED8; }
-.acc-ico { font-size: 14px; }
-.acc-name { font-weight: 500; flex: 1; line-height: 1.3; }
-.acc-type { font-size: 10px; padding: 1px 5px; border-radius: 4px; background: var(--surface-2); color: var(--text-3); white-space: nowrap; }
-.acc-note { margin-top: 12px; padding: 9px 11px; background: #FEF3C7; border-radius: var(--radius-sm); font-size: 11px; color: #92400E; }
+/* AI COMPARE */
+.upz{border:2px dashed var(--bd);border-radius:var(--r);padding:18px 12px;text-align:center;cursor:pointer;transition:all .2s;background:var(--sf2);}
+.upz:hover{border-color:#1D4ED8;background:#EFF6FF;}
+.upz.ld{border-color:#22C55E;background:#F0FDF4;}
+.uzi{font-size:22px;margin-bottom:5px;}
+.uzn{font-size:11px;font-weight:500;color:var(--tx2);}
+.uzs{font-size:10px;color:var(--tx3);margin-top:3px;}
+.bppl{background:linear-gradient(135deg,#EFF6FF,#DBEAFE);border:1px solid #BFDBFE;border-radius:var(--r);padding:12px;margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+.bppi{font-size:20px;}
+.bppt{font-size:11px;font-weight:500;color:#1D4ED8;}
+.bpps{font-size:10px;color:#2563EB;margin-top:2px;}
+.aisr{display:flex;align-items:center;gap:12px;background:var(--sf2);border-radius:var(--rs);padding:12px;margin-bottom:12px;}
+.aisn{font-size:32px;font-weight:800;font-family:var(--mo);}
+.aisl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--tx3);}
+.aist{font-size:11px;color:var(--tx2);margin-top:3px;}
+.gps{margin-bottom:13px;}
+.gph{font-size:11px;font-weight:700;padding:5px 9px;border-radius:var(--rs);margin-bottom:6px;display:flex;align-items:center;gap:5px;}
+.gc{background:#FEE2E2;color:#DC2626;}
+.gw{background:#FEF3C7;color:#D97706;}
+.gi{background:#DBEAFE;color:#1D4ED8;}
+.gk{background:#DCFCE7;color:#16A34A;}
+.gpi{padding:7px 10px;border-left:3px solid;background:var(--sf2);margin-bottom:3px;border-radius:0 var(--rs) var(--rs) 0;font-size:11px;line-height:1.4;}
 
-/* ── AI EXCEL TAB ── */
-.upload-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
-.upload-zone {
-  border: 2px dashed var(--border); border-radius: var(--radius); padding: 18px 12px;
-  text-align: center; cursor: pointer; transition: all 0.2s; background: var(--surface-2);
-}
-.upload-zone:hover { border-color: #1D4ED8; background: #EFF6FF; }
-.upload-zone.loaded { border-color: #22C55E; background: #F0FDF4; }
-.uz-icon { font-size: 22px; margin-bottom: 5px; }
-.uz-name { font-size: 11px; font-weight: 500; color: var(--text-2); }
-.uz-sub { font-size: 10px; color: var(--text-3); margin-top: 3px; }
-.ai-score-row { display: flex; align-items: center; gap: 12px; background: var(--surface-2); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 12px; }
-.ai-score-num { font-size: 32px; font-weight: 800; font-family: var(--mono); }
-.ai-score-lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-3); }
-.ai-score-txt { font-size: 11px; color: var(--text-2); margin-top: 3px; }
-.gap-sec { margin-bottom: 13px; }
-.gap-hdr { font-size: 11px; font-weight: 700; padding: 5px 9px; border-radius: var(--radius-sm); margin-bottom: 6px; display: flex; align-items: center; gap: 5px; }
-.gh-crit { background: #FEE2E2; color: #DC2626; }
-.gh-warn { background: #FEF3C7; color: #D97706; }
-.gh-info { background: #DBEAFE; color: #1D4ED8; }
-.gh-ok   { background: #DCFCE7; color: #16A34A; }
-.gap-item { padding: 7px 10px; border-left: 3px solid; background: var(--surface-2); margin-bottom: 3px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0; font-size: 11px; line-height: 1.4; }
+/* BANNERS */
+.bnry{background:#FFFBEB;border:1px solid #FDE68A;border-radius:var(--rs);padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+.bnrg{background:#F0FDF4;border:1px solid #BBF7D0;border-radius:var(--rs);padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+.bni{font-size:18px;}
+.bnt{font-size:11px;font-weight:600;flex:1;}
+.bns{font-size:10px;margin-top:2px;font-weight:400;}
 
-/* ── STANDALONE EXCEL PAGE ── */
-.xpage-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
-.xcard { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px; }
-.xcard-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
-.xcard-sub { font-size: 11px; color: var(--text-3); margin-bottom: 16px; }
+/* OVERLAY + TOAST */
+.ovl{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;align-items:center;justify-content:center;z-index:1000;}
+.ovl.show{display:flex;}
+.spc{background:var(--surface);border-radius:var(--r);padding:24px 32px;text-align:center;box-shadow:var(--sh2);}
+.spn{width:34px;height:34px;border:3px solid var(--bg);border-top-color:#1D4ED8;border-radius:50%;animation:spin .75s linear infinite;margin:0 auto 12px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.sptx{font-size:12px;color:var(--tx2);font-weight:500;}
+.tst{position:fixed;bottom:20px;right:20px;background:var(--navy);color:#fff;padding:9px 16px;border-radius:var(--r);font-size:12px;box-shadow:var(--sh2);transform:translateY(50px);opacity:0;transition:all .25s;z-index:300;}
+.tst.show{transform:translateY(0);opacity:1;}
 
-/* ── LOADING ── */
-.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.35); display: none; align-items: center; justify-content: center; z-index: 1000; }
-.overlay.show { display: flex; }
-.spin-card { background: var(--surface); border-radius: var(--radius); padding: 24px 32px; text-align: center; box-shadow: var(--shadow-lg); }
-.spinner { width: 34px; height: 34px; border: 3px solid var(--bg); border-top-color: #1D4ED8; border-radius: 50%; animation: spin 0.75s linear infinite; margin: 0 auto 12px; }
-@keyframes spin { to { transform: rotate(360deg); } }
-.spin-text { font-size: 12px; color: var(--text-2); font-weight: 500; }
-
-/* ── TOAST ── */
-.toast { position: fixed; bottom: 20px; right: 20px; background: var(--navy); color: white; padding: 9px 16px; border-radius: var(--radius); font-size: 12px; box-shadow: var(--shadow-lg); transform: translateY(50px); opacity: 0; transition: all 0.25s; z-index: 300; }
-.toast.show { transform: translateY(0); opacity: 1; }
-
-/* ── UTILS ── */
-.hidden { display: none !important; }
-.fade { animation: fadeIn 0.2s ease; }
-@keyframes fadeIn { from { opacity:0; transform:translateY(3px); } to { opacity:1; transform:translateY(0); } }
-.text-muted { color: var(--text-3); }
-.text-sm { font-size: 12px; }
-.mt-2 { margin-top: 8px; }
-.mt-3 { margin-top: 12px; }
-.flex-center { display: flex; align-items: center; gap: 8px; }
-
-@media (max-width: 1100px) { .matrix-wrap { overflow-x: auto; } .matrix-head, .matrix-row { min-width: 950px; } }
+/* UTILS */
+.hidden{display:none!important;}
+.fade{animation:fi .2s ease;}
+@keyframes fi{from{opacity:0;transform:translateY(3px);}to{opacity:1;transform:translateY(0);}}
+.txm{color:var(--tx3);}
+.txs{font-size:12px;}
+.mt2{margin-top:8px;}.mt3{margin-top:12px;}
+.row{display:flex;align-items:center;gap:8px;}
+@media(max-width:1100px){.mx{overflow-x:auto;}.mxh,.mxr{min-width:950px;}}
 </style>
 </head>
 <body>
+<div class="ovl" id="ovl"><div class="spc"><div class="spn"></div><div class="sptx" id="spTx">AI analizi çalışıyor…</div></div></div>
+<div class="tst" id="tst"></div>
 
-<div class="overlay" id="overlay">
-  <div class="spin-card">
-    <div class="spinner"></div>
-    <div class="spin-text" id="spinText">AI analizi çalışıyor…</div>
-  </div>
-</div>
-<div class="toast" id="toast"></div>
-
-<header class="header">
-  <div class="logo">
-    <span class="logo-sap">SAP</span> Activate
-    <div class="logo-div"></div>
-    <span class="logo-sub">Governance Tool</span>
-  </div>
-  <div style="font-size:11px;color:rgba(255,255,255,0.4);font-weight:400;">S/4HANA Cloud Private Edition</div>
-  <div class="header-right">
-    <div class="phase-chips" id="hChips"></div>
-    <button class="btn btn-gold" onclick="goExcel()">🤖 AI Compare</button>
-  </div>
+<header class="hdr">
+  <div class="logo"><span class="logo-sap">SAP</span> Activate<div class="logo-div"></div><span class="logo-sub">Governance Tool</span></div>
+  <span style="font-size:11px;color:rgba(255,255,255,.4)">S/4HANA Cloud Private Edition</span>
+  <div class="hdr-r"><div id="hChips" style="display:flex;gap:5px"></div><button class="btn btn-g" onclick="goXl()">🤖 AI Compare</button></div>
 </header>
 
-<div class="nav-bar">
-  <div class="breadcrumb" id="breadcrumb"></div>
-  <div class="nav-right" id="navRight"></div>
+<div class="lgnd">
+  <span style="font-size:11px;font-weight:600;color:var(--tx2)">Renk Kodu:</span>
+  <div class="li"><div class="ldot" style="background:#94A3B8"></div>Normal</div>
+  <div class="li"><div class="ldot" style="background:#F59E0B"></div><strong style="color:#92400E">🟡 Sarı</strong>: AI fark tespit etti — inceleme bekliyor</div>
+  <div class="li"><div class="ldot" style="background:#16A34A"></div><strong style="color:#14532D">🟢 Yeşil</strong>: Onaylandı — tamamlandı</div>
 </div>
 
+<div class="nav"><div class="bc" id="bc"></div><div class="nav-r" id="navR"></div></div>
 <div class="main fade" id="main"></div>
 
 <script>
-/* ═══════════════════════════════════════════════
-   DATA
-═══════════════════════════════════════════════ */
-const PHASES = [
-  { id:'discover', name:'Discover', color:'#7C3AED', qg:null,   desc:'Çözüm keşfi & değer' },
-  { id:'prepare',  name:'Prepare',  color:'#1D4ED8', qg:'QG1',  desc:'Kurulum & mobilizasyon' },
-  { id:'explore',  name:'Explore',  color:'#0891B2', qg:'QG2',  desc:'Fit-to-Standard' },
-  { id:'realize',  name:'Realize',  color:'#D97706', qg:'QG3',  desc:'Yapılandırma & geliştirme' },
-  { id:'deploy',   name:'Deploy',   color:'#DC2626', qg:'QG4',  desc:'Cutover & canlı' },
-  { id:'run',      name:'Run',      color:'#16A34A', qg:null,   desc:'Operasyon & iyileştirme' },
+/* ══ BEST PRACTICE DATA ══ */
+const BP = {
+  d_ocm1: { files: [
+    { id:'bp1', name:'Customer Organizational Readiness for SAP S/4HANA Cloud', type:'PDF Whitepaper', icon:'📄',
+      source:'SAP Cloud Success Services, June 2022',
+      summary:'SAP S/4HANA Cloud geçişinde organizasyonel hazırlığı sağlamak için Customer COE maturity assessment, rol dönüşümü ve OCM stratejisini kapsar.',
+      sections: [
+        { title:'Discover Fazında Yapılması Gerekenler (SAP Best Practice)', items:[
+          'İş sahipleri (Business Owners) ve Dijital İş Analistlerini belirleyip onboard edin',
+          'Customer COE olgunluk değerlendirmesi yapın — mevcut yetenekleri ve iyileştirme alanlarını tespit edin',
+          'İş kapsamı ve kullanıcı sayısına göre etkilenecek COE rollerini önceden belirleyin',
+          'Benchmark verilerle TCO hesaplaması yapın ve iş gerekçesi (business case) oluşturun',
+          'SAP Meet-the-Expert seanslarına ve OCM webinarlarına katılın',
+          'Fit-to-standard yaklaşımının organizasyonel değişim yönetimi bağlamında ne anlam ifade ettiğini belgeleyin',
+        ]},
+        { title:'Customer COE Rol Çerçevesi', items:[
+          'Business Owner: İş alanı sahibi, stratejik ve operasyonel rehberlik sağlar',
+          'Digital Business Analyst: Dijitalleşme ve inovasyon için prototip geliştiren kilit rol',
+          'Key User: Standartlaştırılmış iş süreçlerini kullanan ve yapılandıran kullanıcı',
+          'Business Architect: Uçtan uca iş modeli ve süreç bütünlüğünü sağlar',
+          'Enterprise Architect: Tüm IT peyzajında yönetişim ve strateji',
+          'Release Manager: S/4HANA Cloud release planlaması ve takibi',
+        ]},
+        { title:'Başarı Kriterleri — Organizational Readiness', items:[
+          'Üst yönetim sponsorluğu (Executive Sponsor) belirlenmiş ve taahhüt alınmış',
+          'Değişime açık organizasyon kültürü ve liderlik altyapısı oluşturulmuş',
+          'IT ve iş birimi arasında güçlü ortaklık modeli kurulmuş',
+          'Mevcut IT rollerinin S/4HANA Cloud\'a göre yeniden yapılandırılması planlanmış',
+          'SAP Fiori ve yeni kullanıcı deneyimine geçiş için son kullanıcı adaptasyon planı hazır',
+          'Design Thinking ve Agile çalışma yöntemlerine geçiş için eğitim planı oluşturulmuş',
+        ]},
+      ]
+    },
+    { id:'bp2', name:'OCM Knowledge Transfer Tracker', type:'PPTX Template', icon:'📊',
+      source:'SAP Activate OCM Template v1.1, March 2024',
+      summary:'OCM bilgi transferi etkinliklerini planlayan ve takip eden şablon. Topic, Delivery Method, Date, Responsible, Status alanlarını içerir.',
+      tableHeaders:['Topic / Konu','Delivery Method','Delivery Date','Responsible','Status','Comments'],
+      tableRows:[
+        ['S/4HANA Cloud geçişinde değişim yönetimi çerçevesi','Online içerik / Bilgi toplantısı','2. hafta','Change Manager','open',''],
+        ['Kullanıcı adaptasyonu ve benimseme stratejisi','Workshop + e-öğrenme','3. hafta','OCM Lead','open',''],
+        ['Fit-to-standard yaklaşımı ve iş birimine etkisi','Yönetim sunumu','4. hafta','PM','open',''],
+      ],
+      statusOpts:['open','in preparation','delivered']
+    }
+  ]},
+  d_ocm2: { files: [
+    { id:'bp3', name:'OCM Knowledge Transfer Tracker', type:'PPTX Template', icon:'📊',
+      source:'SAP Activate OCM Template v1.1, March 2024',
+      summary:'OCM bilgi transferi etkinliklerini planlayan ve takip eden şablon.',
+      tableHeaders:['Topic / Konu','Delivery Method','Delivery Date','Responsible','Status','Comments'],
+      tableRows:[
+        ['S/4HANA Cloud değişim yönetimi','Online içerik','2. hafta','Change Manager','open',''],
+        ['Kullanıcı adaptasyon stratejisi','Workshop','3. hafta','OCM Lead','open',''],
+      ],
+      statusOpts:['open','in preparation','delivered']
+    }
+  ]},
+};
+
+/* ══ PHASES + WORKSTREAMS ══ */
+const PH=[
+  {id:'discover',name:'Discover',color:'#7C3AED',qg:null,desc:'Çözüm keşfi & değer'},
+  {id:'prepare',name:'Prepare',color:'#1D4ED8',qg:'QG1',desc:'Kurulum & mobilizasyon'},
+  {id:'explore',name:'Explore',color:'#0891B2',qg:'QG2',desc:'Fit-to-Standard'},
+  {id:'realize',name:'Realize',color:'#D97706',qg:'QG3',desc:'Yapılandırma & geliştirme'},
+  {id:'deploy',name:'Deploy',color:'#DC2626',qg:'QG4',desc:'Cutover & canlı'},
+  {id:'run',name:'Run',color:'#16A34A',qg:null,desc:'Operasyon & iyileştirme'},
+];
+const WS=[
+  {id:'pm',name:'Project Management',icon:'📊'},
+  {id:'cte',name:'Customer Team Enablement',icon:'🎓'},
+  {id:'tai',name:'Tech. Architecture & Infra.',icon:'🏗️'},
+  {id:'adc',name:'App. Design & Configuration',icon:'⚙️'},
+  {id:'ext',name:'Extensibility',icon:'🔧'},
+  {id:'int',name:'Integration',icon:'🔗'},
+  {id:'tst',name:'Testing',icon:'🧪'},
+  {id:'dm',name:'Data Management',icon:'💾'},
+  {id:'ops',name:'Operations',icon:'🖥️'},
+  {id:'ocm',name:'Org. Change Management',icon:'👥'},
 ];
 
-const WS = [
-  { id:'pm',   name:'Project Management',           icon:'📊' },
-  { id:'cte',  name:'Customer Team Enablement',     icon:'🎓' },
-  { id:'tai',  name:'Tech. Architecture & Infra.',  icon:'🏗️' },
-  { id:'adc',  name:'App. Design & Configuration',  icon:'⚙️' },
-  { id:'ext',  name:'Extensibility',                icon:'🔧' },
-  { id:'int',  name:'Integration',                  icon:'🔗' },
-  { id:'tst',  name:'Testing',                      icon:'🧪' },
-  { id:'dm',   name:'Data Management',              icon:'💾' },
-  { id:'ops',  name:'Operations',                   icon:'🖥️' },
-  { id:'ocm',  name:'Org. Change Management',       icon:'👥' },
-];
-
-const DB = {
-  discover_pm: [
-    { id:'d_pm1', name:'Business Case & Value Assessment', tpl:true,
-      tasks:['İş hedefleri ve motivasyon tanımla','ROI ve TCO hesapla','Yönetici sponsorluğu al','S/4HANA değer kıyaslaması yap'],
-      acc:[{n:'Business Case Template',t:'Template'},{n:'TCO Calculator',t:'Tool'},{n:'Value Realization Framework',t:'Guide'},{n:'Executive Briefing Template',t:'Template'}] },
-    { id:'d_pm2', name:'Project Charter', tpl:false,
-      tasks:['Proje kapsamını tanımla','Temel paydaşları belirle','Başarı kriterlerini onayla','Üst yönetim imzasını al'],
-      acc:[{n:'Project Charter Template',t:'Template'},{n:'Stakeholder Map Template',t:'Template'}] },
+/* ══ DELIVERABLE DATABASE ══ */
+const DB={
+  discover_pm:[
+    {id:'d_pm1',name:'Business Case & Value Assessment',tpl:true,hasBP:false,
+     tasks:['İş hedefleri ve motivasyon tanımla','ROI ve TCO hesapla','Yönetici sponsorluğu al','S/4HANA değer kıyaslaması yap'],
+     acc:[{n:'Business Case Template',t:'Template'},{n:'TCO Calculator',t:'Tool'},{n:'Value Realization Framework',t:'Guide'}]},
+    {id:'d_pm2',name:'Project Charter',tpl:false,hasBP:false,
+     tasks:['Proje kapsamını tanımla','Temel paydaşları belirle','Başarı kriterlerini onayla','Üst yönetim imzasını al'],
+     acc:[{n:'Project Charter Template',t:'Template'},{n:'Stakeholder Map',t:'Template'}]},
   ],
-  discover_cte: [
-    { id:'d_cte1', name:'Solution Discovery Workshop', tpl:false,
-      tasks:['SAP S/4HANA özellik genel bakışı','Demo sistem erişimi ve keşif','Üst düzey fit uyum değerlendirmesi','İş değeri senaryolarını belgele'],
-      acc:[{n:'Discovery Workshop Agenda',t:'Template'},{n:'S/4HANA Feature Catalog',t:'Guide'},{n:'Trial System Setup Guide',t:'Guide'}] },
+  discover_cte:[
+    {id:'d_cte1',name:'Solution Discovery Workshop',tpl:false,hasBP:false,
+     tasks:['SAP S/4HANA özellik genel bakışı','Demo sistem erişimi','Fit uyum değerlendirmesi','İş değeri senaryolarını belgele'],
+     acc:[{n:'Discovery Workshop Agenda',t:'Template'},{n:'S/4HANA Feature Catalog',t:'Guide'}]},
   ],
-  discover_tai: [
-    { id:'d_tai1', name:'High-Level Technical Assessment', tpl:true,
-      tasks:['Mevcut sistem peyzajını analiz et','Bulut hazırlık seviyesini değerlendir','Entegrasyon karmaşıklığını ön değerlendir'],
-      acc:[{n:'Technical Assessment Questionnaire',t:'Template'},{n:'Cloud Readiness Checklist',t:'Checklist'},{n:'Landscape Assessment Guide',t:'Guide'}] },
+  discover_tai:[
+    {id:'d_tai1',name:'High-Level Technical Assessment',tpl:true,hasBP:false,
+     tasks:['Mevcut sistem peyzajını analiz et','Bulut hazırlık seviyesini değerlendir','Entegrasyon karmaşıklığını değerlendir'],
+     acc:[{n:'Technical Assessment Questionnaire',t:'Template'},{n:'Cloud Readiness Checklist',t:'Checklist'}]},
   ],
-  discover_ocm: [
-    { id:'d_ocm1', name:'OCM Strategy', tpl:false,
-      tasks:['Paydaş haritasını oluştur','Üst düzey değişim etkisi değerlendirmesi','İletişim stratejisi taslağını hazırla'],
-      acc:[{n:'OCM Strategy Template',t:'Template'},{n:'Stakeholder Analysis Matrix',t:'Template'},{n:'Change Readiness Survey',t:'Template'}] },
+  discover_ocm:[
+    {id:'d_ocm1',name:'Customer Organizational Readiness Assessment',tpl:true,hasBP:true,
+     tasks:['Üst yönetim sponsoru belirle ve taahhüt al','Customer COE olgunluk değerlendirmesini yap','Etkilenecek iş ve IT rollerini haritalandır','Business Owner ve Digital Business Analyst rollerini belirle','TCO hesaplaması ve iş gerekçesini oluştur','Organizasyonel değişim stratejisini belgele'],
+     acc:[{n:'Customer Readiness Whitepaper',t:'Guide'},{n:'COE Maturity Assessment',t:'Template'},{n:'Stakeholder Analysis Matrix',t:'Template'}]},
+    {id:'d_ocm2',name:'OCM Knowledge Transfer Tracker',tpl:true,hasBP:true,
+     tasks:['Bilgi transfer konu listesini hazırla','Her konu için teslimat yöntemini belirle','Sorumlu kişi ve tarihleri ata','Tracker şablonunu doldurup takibe al'],
+     acc:[{n:'Knowledge Transfer Tracker',t:'Template'},{n:'OCM Enablement Plan',t:'Template'}]},
   ],
-  prepare_pm: [
-    { id:'p_pm1', name:'Project Governance Framework', tpl:true,
-      tasks:['RACI matrisini tanımla','Eskalasyon prosedürlerini belirle','Proje yönlendirme komitesini kur','Toplantı ritm ve kararalma süreçlerini tanımla'],
-      acc:[{n:'RACI Template',t:'Template'},{n:'Governance Framework Guide',t:'Guide'},{n:'Steering Committee Charter',t:'Template'},{n:'Decision Log Template',t:'Template'}] },
-    { id:'p_pm2', name:'Project Plan & WBS', tpl:true,
-      tasks:['Çalışma dökümü yapısını (WBS) tanımla','Kaynak ve maliyet planlaması yap','Risk kayıt defterini oluştur','Proje takvimini onayla'],
-      acc:[{n:'Master Project Plan Template',t:'Template'},{n:'WBS Template',t:'Template'},{n:'Risk Register Template',t:'Template'},{n:'Resource Plan Template',t:'Template'}] },
-    { id:'p_pm3', name:'Kickoff Workshop', tpl:false,
-      tasks:['Yönetici kickoff sunumunu hazırla','Ekip tanışma ve rol tanım seansları','Proje yaklaşımı ve metodoloji hizalaması','Taahhüt ve imzalama'],
-      acc:[{n:'Kickoff Workshop Agenda Template',t:'Template'},{n:'Project Kickoff Presentation',t:'Presentation'},{n:'Team Introduction Template',t:'Template'}] },
-    { id:'p_pm4', name:'Quality Gate 1 Review', tpl:false,
-      tasks:['Proje hazırlığını doğrula','Kaynak mevcudiyetini onayla','Kapsam ve bütçeyi onayla','QG1 kriterlerini karşıla ve imzala'],
-      acc:[{n:'QG1 Checklist',t:'Checklist'},{n:'Project Readiness Assessment',t:'Template'},{n:'Phase Exit Criteria',t:'Reference'}] },
+  prepare_pm:[
+    {id:'p_pm1',name:'Project Governance Framework',tpl:true,hasBP:false,
+     tasks:['RACI matrisini tanımla','Eskalasyon prosedürlerini belirle','Yönlendirme komitesini kur','Toplantı ritm ve karar süreçlerini tanımla'],
+     acc:[{n:'RACI Template',t:'Template'},{n:'Governance Framework Guide',t:'Guide'},{n:'Decision Log Template',t:'Template'}]},
+    {id:'p_pm2',name:'Project Plan & WBS',tpl:true,hasBP:false,
+     tasks:['WBS tanımla','Kaynak ve maliyet planlaması yap','Risk kayıt defterini oluştur','Proje takvimini onayla'],
+     acc:[{n:'Master Project Plan Template',t:'Template'},{n:'WBS Template',t:'Template'},{n:'Risk Register Template',t:'Template'}]},
+    {id:'p_pm3',name:'Kickoff Workshop',tpl:false,hasBP:false,
+     tasks:['Kickoff sunumunu hazırla','Ekip tanışma ve rol tanım seansları','Metodoloji hizalaması','Taahhüt ve imzalama'],
+     acc:[{n:'Kickoff Workshop Agenda',t:'Template'},{n:'Project Kickoff Presentation',t:'Presentation'}]},
+    {id:'p_pm4',name:'Quality Gate 1 Review',tpl:false,hasBP:false,
+     tasks:['Proje hazırlığını doğrula','Kaynak mevcudiyetini onayla','QG1 kriterlerini karşıla ve imzala'],
+     acc:[{n:'QG1 Checklist',t:'Checklist'},{n:'Phase Exit Criteria',t:'Reference'}]},
   ],
-  prepare_cte: [
-    { id:'p_cte1', name:'Learning & Enablement Plan', tpl:false,
-      tasks:['Eğitim ihtiyaçlarını belirle','Role dayalı öğrenme yollarını tasarla','SAP eğitim kataloğundan kursları seç','Eğitim takvimini planla'],
-      acc:[{n:'Enablement Plan Template',t:'Template'},{n:'Role-Based Learning Catalog',t:'Catalog'},{n:'SAP Training Roadmap',t:'Guide'}] },
-    { id:'p_cte2', name:'SAP Activate & Agile Training', tpl:false,
-      tasks:['Metodoloji genel bakış seansları','Agile/Scrum temel eğitimi','Cloud ALM araç eğitimi','Roadmap Viewer kullanım eğitimi'],
-      acc:[{n:'SAP Activate Overview Deck',t:'Presentation'},{n:'Agile Guide for SAP Projects',t:'Guide'},{n:'Cloud ALM Quick Start',t:'Guide'}] },
+  prepare_cte:[
+    {id:'p_cte1',name:'Learning & Enablement Plan',tpl:false,hasBP:false,
+     tasks:['Eğitim ihtiyaçlarını belirle','Role dayalı öğrenme yollarını tasarla','SAP eğitim kataloğundan kursları seç'],
+     acc:[{n:'Enablement Plan Template',t:'Template'},{n:'Role-Based Learning Catalog',t:'Catalog'}]},
+    {id:'p_cte2',name:'SAP Activate & Agile Training',tpl:false,hasBP:false,
+     tasks:['Metodoloji genel bakış seansları','Agile/Scrum temel eğitimi','Cloud ALM araç eğitimi'],
+     acc:[{n:'SAP Activate Overview Deck',t:'Presentation'},{n:'Agile Guide for SAP Projects',t:'Guide'}]},
   ],
-  prepare_tai: [
-    { id:'p_tai1', name:'System Landscape Design', tpl:true,
-      tasks:['3 katmanlı peyzaj tasarımı (Dev/QA/Prod)','Tenant provisioning planı','Erişim ve yetkilendirme yönetimi','Ağ ve güvenlik gereksinimleri'],
-      acc:[{n:'Landscape Design Template',t:'Template'},{n:'Tenant Provisioning Guide',t:'Guide'},{n:'Network Requirements Checklist',t:'Checklist'}] },
-    { id:'p_tai2', name:'SAP Cloud ALM Setup', tpl:false,
-      tasks:['SAP Cloud ALM provisioning','Projede konfigürasyon','Görev ve izleme araçlarını kur','Kullanıcıları ve rolleri tanımla'],
-      acc:[{n:'Cloud ALM Setup Guide',t:'Guide'},{n:'Cloud ALM Admin Handbook',t:'Guide'},{n:'User Management Guide',t:'Guide'}] },
-    { id:'p_tai3', name:'Dev Environment Setup', tpl:false,
-      tasks:['ABAP Cloud geliştirme ortamı','CI/CD pipeline tasarımı ve kurulumu','Transport yönetim konfigürasyonu','Geliştirme standartlarını yayınla'],
-      acc:[{n:'Dev Environment Checklist',t:'Checklist'},{n:'CI/CD Setup Guide',t:'Guide'},{n:'ABAP Development Standards',t:'Guide'}] },
+  prepare_tai:[
+    {id:'p_tai1',name:'System Landscape Design',tpl:true,hasBP:false,
+     tasks:['3 katmanlı peyzaj tasarımı (Dev/QA/Prod)','Tenant provisioning planı','Ağ ve güvenlik gereksinimleri'],
+     acc:[{n:'Landscape Design Template',t:'Template'},{n:'Network Requirements Checklist',t:'Checklist'}]},
+    {id:'p_tai2',name:'SAP Cloud ALM Setup',tpl:false,hasBP:false,
+     tasks:['SAP Cloud ALM provisioning','Proje konfigürasyonu','Kullanıcı ve rolleri tanımla'],
+     acc:[{n:'Cloud ALM Setup Guide',t:'Guide'},{n:'User Management Guide',t:'Guide'}]},
+    {id:'p_tai3',name:'Dev Environment Setup',tpl:false,hasBP:false,
+     tasks:['ABAP Cloud geliştirme ortamı','CI/CD pipeline tasarımı','Transport yönetim konfigürasyonu'],
+     acc:[{n:'Dev Environment Checklist',t:'Checklist'},{n:'ABAP Development Standards',t:'Guide'}]},
   ],
-  prepare_adc: [
-    { id:'p_adc1', name:'Fit-to-Standard Preparation', tpl:true,
-      tasks:['Scope item aktivasyon listesi hazırla','Workshop katılımcılarını belirle','Mevcut iş süreci belgelerini derle','FTS yaklaşımı ve kurallarını belirle'],
-      acc:[{n:'FTS Preparation Guide',t:'Guide'},{n:'Scope Item Fact Sheets',t:'Reference'},{n:'Business Process Questionnaire',t:'Template'},{n:'FTS Workshop Rules',t:'Guide'}] },
+  prepare_adc:[
+    {id:'p_adc1',name:'Fit-to-Standard Preparation',tpl:true,hasBP:false,
+     tasks:['Scope item aktivasyon listesi hazırla','Workshop katılımcılarını belirle','FTS yaklaşımı ve kurallarını belirle'],
+     acc:[{n:'FTS Preparation Guide',t:'Guide'},{n:'Scope Item Fact Sheets',t:'Reference'}]},
   ],
-  prepare_dm: [
-    { id:'p_dm1', name:'Data Migration Strategy', tpl:true,
-      tasks:['Migrasyon nesne listesini belirle','Kaynak sistem veri kalitesi analizi','Migrasyon yaklaşımını (Cockpit/Custom) karar ver','Migrasyon takvimi ve sorumlulukları tanımla'],
-      acc:[{n:'Data Migration Strategy Template',t:'Template'},{n:'Data Object Inventory',t:'Template'},{n:'Migration Cockpit Overview',t:'Guide'},{n:'Data Quality Assessment',t:'Template'}] },
+  prepare_dm:[
+    {id:'p_dm1',name:'Data Migration Strategy',tpl:true,hasBP:false,
+     tasks:['Migrasyon nesne listesini belirle','Kaynak sistem veri kalitesi analizi','Migrasyon yaklaşımını karar ver'],
+     acc:[{n:'Data Migration Strategy Template',t:'Template'},{n:'Data Object Inventory',t:'Template'}]},
   ],
-  prepare_ocm: [
-    { id:'p_ocm1', name:'Organizational Change Plan', tpl:false,
-      tasks:['Detaylı değişim etkisi değerlendirmesi','Paydaş angajman planı','İletişim planı ve takvimi','Direnç yönetimi stratejisi'],
-      acc:[{n:'OCM Plan Template',t:'Template'},{n:'Change Impact Assessment',t:'Template'},{n:'Communication Plan Template',t:'Template'},{n:'Resistance Management Guide',t:'Guide'}] },
-    { id:'p_ocm2', name:'Business Readiness Assessment', tpl:false,
-      tasks:['Mevcut durum değerlendirmesi','Organizasyonel hazırlık anketi uygula','Sonuçları analiz et ve raporla','Eylem planı oluştur'],
-      acc:[{n:'Readiness Assessment Questionnaire',t:'Template'},{n:'OCM Risk Register',t:'Template'},{n:'Assessment Results Dashboard',t:'Template'}] },
+  prepare_ocm:[
+    {id:'p_ocm1',name:'Organizational Change Plan',tpl:false,hasBP:false,
+     tasks:['Detaylı değişim etkisi değerlendirmesi','Paydaş angajman planı','İletişim planı ve takvimi','Direnç yönetimi stratejisi'],
+     acc:[{n:'OCM Plan Template',t:'Template'},{n:'Change Impact Assessment',t:'Template'},{n:'Communication Plan Template',t:'Template'}]},
   ],
-  explore_pm: [
-    { id:'e_pm1', name:'Project Monitoring & Control', tpl:false,
-      tasks:['Haftalık durum raporları hazırla','Steering committee güncellemelerini sun','Sorun ve risk yönetimini sürdür','Bütçe ve zaman çizelgesini takip et'],
-      acc:[{n:'Status Report Template',t:'Template'},{n:'Issue Log Template',t:'Template'},{n:'RAID Log Template',t:'Template'}] },
-    { id:'e_pm2', name:'Quality Gate 2 Review', tpl:false,
-      tasks:['FTS tamamlama incelemesi','Çözüm tasarımı sign-off','Geliştirme listesini onayla','QG2 kriterlerini karşıla'],
-      acc:[{n:'QG2 Checklist',t:'Checklist'},{n:'Solution Scope Confirmation',t:'Template'},{n:'Gap Resolution Plan',t:'Template'}] },
+  explore_pm:[
+    {id:'e_pm1',name:'Project Monitoring & Control',tpl:false,hasBP:false,
+     tasks:['Haftalık durum raporları hazırla','Steering committee güncellemelerini sun','Bütçe ve zaman çizelgesini takip et'],
+     acc:[{n:'Status Report Template',t:'Template'},{n:'RAID Log Template',t:'Template'}]},
+    {id:'e_pm2',name:'Quality Gate 2 Review',tpl:false,hasBP:false,
+     tasks:['FTS tamamlama incelemesi','Çözüm tasarımı sign-off','QG2 kriterlerini karşıla'],
+     acc:[{n:'QG2 Checklist',t:'Checklist'},{n:'Solution Scope Confirmation',t:'Template'}]},
   ],
-  explore_cte: [
-    { id:'e_cte1', name:'Business User Enablement', tpl:false,
-      tasks:['SAP terminoloji ve navigasyon eğitimi','Master data kavramları eğitimi','Workshop hazırlık briefing seansları','Fit-to-standard yaklaşımını anlat'],
-      acc:[{n:'Business User Enablement Plan',t:'Template'},{n:'SAP Terminology Glossary',t:'Reference'},{n:'Workshop Participant Briefing',t:'Template'}] },
-    { id:'e_cte2', name:'Key User Identification & Training', tpl:false,
-      tasks:['Key user rollerini tanımla','Key user seçim kriterlerini uygula','Key user eğitim planını hazırla ve uygula','Key user yeterlilik değerlendirmesi'],
-      acc:[{n:'Key User Role Description',t:'Template'},{n:'Key User Training Catalog',t:'Catalog'},{n:'Competency Assessment Template',t:'Template'}] },
+  explore_adc:[
+    {id:'e_adc1',name:'Fit-to-Standard Workshops',tpl:true,hasBP:false,
+     tasks:['FTS workshoplarını yürüt','Konfigürasyon kararlarını belgele','Gap ve gereksinimleri tespit et','Workshop katılımcı onayını al'],
+     acc:[{n:'FTS Workshop Template',t:'Template'},{n:'BPML Template',t:'Template'},{n:'Gap-Fit Analysis Template',t:'Template'}]},
+    {id:'e_adc2',name:'Solution Design Document (SDD)',tpl:true,hasBP:false,
+     tasks:['To-be süreçleri belgele','Konfigürasyon workbook tamamla','SDD\'yi onayla'],
+     acc:[{n:'SDD Template',t:'Template'},{n:'Configuration Workbook',t:'Template'}]},
+    {id:'e_adc3',name:'Business Process Master List (BPML)',tpl:true,hasBP:false,
+     tasks:['Kapsam dahilindeki süreçleri derle','SAP best practice\'lere eşle','BPML\'i imzalat'],
+     acc:[{n:'BPML Template',t:'Template'},{n:'Process Hierarchy Template',t:'Template'}]},
   ],
-  explore_tai: [
-    { id:'e_tai1', name:'Integration Architecture Design', tpl:true,
-      tasks:['Entegrasyon peyzaj tasarımını belgele','API/middleware seçimini tamamla','Arayüz envanterini hazırla','BTP servislerini belirle'],
-      acc:[{n:'Integration Architecture Template',t:'Template'},{n:'Interface Inventory Sheet',t:'Template'},{n:'BTP Services Selection Guide',t:'Guide'},{n:'API Design Guidelines',t:'Guide'}] },
-    { id:'e_tai2', name:'Technical Design Document', tpl:true,
-      tasks:['Sistem mimarisi dokümantasyonu','Güvenlik ve yetkilendirme konseptini tasarla','Performans gereksinimlerini belirle','Teknik tasarım belgesini onayla'],
-      acc:[{n:'Technical Design Template',t:'Template'},{n:'Security Concept Template',t:'Template'},{n:'Authorization Concept Guide',t:'Guide'},{n:'Performance Requirements Template',t:'Template'}] },
+  explore_tai:[
+    {id:'e_tai1',name:'Integration Architecture Design',tpl:true,hasBP:false,
+     tasks:['Entegrasyon peyzaj tasarımını belgele','API/middleware seçimi','Arayüz envanterini hazırla'],
+     acc:[{n:'Integration Architecture Template',t:'Template'},{n:'Interface Inventory Sheet',t:'Template'}]},
   ],
-  explore_adc: [
-    { id:'e_adc1', name:'Fit-to-Standard Workshops', tpl:true,
-      tasks:['Süreç alanlarına göre FTS workshop\'larını yürüt','Konfigürasyon kararlarını belgele','Gap ve geliştirme gereksinimlerini tespit et','Workshop katılımcı onayını al'],
-      acc:[{n:'FTS Workshop Template',t:'Template'},{n:'Business Process Master List (BPML)',t:'Template'},{n:'Configuration Decision Log',t:'Template'},{n:'Gap-Fit Analysis Template',t:'Template'},{n:'How to Run FTS Workshops',t:'Guide'}] },
-    { id:'e_adc2', name:'Solution Design Document (SDD)', tpl:true,
-      tasks:['To-be süreçleri belgele','Konfigürasyon workbook\'u tamamla','Raporlama gereksinimlerini kaydet','SDD\'yi paydaşlara onayla'],
-      acc:[{n:'Solution Design Document Template',t:'Template'},{n:'Configuration Workbook',t:'Template'},{n:'Process Flow Template (Visio)',t:'Template'},{n:'Reporting Requirements Template',t:'Template'}] },
-    { id:'e_adc3', name:'Business Process Master List (BPML)', tpl:true,
-      tasks:['Kapsam dahilindeki tüm süreçleri derle','SAP best practice\'lere eşle','Workshop önceliklendirmesi yap','BPML\'i imzalat'],
-      acc:[{n:'BPML Template (Excel)',t:'Template'},{n:'Scope Item Reference List',t:'Reference'},{n:'Process Hierarchy Template',t:'Template'}] },
+  explore_ext:[
+    {id:'e_ext1',name:'Extensibility Requirements',tpl:true,hasBP:false,
+     tasks:['Standart dışı gereksinimleri listele','Extensibility tipini sınıflandır','Clean core uyumluluk kontrolü'],
+     acc:[{n:'Extensibility Assessment Template',t:'Template'},{n:'WRICEF Log Template',t:'Template'},{n:'Clean Core Guidelines',t:'Guide'}]},
   ],
-  explore_ext: [
-    { id:'e_ext1', name:'Extensibility Requirements', tpl:true,
-      tasks:['Standart dışı gereksinimleri listele','Extensibility tipini sınıflandır (In-App/Side-by-Side/Key-User)','Clean core uyumluluk kontrolü yap','Feasibility ve etki değerlendirmesi'],
-      acc:[{n:'Extensibility Assessment Template',t:'Template'},{n:'Clean Core Guidelines',t:'Guide'},{n:'WRICEF Log Template',t:'Template'},{n:'In-App Extensibility Guide',t:'Guide'}] },
+  explore_tst:[
+    {id:'e_tst1',name:'Test Strategy & Planning',tpl:true,hasBP:false,
+     tasks:['Test kapsamını tanımla','Cloud ALM test araçlarını kur','Test ekibi rollerini tanımla'],
+     acc:[{n:'Test Strategy Template',t:'Template'},{n:'Cloud ALM Test Management Guide',t:'Guide'}]},
   ],
-  explore_int: [
-    { id:'e_int1', name:'Integration Design', tpl:true,
-      tasks:['Arayüz tasarım spesifikasyonlarını hazırla','Hata yönetimi ve retry stratejisi belirle','BTP entegrasyon servislerini seç','Entegrasyon tasarımını gözden geçir ve onayla'],
-      acc:[{n:'Integration Design Template',t:'Template'},{n:'Interface Specification Template',t:'Template'},{n:'Error Handling Guidelines',t:'Guide'},{n:'BTP Integration Suite Guide',t:'Guide'}] },
+  explore_dm:[
+    {id:'e_dm1',name:'Data Migration Design',tpl:true,hasBP:false,
+     tasks:['Kaynak-hedef eşleme tablosunu oluştur','Veri temizleme kurallarını belirle','Migration Cockpit konfigürasyonunu başlat'],
+     acc:[{n:'Data Migration Design Document',t:'Template'},{n:'Data Mapping Template',t:'Template'}]},
   ],
-  explore_tst: [
-    { id:'e_tst1', name:'Test Strategy & Planning', tpl:true,
-      tasks:['Test kapsamı ve yaklaşımını tanımla','Test tiplerini ve fazlarını belirle','Cloud ALM test araçlarını kur','Test ekibi rol ve sorumluluklarını tanımla'],
-      acc:[{n:'Test Strategy Template',t:'Template'},{n:'Test Plan Template',t:'Template'},{n:'Cloud ALM Test Management Guide',t:'Guide'},{n:'Test Types Overview',t:'Reference'}] },
+  explore_ocm:[
+    {id:'e_ocm1',name:'Detailed Change Impact Assessment',tpl:false,hasBP:false,
+     tasks:['Süreç değişimlerini analiz et','Rol etki analizini tamamla','Risk azaltma planını oluştur'],
+     acc:[{n:'Change Impact Assessment (Detailed)',t:'Template'},{n:'Role Mapping Template',t:'Template'}]},
+    {id:'e_ocm2',name:'Training Needs Analysis',tpl:false,hasBP:false,
+     tasks:['Eğitim müfredatı tanımla','Role-eğitim eşleme matrisini hazırla','Eğitim takvimini tamamla'],
+     acc:[{n:'Training Needs Analysis Template',t:'Template'},{n:'Learning Path Matrix',t:'Template'}]},
   ],
-  explore_dm: [
-    { id:'e_dm1', name:'Data Migration Design', tpl:true,
-      tasks:['Migrasyon nesne spesifikasyonlarını hazırla','Kaynak-hedef eşleme (mapping) tablosunu oluştur','Veri temizleme kurallarını belirle','Migration Cockpit konfigürasyonunu başlat'],
-      acc:[{n:'Data Migration Design Document',t:'Template'},{n:'Data Mapping Template (Excel)',t:'Template'},{n:'Migration Object Specs',t:'Template'},{n:'Data Quality Rulebook',t:'Template'}] },
+  realize_pm:[
+    {id:'r_pm1',name:'Sprint Execution & Management',tpl:false,hasBP:false,
+     tasks:['Sprint planlama seanslarını yürüt','Günlük scrum toplantıları kolaylaştır','Sprint review ve retrospektif yap'],
+     acc:[{n:'Sprint Plan Template',t:'Template'},{n:'Velocity Tracker',t:'Template'}]},
+    {id:'r_pm2',name:'Quality Gate 3 Review',tpl:false,hasBP:false,
+     tasks:['Geliştirme tamamlanma incelemesi','Test sonuçlarını gözden geçir','QG3 kriterlerini karşıla'],
+     acc:[{n:'QG3 Checklist',t:'Checklist'},{n:'Test Results Summary',t:'Template'}]},
   ],
-  explore_ocm: [
-    { id:'e_ocm1', name:'Detailed Change Impact Assessment', tpl:false,
-      tasks:['Süreç değişimlerini analiz et','Rol etki analizini tamamla','Organizasyon yapısı değişikliklerini belirle','Risk azaltma planını oluştur'],
-      acc:[{n:'Change Impact Assessment (Detailed)',t:'Template'},{n:'Role Mapping Template',t:'Template'},{n:'Process Change Summary',t:'Template'}] },
-    { id:'e_ocm2', name:'Training Needs Analysis', tpl:false,
-      tasks:['Eğitim müfredatı tanımla','Role-eğitim eşleme matrisini hazırla','Eğitim teslimat yaklaşımını belirle','Eğitim takvimini tamamla'],
-      acc:[{n:'Training Needs Analysis Template',t:'Template'},{n:'Training Curriculum Template',t:'Template'},{n:'Learning Path Matrix',t:'Template'}] },
+  realize_adc:[
+    {id:'r_adc1',name:'System Configuration',tpl:true,hasBP:false,
+     tasks:['Sistemi konfigüre et','Scope item aktivasyonlarını gerçekleştir','Birim testleri ile doğrula'],
+     acc:[{n:'Configuration Workbook (Completed)',t:'Template'},{n:'Scope Item Activation Guide',t:'Guide'}]},
+    {id:'r_adc2',name:'Custom Development (WRICEF)',tpl:true,hasBP:false,
+     tasks:['WRICEF nesnelerini geliştir','Code review tamamla','WRICEF testlerini çalıştır'],
+     acc:[{n:'WRICEF Tracker Template',t:'Template'},{n:'Development Standards Guide',t:'Guide'},{n:'Code Review Checklist',t:'Checklist'}]},
+    {id:'r_adc3',name:'Solution Walkthrough',tpl:false,hasBP:false,
+     tasks:['Konfigüre edilmiş çözümü iş birimine sun','Geri bildirimleri belgele','Delta gereksinimleri tespit et'],
+     acc:[{n:'Solution Walkthrough Template',t:'Template'},{n:'Delta Log Template',t:'Template'}]},
   ],
-  realize_pm: [
-    { id:'r_pm1', name:'Sprint Execution & Management', tpl:false,
-      tasks:['Sprint planlama seanslarını yürüt','Günlük scrum toplantıları kolaylaştır','Sprint review ve retrospektif yap','Velocity ve burndown takibi'],
-      acc:[{n:'Sprint Plan Template',t:'Template'},{n:'Sprint Review Template',t:'Template'},{n:'Backlog Management Guide',t:'Guide'},{n:'Velocity Tracker',t:'Template'}] },
-    { id:'r_pm2', name:'Quality Gate 3 Review', tpl:false,
-      tasks:['Geliştirme tamamlanma incelemesi','Test sonuçlarını gözden geçir','Canlıya geçiş hazırlığı ön kontrolü','QG3 kriterlerini karşıla'],
-      acc:[{n:'QG3 Checklist',t:'Checklist'},{n:'Development Completion Tracker',t:'Template'},{n:'Test Results Summary',t:'Template'}] },
+  realize_ext:[
+    {id:'r_ext1',name:'Extensibility Development',tpl:false,hasBP:false,
+     tasks:['In-app extensions geliştir ve test et','Side-by-side BTP geliştirmeleri tamamla','Extensibility nesnelerini dokümante et'],
+     acc:[{n:'Extensibility Dev Guide',t:'Guide'},{n:'BTP Development Toolkit',t:'Tool'}]},
   ],
-  realize_cte: [
-    { id:'r_cte1', name:'Training Material Development', tpl:false,
-      tasks:['Role bazlı eğitim materyallerini geliştir','Sistem simülasyon egzersizleri oluştur','E-öğrenme içerikleri hazırla','Eğitimci el kitabını hazırla'],
-      acc:[{n:'Training Material Template',t:'Template'},{n:'Exercise Scenario Template',t:'Template'},{n:'Train-the-Trainer Guide',t:'Guide'},{n:'E-Learning Standards',t:'Guide'}] },
+  realize_int:[
+    {id:'r_int1',name:'Integration Development & Testing',tpl:false,hasBP:false,
+     tasks:['Entegrasyon akışlarını geliştir','Arayüz birim testlerini yap','Uçtan uca entegrasyon testi yürüt'],
+     acc:[{n:'Integration Test Protocol',t:'Template'},{n:'Error Handling Runbook',t:'Guide'}]},
   ],
-  realize_tai: [
-    { id:'r_tai1', name:'Transport & Release Management', tpl:false,
-      tasks:['Transport stratejisi ve prosedürlerini uygula','Release takvimini yönet','Ortam senkronizasyon prosedürlerini takip et','CTS konfigürasyonunu doğrula'],
-      acc:[{n:'Transport Management Guide',t:'Guide'},{n:'Release Calendar Template',t:'Template'},{n:'Environment Sync Checklist',t:'Checklist'}] },
+  realize_tst:[
+    {id:'r_tst1',name:'Unit & String Testing',tpl:false,hasBP:false,
+     tasks:['Geliştirici birim testlerini yürüt','String test senaryolarını çalıştır','Test sonuçlarını belgele'],
+     acc:[{n:'Unit Test Protocol',t:'Template'},{n:'Defect Management Template',t:'Template'}]},
+    {id:'r_tst2',name:'System Integration Testing (SIT)',tpl:false,hasBP:false,
+     tasks:['SIT test senaryolarını hazırla','SIT yürütmesini koordine et','SIT tamamlama raporunu hazırla'],
+     acc:[{n:'SIT Test Plan',t:'Template'},{n:'SIT Defect Log',t:'Template'}]},
+    {id:'r_tst3',name:'User Acceptance Testing (UAT)',tpl:true,hasBP:false,
+     tasks:['UAT test senaryolarını hazırla','Key user\'lara UAT eğitimi ver','UAT yürütmesini yönet','UAT sign-off al'],
+     acc:[{n:'UAT Test Plan',t:'Template'},{n:'UAT Sign-off Template',t:'Template'}]},
+    {id:'r_tst4',name:'Performance Testing',tpl:false,hasBP:false,
+     tasks:['Performans KPI\'larını tanımla','Yük testi senaryolarını hazırla','Yük testini çalıştır ve analiz et'],
+     acc:[{n:'Performance Test Plan',t:'Template'},{n:'Load Testing Guide',t:'Guide'}]},
   ],
-  realize_adc: [
-    { id:'r_adc1', name:'System Configuration', tpl:true,
-      tasks:['Tasarım kararlarına göre sistemi konfigüre et','Scope item aktivasyonlarını gerçekleştir','Baseline konfigürasyonunu belgele','Konfigürasyonu birim testleri ile doğrula'],
-      acc:[{n:'Configuration Workbook (Completed)',t:'Template'},{n:'Scope Item Activation Guide',t:'Guide'},{n:'Configuration Documentation Standards',t:'Guide'}] },
-    { id:'r_adc2', name:'Custom Development (WRICEF)', tpl:true,
-      tasks:['WRICEF nesnelerini geliştir (Form/Report/Interface)','Geliştirme standartlarına uy','Code review süreçlerini tamamla','WRICEF test senaryolarını çalıştır'],
-      acc:[{n:'WRICEF Tracker Template',t:'Template'},{n:'Development Standards Guide',t:'Guide'},{n:'Code Review Checklist',t:'Checklist'},{n:'WRICEF Test Protocol',t:'Template'}] },
-    { id:'r_adc3', name:'Solution Walkthrough', tpl:false,
-      tasks:['Konfigüre edilmiş çözümü iş birimine sun','Geri bildirimleri topla ve belgele','Delta gereksinimleri tespit et ve önceliklendir','Solution walkthrough sign-off al'],
-      acc:[{n:'Solution Walkthrough Template',t:'Template'},{n:'Delta Log Template',t:'Template'},{n:'Feedback Collection Form',t:'Template'}] },
+  realize_dm:[
+    {id:'r_dm1',name:'Data Migration Development',tpl:true,hasBP:false,
+     tasks:['Migrasyon programlarını geliştir','Veri dönüşümü ve temizleme','Migrasyon program testleri'],
+     acc:[{n:'Migration Program Specs',t:'Template'},{n:'ETL Mapping Document',t:'Template'}]},
+    {id:'r_dm2',name:'Migration Mock Runs',tpl:false,hasBP:false,
+     tasks:['1. mock migrasyon yürütme','Veri kalite sorunlarını çöz','2. mock migrasyon yürütme','Mock sonuçlarını belgele'],
+     acc:[{n:'Mock Run Checklist',t:'Checklist'},{n:'Migration Validation Template',t:'Template'}]},
   ],
-  realize_ext: [
-    { id:'r_ext1', name:'Extensibility Development', tpl:false,
-      tasks:['In-app extensions geliştir ve test et','Side-by-side BTP geliştirmeleri tamamla','Key-user extensibility konfigürasyonları','Extensibility nesnelerini dokümante et'],
-      acc:[{n:'Extensibility Dev Guide',t:'Guide'},{n:'BTP Development Toolkit',t:'Tool'},{n:'Key-User Extension Catalog',t:'Reference'},{n:'Extension Test Protocol',t:'Template'}] },
+  realize_ocm:[
+    {id:'r_ocm1',name:'Key User Training Delivery',tpl:false,hasBP:false,
+     tasks:['Key user eğitim seanslarını yürüt','Eğitim etkinliğini değerlendir','Eğitim materyallerini güncelle'],
+     acc:[{n:'Key User Training Schedule',t:'Template'},{n:'Training Feedback Form',t:'Template'}]},
+    {id:'r_ocm2',name:'Communication Execution',tpl:false,hasBP:false,
+     tasks:['Planlanan iletişimleri hayata geçir','Proje bültenini yayınla','Değişim habercileri ağını aktif et'],
+     acc:[{n:'Communication Calendar',t:'Template'},{n:'Newsletter Template',t:'Template'}]},
   ],
-  realize_int: [
-    { id:'r_int1', name:'Integration Development & Testing', tpl:false,
-      tasks:['Entegrasyon akışlarını geliştir','Arayüz birim testlerini yap','Uçtan uca entegrasyon testi yürüt','Hata yönetimi ve izleme yapılandır'],
-      acc:[{n:'Integration Test Protocol',t:'Template'},{n:'Error Handling Runbook',t:'Guide'},{n:'Integration Monitoring Setup',t:'Guide'},{n:'Interface Test Results Template',t:'Template'}] },
+  deploy_pm:[
+    {id:'dep_pm1',name:'Cutover Planning & Execution',tpl:true,hasBP:false,
+     tasks:['Detaylı cutover görev listesi hazırla','Cutover provasını yürüt','Git/Gitme kararını ver','Prodüksiyon cutover\'ı tamamla'],
+     acc:[{n:'Cutover Plan Template',t:'Template'},{n:'Cutover Task List',t:'Template'},{n:'Hypercare Plan',t:'Template'}]},
+    {id:'dep_pm2',name:'Quality Gate 4 – Go-Live Readiness',tpl:false,hasBP:false,
+     tasks:['Final hazırlık değerlendirmesi','İş birimi sign-off belgele','Üst yönetim onayını al'],
+     acc:[{n:'QG4 Go-Live Checklist',t:'Checklist'},{n:'Go-Live Approval Template',t:'Template'}]},
   ],
-  realize_tst: [
-    { id:'r_tst1', name:'Unit & String Testing', tpl:false,
-      tasks:['Geliştirici birim testlerini yürüt','String test senaryolarını çalıştır','Hataları kaydet ve çöz','Test sonuçlarını belgele'],
-      acc:[{n:'Unit Test Protocol',t:'Template'},{n:'String Test Scenarios',t:'Template'},{n:'Defect Management Template',t:'Template'}] },
-    { id:'r_tst2', name:'System Integration Testing (SIT)', tpl:false,
-      tasks:['SIT test senaryolarını hazırla','SIT yürütmesini koordine et','Kritik hataları öncelikli çöz','SIT tamamlama raporunu hazırla'],
-      acc:[{n:'SIT Test Plan',t:'Template'},{n:'SIT Test Cases Template',t:'Template'},{n:'SIT Defect Log',t:'Template'},{n:'SIT Completion Report',t:'Template'}] },
-    { id:'r_tst3', name:'User Acceptance Testing (UAT)', tpl:true,
-      tasks:['UAT test senaryolarını iş süreçlerine göre hazırla','Key user\'lara UAT eğitimi ver','UAT yürütmesini yönet ve takip et','UAT sign-off belgelerini al'],
-      acc:[{n:'UAT Test Plan',t:'Template'},{n:'UAT Test Script Template',t:'Template'},{n:'UAT Defect Log',t:'Template'},{n:'UAT Sign-off Template',t:'Template'}] },
-    { id:'r_tst4', name:'Performance Testing', tpl:false,
-      tasks:['Performans KPI\'larını ve eşiklerini tanımla','Yük testi senaryolarını hazırla','Yük testini çalıştır ve analiz et','Performans iyileştirme eylemlerini uygula'],
-      acc:[{n:'Performance Test Plan',t:'Template'},{n:'Load Testing Guide',t:'Guide'},{n:'Performance Baseline Template',t:'Template'}] },
+  deploy_tai:[
+    {id:'dep_tai1',name:'Production System Setup',tpl:false,hasBP:false,
+     tasks:['Prodüksiyon ortamı final konfigürasyonu','Güvenlik sertleştirme kontrolleri','İzleme ve alert araçlarını kur'],
+     acc:[{n:'Production Readiness Checklist',t:'Checklist'},{n:'Security Hardening Guide',t:'Guide'}]},
   ],
-  realize_dm: [
-    { id:'r_dm1', name:'Data Migration Development', tpl:true,
-      tasks:['Migrasyon programlarını geliştir','Legacy sistemden veri çıkar','Veri dönüşümü ve temizleme işlemleri','Migrasyon program testlerini yürüt'],
-      acc:[{n:'Migration Program Specs',t:'Template'},{n:'Data Cleansing Rules Template',t:'Template'},{n:'ETL Mapping Document',t:'Template'},{n:'Migration Test Protocol',t:'Template'}] },
-    { id:'r_dm2', name:'Migration Mock Runs', tpl:false,
-      tasks:['1. mock migrasyon yürütme ve analiz','Veri kalite sorunlarını çöz','2. mock migrasyon yürütme ve performans ölçümü','Mock sonuçlarını belgele ve onayla'],
-      acc:[{n:'Mock Run Checklist',t:'Checklist'},{n:'Migration Validation Template',t:'Template'},{n:'Data Reconciliation Template',t:'Template'},{n:'Mock Run Results Report',t:'Template'}] },
+  deploy_tst:[
+    {id:'dep_tst1',name:'Regression & Smoke Testing',tpl:false,hasBP:false,
+     tasks:['Final regresyon testi yürüt','Cutover sonrası smoke test gerçekleştir','Test sonuçlarını onayla'],
+     acc:[{n:'Smoke Test Script',t:'Template'},{n:'Regression Test Protocol',t:'Template'}]},
   ],
-  realize_ocm: [
-    { id:'r_ocm1', name:'Key User Training Delivery', tpl:false,
-      tasks:['Key user eğitim seanslarını yürüt','Eğitim etkinliğini değerlendir','Geri bildirimleri analiz et','Eğitim materyallerini güncelle'],
-      acc:[{n:'Key User Training Schedule',t:'Template'},{n:'Training Feedback Form',t:'Template'},{n:'Competency Assessment',t:'Template'}] },
-    { id:'r_ocm2', name:'Communication Execution', tpl:false,
-      tasks:['Planlanan iletişimleri hayata geçir','Proje bültenini yayınla','Yönetim briefinglerini sun','Değişim habercileri ağını aktif et'],
-      acc:[{n:'Communication Calendar',t:'Template'},{n:'Newsletter Template',t:'Template'},{n:'Management Briefing Template',t:'Template'}] },
+  deploy_dm:[
+    {id:'dep_dm1',name:'Production Data Migration',tpl:true,hasBP:false,
+     tasks:['Final veri çıkarma ve prodüksiyona yükleme','Prodüksiyonda veri doğrulama','Bakiye ve mutabakat kontrolleri','Data migration sign-off belgele'],
+     acc:[{n:'Production Migration Checklist',t:'Checklist'},{n:'Data Validation Template',t:'Template'}]},
   ],
-  deploy_pm: [
-    { id:'dep_pm1', name:'Cutover Planning & Execution', tpl:true,
-      tasks:['Detaylı cutover görev listesi hazırla','Cutover provasını yürüt ve değerlendir','Git/Gitme kararını ver','Prodüksiyon cutover\'ı başarıyla tamamla'],
-      acc:[{n:'Cutover Plan Template',t:'Template'},{n:'Cutover Task List (Excel)',t:'Template'},{n:'Cutover Rehearsal Checklist',t:'Checklist'},{n:'Hypercare Plan',t:'Template'}] },
-    { id:'dep_pm2', name:'Quality Gate 4 – Go-Live Readiness', tpl:false,
-      tasks:['Final hazırlık değerlendirmesi','İş birimi sign-off belgele','IT ve teknik ekip sign-off','Üst yönetim onayını al'],
-      acc:[{n:'QG4 Go-Live Checklist',t:'Checklist'},{n:'Readiness Sign-off Template',t:'Template'},{n:'Go-Live Approval Template',t:'Template'}] },
+  deploy_ocm:[
+    {id:'dep_ocm1',name:'End-User Training Delivery',tpl:false,hasBP:false,
+     tasks:['Son kullanıcı eğitim seanslarını tamamla','Hızlı referans kartlarını dağıt','Süper kullanıcı ağını aktif et'],
+     acc:[{n:'End-User Training Schedule',t:'Template'},{n:'Quick Reference Card Template',t:'Template'}]},
+    {id:'dep_ocm2',name:'Go-Live Communication',tpl:false,hasBP:false,
+     tasks:['Canlıya geçiş duyurusunu yayınla','Help desk iletişim kanallarını aktif et','Kullanıcı desteğini güvence altına al'],
+     acc:[{n:'Go-Live Announcement Template',t:'Template'},{n:'Help Desk Script',t:'Guide'}]},
   ],
-  deploy_tai: [
-    { id:'dep_tai1', name:'Production System Setup & Hardening', tpl:false,
-      tasks:['Prodüksiyon ortamı final konfigürasyonu','Güvenlik sertleştirme kontrolleri','İzleme ve alert araçlarını kur','Prodüksiyon erişimlerini doğrula'],
-      acc:[{n:'Production Readiness Checklist',t:'Checklist'},{n:'Security Hardening Guide',t:'Guide'},{n:'Monitoring Setup Guide',t:'Guide'}] },
+  run_pm:[
+    {id:'run_pm1',name:'Hypercare Management',tpl:false,hasBP:false,
+     tasks:['Günlük hypercare görüşmeleri','Sorunları triyaj yap ve önceliklendir','Stabilizasyon metriklerini takip et'],
+     acc:[{n:'Hypercare Plan',t:'Template'},{n:'Hypercare Exit Checklist',t:'Checklist'}]},
+    {id:'run_pm2',name:'Project Closure',tpl:false,hasBP:false,
+     tasks:['Öğrenilen dersler workshopu','Proje kapanış raporunu hazırla','Proje arşivini oluştur'],
+     acc:[{n:'Lessons Learned Template',t:'Template'},{n:'Project Closure Report',t:'Template'}]},
   ],
-  deploy_tst: [
-    { id:'dep_tst1', name:'Regression & Smoke Testing', tpl:false,
-      tasks:['Final regresyon testi yürüt','Cutover sonrası smoke test gerçekleştir','Kritik sorunları çöz','Test sonuçlarını onayla'],
-      acc:[{n:'Smoke Test Script',t:'Template'},{n:'Regression Test Protocol',t:'Template'},{n:'Post-Cutover Test Checklist',t:'Checklist'}] },
+  run_tai:[
+    {id:'run_tai1',name:'Operations Handover',tpl:false,hasBP:false,
+     tasks:['IT operasyon ekibine devir toplantısı','Runbook ve prosedür dokümantasyonu','Destek modeli ve SLA tanımı'],
+     acc:[{n:'Operations Handover Checklist',t:'Checklist'},{n:'System Runbook Template',t:'Template'}]},
   ],
-  deploy_dm: [
-    { id:'dep_dm1', name:'Production Data Migration', tpl:true,
-      tasks:['Final veri çıkarma ve prodüksiyona yükleme','Prodüksiyonda veri doğrulama yap','Bakiye ve mutabakat kontrollerini tamamla','Data migration sign-off belgele'],
-      acc:[{n:'Production Migration Checklist',t:'Checklist'},{n:'Data Validation Template',t:'Template'},{n:'Reconciliation Report Template',t:'Template'},{n:'Migration Sign-off Document',t:'Template'}] },
+  run_ops:[
+    {id:'run_ops1',name:'System Monitoring & Support Setup',tpl:false,hasBP:false,
+     tasks:['İzleme panolarını kur','Alert kurallarını yapılandır','Performans baseline oluştur'],
+     acc:[{n:'Monitoring Dashboard Guide',t:'Guide'},{n:'Alert Configuration Template',t:'Template'}]},
+    {id:'run_ops2',name:'Continuous Improvement Planning',tpl:false,hasBP:false,
+     tasks:['Süreç ve sistem KPI\'larını tanımla','Optimizasyon backlog oluştur','Düzenli inceleme toplantı ritmi oluştur'],
+     acc:[{n:'KPI Dashboard Template',t:'Template'},{n:'Continuous Improvement Framework',t:'Guide'}]},
   ],
-  deploy_ocm: [
-    { id:'dep_ocm1', name:'End-User Training Delivery', tpl:false,
-      tasks:['Son kullanıcı eğitim seanslarını tamamla','Hızlı referans kartlarını dağıt','Süper kullanıcı ağını aktif et','Kullanıcı destek kanallarını duyur'],
-      acc:[{n:'End-User Training Schedule',t:'Template'},{n:'Quick Reference Card Template',t:'Template'},{n:'Super User Network Plan',t:'Template'},{n:'Help Desk Notification Template',t:'Template'}] },
-    { id:'dep_ocm2', name:'Go-Live Communication', tpl:false,
-      tasks:['Canlıya geçiş duyurusunu yayınla','Yönetim mesajlaşmasını yönet','Help desk iletişim kanallarını aktif et','Kullanıcı desteğini güvence altına al'],
-      acc:[{n:'Go-Live Announcement Template',t:'Template'},{n:'Management Message Template',t:'Template'},{n:'Help Desk Script',t:'Guide'}] },
-  ],
-  run_pm: [
-    { id:'run_pm1', name:'Hypercare Management', tpl:false,
-      tasks:['Günlük hypercare durum görüşmelerini yönet','Sorunları triyaj yap ve önceliklendir','Stabilizasyon metriklerini takip et','Hypercare çıkış kriterlerini karşıla'],
-      acc:[{n:'Hypercare Plan',t:'Template'},{n:'Hypercare Issue Tracker',t:'Template'},{n:'Hypercare Exit Checklist',t:'Checklist'},{n:'Daily Status Report Template',t:'Template'}] },
-    { id:'run_pm2', name:'Project Closure', tpl:false,
-      tasks:['Öğrenilen dersler workshop\'u yürüt','Proje kapanış raporunu hazırla','Operasyonlara bilgi transferini tamamla','Proje arşivini oluştur'],
-      acc:[{n:'Lessons Learned Template',t:'Template'},{n:'Project Closure Report',t:'Template'},{n:'Knowledge Transfer Checklist',t:'Checklist'}] },
-  ],
-  run_tai: [
-    { id:'run_tai1', name:'Operations Handover', tpl:false,
-      tasks:['IT operasyon ekibine devir toplantısı','Runbook ve prosedür dokümantasyonu','Destek modeli ve SLA tanımı','Yetkilendirme ve erişim devirlerini tamamla'],
-      acc:[{n:'Operations Handover Checklist',t:'Checklist'},{n:'System Runbook Template',t:'Template'},{n:'SLA Definition Template',t:'Template'}] },
-  ],
-  run_ops: [
-    { id:'run_ops1', name:'System Monitoring & Support Setup', tpl:false,
-      tasks:['İzleme panolarını kur','Alert kurallarını yapılandır','Performans baseline\'ı oluştur','Destek prosedürlerini aktif et'],
-      acc:[{n:'Monitoring Dashboard Guide',t:'Guide'},{n:'Alert Configuration Template',t:'Template'},{n:'Support Model Document',t:'Template'}] },
-    { id:'run_ops2', name:'Continuous Improvement Planning', tpl:false,
-      tasks:['Süreç ve sistem KPI\'larını tanımla','Optimizasyon backlog\'u oluştur','İnovasyon yol haritasını hazırla','Düzenli inceleme toplantı ritmi oluştur'],
-      acc:[{n:'KPI Dashboard Template',t:'Template'},{n:'Optimization Backlog Template',t:'Template'},{n:'Continuous Improvement Framework',t:'Guide'}] },
-  ],
-  run_ocm: [
-    { id:'run_ocm1', name:'Post Go-Live Adoption & Support', tpl:false,
-      tasks:['Kullanıcı benimseme metriklerini izle','Canlı sonrası kullanıcı anketleri uygula','Direnç noktalarını yönet','Uzun vadeli benimseme planını güncelle'],
-      acc:[{n:'Adoption Metrics Dashboard',t:'Template'},{n:'Post Go-Live Survey Template',t:'Template'},{n:'Resistance Management Playbook',t:'Guide'}] },
+  run_ocm:[
+    {id:'run_ocm1',name:'Post Go-Live Adoption & Support',tpl:false,hasBP:false,
+     tasks:['Kullanıcı benimseme metriklerini izle','Canlı sonrası kullanıcı anketleri uygula','Uzun vadeli benimseme planını güncelle'],
+     acc:[{n:'Adoption Metrics Dashboard',t:'Template'},{n:'Post Go-Live Survey Template',t:'Template'}]},
   ],
 };
 
-/* ═══════════════════════════════════════════════
-   STATE
-═══════════════════════════════════════════════ */
-let S = {
-  view: 'dashboard',
-  cell: null,           // { phaseId, wsId }
-  delivId: null,
-  tab: 'tasks',
-  progress: {},         // { id: { status, pct, notes, assignee, due, checks:{} } }
-  templates: {},        // { id: { name, data } }
-  consultFiles: {},     // { id: { name, data } }
-  aiResults: {},        // { id: htmlString }
-};
-
-function save() { try { localStorage.setItem('sap_gov_v2', JSON.stringify({ progress: S.progress })); } catch(e){} }
-function load() { try { const d = JSON.parse(localStorage.getItem('sap_gov_v2')||'{}'); S.progress = d.progress||{}; } catch(e){} }
+/* ══ STATE ══ */
+let S={view:'dashboard',cell:null,dId:null,tab:'tasks',prog:{},files:{}};
+function save(){try{localStorage.setItem('sap_v3',JSON.stringify({prog:S.prog}));}catch(e){}}
+function load(){try{const d=JSON.parse(localStorage.getItem('sap_v3')||'{}');S.prog=d.prog||{};}catch(e){}}
 load();
 
-/* ═══════════════════════════════════════════════
-   HELPERS
-═══════════════════════════════════════════════ */
-const allDelivs = () => Object.values(DB).flat();
-const findDeliv = id => allDelivs().find(d => d.id === id);
-const cellDelivs = (ph, ws) => DB[`${ph}_${ws}`] || [];
-const prog = id => S.progress[id] || { status:'not-started', pct:0, notes:'', assignee:'', due:'', checks:{} };
-const phaseColor = id => PHASES.find(p=>p.id===id)?.color || '#666';
-const statusColor = s => ({ 'not-started':'#94A3B8', 'in-progress':'#F59E0B', 'completed':'#22C55E', 'blocked':'#EF4444', 'review':'#8B5CF6' }[s] || '#94A3B8');
-const statusLabel = s => ({ 'not-started':'Başlanmadı', 'in-progress':'Devam Ediyor', 'completed':'Tamamlandı', 'blocked':'Engellendi', 'review':'İncelemede' }[s] || s);
-const statusClass = s => ({ 'not-started':'s-ns', 'in-progress':'s-ip', 'completed':'s-done', 'blocked':'s-blk', 'review':'s-rev' }[s] || 's-ns');
-const typeIcon = t => ({ Template:'📄', Guide:'📖', Checklist:'✅', Reference:'🔗', Tool:'🛠️', Presentation:'📊', Catalog:'📚' }[t] || '📎');
+/* ══ HELPERS ══ */
+const allD=()=>Object.values(DB).flat();
+const fD=id=>allD().find(d=>d.id===id);
+const cD=(ph,ws)=>DB[`${ph}_${ws}`]||[];
+const gP=id=>S.prog[id]||{st:'ns',pct:0,notes:'',who:'',due:'',chk:{},ai:null,air:null};
+const phC=id=>PH.find(p=>p.id===id)?.color||'#666';
+const stC=s=>({ns:'#94A3B8',ip:'#F59E0B',dn:'#22C55E',bl:'#EF4444',rv:'#8B5CF6'}[s]||'#94A3B8');
+const stL=s=>({ns:'Başlanmadı',ip:'Devam Ediyor',dn:'Tamamlandı',bl:'Engellendi',rv:'İncelemede'}[s]||s);
+const stCl=s=>({ns:'sns',ip:'sip',dn:'sdn',bl:'sbl',rv:'srv'}[s]||'sns');
+const tiI=t=>({Template:'📄',Guide:'📖',Checklist:'✅',Reference:'🔗',Tool:'🛠️',Presentation:'📊',Catalog:'📚'}[t]||'📎');
+function phPct(ph){let t=0,c=0;WS.forEach(ws=>cD(ph,ws.id).forEach(d=>{t+=gP(d.id).pct||0;c++;}));return c?Math.round(t/c):0;}
+function toast(m){const e=document.getElementById('tst');e.textContent=m;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),2400);}
+function load2(on,t='AI analizi çalışıyor…'){document.getElementById('ovl').classList.toggle('show',on);document.getElementById('spTx').textContent=t;}
 
-function cellPct(ph, ws) {
-  const ds = cellDelivs(ph, ws);
-  if (!ds.length) return -1;
-  return Math.round(ds.reduce((s,d) => s + (prog(d.id).pct||0), 0) / ds.length);
+/* ══ RENDER ══ */
+function render(){
+  rChips();rNav();
+  const m=document.getElementById('main');m.className='main fade';
+  if(S.view==='dash')m.innerHTML=rDash();
+  else if(S.view==='cell')m.innerHTML=rCell();
+  else if(S.view==='xl')m.innerHTML=rXL();
 }
-function phasePct(ph) {
-  let t=0, c=0;
-  WS.forEach(ws => cellDelivs(ph, ws.id).forEach(d => { t += prog(d.id).pct||0; c++; }));
-  return c ? Math.round(t/c) : 0;
-}
-function toast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), 2400);
-}
-function loading(on, txt='AI analizi çalışıyor…') {
-  document.getElementById('overlay').classList.toggle('show', on);
-  document.getElementById('spinText').textContent = txt;
+function rChips(){document.getElementById('hChips').innerHTML=PH.map(p=>`<span class="pchip" style="background:${p.color}" onclick="gPh('${p.id}')">${p.name} ${phPct(p.id)}%</span>`).join('');}
+function rNav(){
+  const bc=document.getElementById('bc'),nr=document.getElementById('navR');
+  if(S.view==='dash'){bc.innerHTML=`<span class="bcc">📊 Dashboard</span>`;nr.innerHTML=`<span class="txs txm">${allD().length} deliverable</span>`;}
+  else if(S.view==='cell'){const ph=PH.find(p=>p.id===S.cell.ph),ws=WS.find(w=>w.id===S.cell.ws);bc.innerHTML=`<span class="bcl" onclick="gDash()">Dashboard</span><span class="bcs">›</span><span style="color:${ph.color};font-weight:600">${ph.name}</span><span class="bcs">›</span><span class="bcc">${ws.name}</span>`;nr.innerHTML=`<button class="btn btn-s" onclick="gDash()">← Geri</button>`;}
+  else if(S.view==='xl'){bc.innerHTML=`<span class="bcl" onclick="gDash()">Dashboard</span><span class="bcs">›</span><span class="bcc">🤖 AI Compare</span>`;nr.innerHTML=`<button class="btn btn-s" onclick="gDash()">← Geri</button>`;}
 }
 
-/* ═══════════════════════════════════════════════
-   RENDER
-═══════════════════════════════════════════════ */
-function render() {
-  renderHeaderChips();
-  renderNav();
-  const m = document.getElementById('main');
-  m.className = 'main fade';
-  if (S.view === 'dashboard') m.innerHTML = renderDash();
-  else if (S.view === 'cell')  m.innerHTML = renderCell();
-  else if (S.view === 'excel') m.innerHTML = renderExcelPage();
-}
-
-function renderHeaderChips() {
-  document.getElementById('hChips').innerHTML = PHASES.map(p => {
-    const pct = phasePct(p.id);
-    return `<div class="phase-chip" style="background:${p.color};color:white" onclick="gotoPhase('${p.id}')">${p.name} ${pct}%</div>`;
-  }).join('');
-}
-
-function renderNav() {
-  const bc = document.getElementById('breadcrumb');
-  const nr = document.getElementById('navRight');
-  if (S.view === 'dashboard') {
-    bc.innerHTML = `<span class="bc-current">📊 Dashboard</span>`;
-    nr.innerHTML = `<span class="text-sm text-muted">${allDelivs().length} toplam deliverable</span>`;
-  } else if (S.view === 'cell') {
-    const ph = PHASES.find(p=>p.id===S.cell.phaseId), ws = WS.find(w=>w.id===S.cell.wsId);
-    bc.innerHTML = `<span class="bc-link" onclick="gotoDash()">Dashboard</span><span class="bc-sep">›</span><span style="color:${ph.color};font-weight:600">${ph.name}</span><span class="bc-sep">›</span><span class="bc-current">${ws.name}</span>`;
-    nr.innerHTML = `<button class="btn btn-secondary" onclick="gotoDash()">← Geri</button>`;
-  } else if (S.view === 'excel') {
-    bc.innerHTML = `<span class="bc-link" onclick="gotoDash()">Dashboard</span><span class="bc-sep">›</span><span class="bc-current">🤖 AI Compare</span>`;
-    nr.innerHTML = `<button class="btn btn-secondary" onclick="gotoDash()">← Geri</button>`;
-  }
-}
-
-/* ── DASHBOARD ── */
-function renderDash() {
-  const cards = PHASES.map(p => {
-    const pct = phasePct(p.id);
-    const cnt = WS.reduce((s,ws) => s + cellDelivs(p.id,ws.id).length, 0);
-    return `<div class="summary-card" style="border-top-color:${p.color};color:${p.color}" onclick="gotoPhase('${p.id}')">
-      <div class="sc-phase">${p.name}</div>
-      <div class="sc-pct">${pct}%</div>
-      <div class="sc-meta">${cnt} deliverable</div>
-      <div class="sc-bar"><div class="sc-bar-fill" style="width:${pct}%;background:${p.color}"></div></div>
-    </div>`;
-  }).join('');
-
-  const hdr = `<div class="matrix-head">
-    <div class="mh-corner">Workstream</div>
-    ${PHASES.map(p => `<div class="mh-phase" style="background:${p.color}" onclick="gotoPhase('${p.id}')">
-      <div class="mph-name">${p.name}</div>
-      <div class="mph-desc">${p.desc}</div>
-      ${p.qg ? `<div><span class="qg-tag">🏁 ${p.qg}</span></div>` : ''}
-    </div>`).join('')}
-  </div>`;
-
-  const rows = WS.map(ws => {
-    const cells = PHASES.map(ph => {
-      const ds = cellDelivs(ph.id, ws.id);
-      if (!ds.length) return `<div class="m-cell empty"></div>`;
-      const pct = cellPct(ph.id, ws.id);
-      const items = ds.slice(0,3).map(d => {
-        const p = prog(d.id);
-        return `<div class="cell-item"><div class="cdot" style="background:${statusColor(p.status)}"></div>${d.name.length>36?d.name.slice(0,36)+'…':d.name}</div>`;
+/* DASHBOARD */
+function rDash(){
+  const cards=PH.map(p=>{const pct=phPct(p.id);const cnt=WS.reduce((s,ws)=>s+cD(p.id,ws.id).length,0);
+    return `<div class="scard" style="border-top-color:${p.color};color:${p.color}" onclick="gPh('${p.id}')">
+      <div class="sc-ph">${p.name}</div><div class="sc-pct">${pct}%</div>
+      <div class="sc-mt">${cnt} deliverable</div>
+      <div class="sc-bar"><div class="sc-fill" style="width:${pct}%;background:${p.color}"></div></div>
+    </div>`;}).join('');
+  const hdr=`<div class="mxh"><div class="mhc">Workstream</div>${PH.map(p=>
+    `<div class="mhp" style="background:${p.color}" onclick="gPh('${p.id}')">
+      <div class="mhpn">${p.name}</div><div class="mhpd">${p.desc}</div>
+      ${p.qg?`<div><span class="qgt">🏁 ${p.qg}</span></div>`:''}
+    </div>`).join('')}</div>`;
+  const rows=WS.map(ws=>{
+    const cells=PH.map(ph=>{
+      const ds=cD(ph.id,ws.id);if(!ds.length) return`<div class="mc emp"></div>`;
+      const pct=Math.round(ds.reduce((s,d)=>s+(gP(d.id).pct||0),0)/ds.length);
+      const items=ds.slice(0,3).map(d=>{
+        const p=gP(d.id);const ai=p.ai;
+        let cls='cin',dot=stC(p.st);
+        if(ai==='diff'){cls='ciy';dot='#F59E0B';}
+        if(ai==='ok'){cls='cig';dot='#16A34A';}
+        const fl=ai==='diff'?'🟡':ai==='ok'?'🟢':'';
+        return `<div class="ci ${cls}"><div class="cdot" style="background:${dot}"></div>${fl}${d.name.length>34?d.name.slice(0,34)+'…':d.name}</div>`;
       }).join('');
-      const more = ds.length>3 ? `<div class="cell-more">+${ds.length-3} daha</div>` : '';
-      return `<div class="m-cell" onclick="openCell('${ph.id}','${ws.id}')">
-        <div class="cell-items">${items}${more}</div>
-        <div class="cell-pct">${pct}%</div>
-        <div class="cell-prog"><div class="cell-prog-fill" style="width:${pct}%;background:${ph.color}"></div></div>
+      const more=ds.length>3?`<div class="cm">+${ds.length-3} daha</div>`:'';
+      return `<div class="mc" onclick="oCell('${ph.id}','${ws.id}')">
+        <div class="cis">${items}${more}</div>
+        <div class="cpct">${pct}%</div>
+        <div class="cpb"><div class="cpbf" style="width:${pct}%;background:${ph.color}"></div></div>
       </div>`;
     }).join('');
-    return `<div class="matrix-row"><div class="ws-label"><span class="ws-icon">${ws.icon}</span>${ws.name}</div>${cells}</div>`;
+    return `<div class="mxr"><div class="wsl"><span class="wsi">${ws.icon}</span>${ws.name}</div>${cells}</div>`;
   }).join('');
-
-  return `<div class="summary-row">${cards}</div>
-  <div class="matrix-wrap">${hdr}<div class="matrix-body">${rows}</div></div>`;
+  return `<div class="srow">${cards}</div><div class="mx">${hdr}<div>${rows}</div></div>`;
 }
 
-/* ── CELL VIEW ── */
-function renderCell() {
-  const { phaseId, wsId } = S.cell;
-  const ph = PHASES.find(p=>p.id===phaseId), ws = WS.find(w=>w.id===wsId);
-  const ds = cellDelivs(phaseId, wsId);
-
-  const list = ds.map(d => {
-    const p = prog(d.id);
-    const sel = S.delivId === d.id;
-    return `<div class="deliv-item ${sel?'sel':''}" onclick="selDeliv('${d.id}')">
-      <div class="di-name">${d.name}</div>
-      <div class="di-row">
-        <span class="sbadge ${statusClass(p.status)}">${statusLabel(p.status)}</span>
-        <div class="di-bar"><div class="di-bar-fill" style="width:${p.pct}%;background:${ph.color}"></div></div>
-        <span class="di-num">${p.pct}%</span>
+/* CELL VIEW */
+function rCell(){
+  const{ph,ws}=S.cell;const phase=PH.find(p=>p.id===ph),wss=WS.find(w=>w.id===ws);const ds=cD(ph,ws);
+  const list=ds.map(d=>{
+    const p=gP(d.id);const sel=S.dId===d.id;const ai=p.ai;
+    let nc='din',fl='';if(ai==='diff'){nc='din hy';fl=' 🟡';}if(ai==='ok'){nc='din hg';fl=' 🟢';}
+    const bpt=d.hasBP?`<span style="font-size:9px;background:#EFF6FF;color:#1D4ED8;padding:1px 5px;border-radius:3px;font-weight:700;margin-left:4px">BP</span>`:'';
+    return `<div class="di ${sel?'sel':''}" onclick="sDel('${d.id}')">
+      <div class="${nc}">${d.name}${fl}${bpt}</div>
+      <div class="dir"><span class="sb ${stCl(p.st)}">${stL(p.st)}</span>
+        <div class="dib"><div class="dibf" style="width:${p.pct}%;background:${phase.color}"></div></div>
+        <span class="din2">${p.pct}%</span>
       </div>
-    </div>`;
-  }).join('');
-
-  const right = S.delivId ? renderRight() : `<div class="right-panel"><div class="rp-empty">← Bir deliverable seçin</div></div>`;
-
-  return `<div class="flex-center" style="margin-bottom:14px">
-    <span class="dv-phase-label" style="background:${ph.color}">${ph.name}</span>
-    <span style="font-size:13px;font-weight:600">${ws.icon} ${ws.name}</span>
-    <span class="text-sm text-muted" style="margin-left:auto">${ds.length} deliverable</span>
+    </div>`;}).join('');
+  const rp=S.dId?rRight():`<div class="rp"><div class="rpe">← Bir deliverable seçin</div></div>`;
+  return `<div class="row" style="margin-bottom:14px">
+    <span class="dpl" style="background:${phase.color}">${phase.name}</span>
+    <span style="font-size:13px;font-weight:600">${wss.icon} ${wss.name}</span>
+    <span class="txs txm" style="margin-left:auto">${ds.length} deliverable</span>
   </div>
-  <div class="detail-layout">
-    <div class="delivs-panel">
-      <div class="dp-hdr">Deliverables <span class="dp-badge">${ds.length}</span></div>
-      ${list}
-    </div>
-    ${right}
-  </div>`;
+  <div class="dtl"><div class="dvp"><div class="dvph">Deliverables <span class="dvpbg">${ds.length}</span></div>${list}</div>${rp}</div>`;
 }
-
-function renderRight() {
-  const d = findDeliv(S.delivId);
-  if (!d) return '';
-  const p = prog(S.delivId);
-  const tabs = ['tasks','progress','accelerators','excel'].map(t =>
-    `<div class="tab ${S.tab===t?'active':''}" onclick="selTab('${t}')">${tabLabel(t)}</div>`
-  ).join('');
-  const tabIcons = { tasks:'📋', progress:'📊', accelerators:'🚀', excel:'🤖' };
-
-  return `<div class="right-panel">
-    <div class="rp-header">
-      <div class="rph-name">${d.name}</div>
-      <div class="rph-meta">
-        <span class="sbadge ${statusClass(p.status)}">${statusLabel(p.status)}</span>
-        <span class="text-muted" style="font-size:10px;font-family:var(--mono)">${p.pct}% tamamlandı</span>
-        ${d.tpl ? '<span style="font-size:10px;background:#EFF6FF;color:#1D4ED8;padding:2px 7px;border-radius:4px;font-weight:600">📋 Şablon Mevcut</span>' : ''}
+function rRight(){
+  const d=fD(S.dId);if(!d) return '';const p=gP(S.dId);
+  const tabs=['tasks','progress','bp','ai'].map(t=>{
+    const lbl={tasks:'📋 Görevler',progress:'📊 İlerleme',bp:'⭐ Best Practice',ai:'🤖 AI Compare'}[t];
+    if(t==='bp'&&!d.hasBP) return '';
+    return `<div class="tab ${S.tab===t?'act':''}" onclick="sTab('${t}')">${lbl}</div>`;
+  }).filter(Boolean).join('');
+  return `<div class="rp">
+    <div class="rph">
+      <div class="rphn">${d.name}</div>
+      <div class="rphm">
+        <span class="sb ${stCl(p.st)}">${stL(p.st)}</span>
+        <span class="txm" style="font-size:10px;font-family:var(--mo)">${p.pct}%</span>
+        ${d.hasBP?'<span style="font-size:10px;background:#EFF6FF;color:#1D4ED8;padding:2px 7px;border-radius:4px;font-weight:600">⭐ Best Practice</span>':''}
+        ${d.tpl?'<span style="font-size:10px;background:#F0FDF4;color:#16A34A;padding:2px 7px;border-radius:4px;font-weight:600">📋 Şablon</span>':''}
+        ${p.ai==='diff'?'<span class="sb sdf">🟡 Fark Tespit Edildi</span>':''}
+        ${p.ai==='ok'?'<span class="sb sap">🟢 Onaylandı</span>':''}
       </div>
     </div>
     <div class="tabs">${tabs}</div>
-    <div class="tab-content">${renderTabContent(d, p)}</div>
+    <div class="tc">${rTab(d,p)}</div>
   </div>`;
 }
-
-function renderTabContent(d, p) {
-  if (S.tab === 'tasks') {
-    const done = Object.values(p.checks||{}).filter(Boolean).length;
-    const items = d.tasks.map((t,i) => {
-      const chk = p.checks?.[i];
-      return `<li class="task-item">
-        <div class="tchk ${chk?'done':''}" onclick="toggleTask('${d.id}',${i})">${chk?'✓':''}</div>
-        <span class="${chk?'task-done':''}">${t}</span>
-      </li>`;
-    }).join('');
-    return `<div class="sec-title">Görevler (${done}/${d.tasks.length})</div><ul class="task-list">${items}</ul>`;
+function rTab(d,p){
+  if(S.tab==='tasks'){
+    const dn=Object.values(p.chk||{}).filter(Boolean).length;
+    const items=d.tasks.map((t,i)=>{const c=p.chk?.[i];return`<li class="ti"><div class="tck ${c?'dn':''}" onclick="tTask('${d.id}',${i})">${c?'✓':''}</div><span class="${c?'tsd':''}">${t}</span></li>`;}).join('');
+    return `<div class="stt">Görevler (${dn}/${d.tasks.length})</div><ul class="tl">${items}</ul>`;
   }
-  if (S.tab === 'progress') {
-    const statuses = [['not-started','sbtn-ns'],['in-progress','sbtn-ip'],['completed','sbtn-done'],['blocked','sbtn-blk'],['review','sbtn-rev']];
-    return `<div class="sec-title">Durum</div>
-      <div class="status-row">${statuses.map(([s,cls])=>`<button class="sbtn ${cls} ${p.status===s?'active':''}" onclick="setStatus('${d.id}','${s}')">${statusLabel(s)}</button>`).join('')}</div>
-      <div class="sec-title">Tamamlanma %</div>
-      <div class="slider-row">
-        <input type="range" min="0" max="100" value="${p.pct}" class="pslider" id="sl_${d.id}" oninput="slidePct('${d.id}',this.value)">
-        <span class="pct-val" id="pd_${d.id}">${p.pct}%</span>
-      </div>
-      <div class="form-field"><label class="f-label">Sorumlu</label><input class="f-input" type="text" value="${p.assignee||''}" placeholder="Ad Soyad" oninput="setField('${d.id}','assignee',this.value)"></div>
-      <div class="form-field"><label class="f-label">Bitiş Tarihi</label><input class="f-input" type="date" value="${p.due||''}" oninput="setField('${d.id}','due',this.value)"></div>
-      <div class="form-field"><label class="f-label">Notlar</label><textarea class="f-textarea" placeholder="Notlar…" oninput="setField('${d.id}','notes',this.value)">${p.notes||''}</textarea></div>
-      <button class="btn btn-primary btn-full" onclick="saveProg('${d.id}')">💾 Kaydet</button>`;
+  if(S.tab==='progress'){
+    const ss=[['ns','sbns'],['ip','sbip'],['dn','sbdn'],['bl','sbbl'],['rv','sbrv']];
+    return `<div class="stt">Durum</div>
+      <div class="str">${ss.map(([s,c])=>`<button class="sbn ${c} ${p.st===s?'act':''}" onclick="sSt('${d.id}','${s}')">${stL(s)}</button>`).join('')}</div>
+      <div class="stt">Tamamlanma %</div>
+      <div class="slr"><input type="range" min="0" max="100" value="${p.pct}" class="psl" oninput="sPct('${d.id}',this.value)"><span class="pv" id="pv_${d.id}">${p.pct}%</span></div>
+      <div class="ff"><label class="fl">Sorumlu</label><input class="fi" type="text" value="${p.who||''}" placeholder="Ad Soyad" oninput="sF('${d.id}','who',this.value)"></div>
+      <div class="ff"><label class="fl">Bitiş Tarihi</label><input class="fi" type="date" value="${p.due||''}" oninput="sF('${d.id}','due',this.value)"></div>
+      <div class="ff"><label class="fl">Notlar</label><textarea class="fta" placeholder="Notlar…" oninput="sF('${d.id}','notes',this.value)">${p.notes||''}</textarea></div>
+      <button class="btn btn-p btn-w" onclick="svP('${d.id}')">💾 Kaydet</button>`;
   }
-  if (S.tab === 'accelerators') {
-    const items = d.acc.map(a => `<div class="acc-item">
-      <span class="acc-ico">${typeIcon(a.t)}</span>
-      <span class="acc-name">${a.n}</span>
-      <span class="acc-type">${a.t}</span>
-    </div>`).join('');
-    return `<div class="sec-title">Accelerators (${d.acc.length})</div>
-      <div class="acc-grid">${items}</div>
-      <div class="acc-note mt-2">⚠️ Accelerator\'lara erişmek için <a href="https://go.support.sap.com/roadmapviewer/" target="_blank" style="color:#1D4ED8">SAP Roadmap Viewer</a>\'ı kullanın.</div>`;
-  }
-  if (S.tab === 'excel') {
-    return renderExcelTab(d);
-  }
-  return '';
+  if(S.tab==='bp') return rBP(d);
+  if(S.tab==='ai') return rAI(d,p);
+  const items=d.acc.map(a=>`<div style="display:flex;align-items:center;gap:7px;padding:9px 11px;border:1px solid var(--bd);border-radius:var(--rs);font-size:11px;background:var(--surface);margin-bottom:5px">${tiI(a.t)} <span style="font-weight:500;flex:1">${a.n}</span><span style="font-size:10px;padding:1px 5px;border-radius:4px;background:var(--sf2);color:var(--tx3)">${a.t}</span></div>`).join('');
+  return `<div class="stt">Accelerators (${d.acc.length})</div>${items}`;
 }
 
-function renderExcelTab(d) {
-  const tpl = S.templates[d.id], con = S.consultFiles[d.id], res = S.aiResults[d.id];
-  return `<div style="font-size:11px;color:var(--text-3);margin-bottom:14px">As-Is şablonunuzu ve danışman dosyasını yükleyin. AI karşılaştırıp gap raporu üretir.</div>
-    <div class="upload-pair">
-      <div>
-        <div class="sec-title">📋 To-Be Şablonunuz</div>
-        <div class="upload-zone ${tpl?'loaded':''}" onclick="trigUp('tpl_${d.id}')">
-          <div class="uz-icon">${tpl?'✅':'📁'}</div>
-          <div class="uz-name">${tpl?tpl.name:'Şablon yükle'}</div>
-          <div class="uz-sub">.xlsx / .xls / .csv</div>
-        </div>
-        <input type="file" id="tpl_${d.id}" accept=".xlsx,.xls,.csv" class="hidden" onchange="fileUp(this,'tpl','${d.id}')">
-      </div>
-      <div>
-        <div class="sec-title">📨 Danışman Dosyası</div>
-        <div class="upload-zone ${con?'loaded':''}" onclick="trigUp('con_${d.id}')">
-          <div class="uz-icon">${con?'✅':'📁'}</div>
-          <div class="uz-name">${con?con.name:'Danışman dosyası yükle'}</div>
-          <div class="uz-sub">.xlsx / .xls / .csv</div>
-        </div>
-        <input type="file" id="con_${d.id}" accept=".xlsx,.xls,.csv" class="hidden" onchange="fileUp(this,'con','${d.id}')">
-      </div>
-    </div>
-    ${tpl && con
-      ? `<button class="btn btn-gold btn-full" onclick="runAI('${d.id}')">🤖 AI Karşılaştırma Başlat</button>`
-      : `<div style="text-align:center;font-size:11px;color:var(--text-3);padding:6px">Her iki dosyayı yükledikten sonra karşılaştırma yapabilirsiniz</div>`}
-    ${res ? `<div class="mt-3">
-      <div class="flex-center" style="margin-bottom:10px">
-        <div class="sec-title" style="margin:0">🤖 AI Analiz Sonucu</div>
-        <button class="btn btn-secondary" style="margin-left:auto" onclick="dlReport('${d.id}')">⬇️ Rapor İndir</button>
-      </div>
-      ${res}
-    </div>` : ''}`;
-}
-
-/* ── EXCEL STANDALONE PAGE ── */
-function renderExcelPage() {
-  const opts = Object.entries(DB).flatMap(([key, ds]) => {
-    const [ph,ws] = key.split('_');
-    const phn = PHASES.find(p=>p.id===ph)?.name, wsn = WS.find(w=>w.id===ws)?.name;
-    return ds.filter(d=>d.tpl).map(d => `<option value="${d.id}">[${phn} › ${wsn}] ${d.name}</option>`);
+/* BEST PRACTICE TAB */
+function rBP(d){
+  const bpd=BP[d.id];if(!bpd) return `<div class="rpe">Best Practice içeriği yüklenmedi.</div>`;
+  const fh=bpd.files.map(f=>{
+    let body=`<div style="font-size:10px;color:var(--tx3);margin-bottom:10px">Kaynak: ${f.source}</div>`;
+    if(f.summary) body+=`<div class="bps"><div class="bpst">📌 Özet</div><p style="font-size:11px;color:var(--tx2);line-height:1.6">${f.summary}</p></div>`;
+    if(f.sections) f.sections.forEach(s=>{body+=`<div class="bps"><div class="bpst">📋 ${s.title}</div><ul class="bpcl">${s.items.map(i=>`<li class="bpci"><span class="bpico">▸</span><span>${i}</span></li>`).join('')}</ul></div>`;});
+    if(f.tableHeaders){const th=f.tableHeaders.map(h=>`<th>${h}</th>`).join('');const tr=f.tableRows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('');body+=`<div class="bps"><div class="bpst">📊 Şablon Yapısı</div><div style="overflow-x:auto"><table class="bptb"><thead><tr>${th}</tr></thead><tbody>${tr}</tbody></table></div></div>`;if(f.statusOpts) body+=`<div style="margin-top:8px;font-size:11px;color:var(--tx2)"><strong>Durum değerleri:</strong> ${f.statusOpts.join(' → ')}</div>`;}
+    return `<div class="bpfc"><div class="bpfh"><span class="bpfi">${f.icon}</span><span class="bpfn">${f.name}</span><span class="bpft">${f.type}</span></div><div class="bpfb">${body}</div></div>`;
   }).join('');
-
-  return `<div class="xcard" style="margin-bottom:16px">
-    <div class="xcard-title">🤖 AI Excel Karşılaştırma Aracı</div>
-    <div class="xcard-sub">To-Be şablonunuzu ve danışman Excel'ini yükleyip AI ile gap analizi yapın. Danışmanlık ekibine gönderilecek raporu otomatik oluşturun.</div>
-    <div class="form-field">
-      <label class="f-label">Deliverable Seç (Şablonu olan deliverable'lar)</label>
-      <select class="f-input" onchange="xPageSel(this.value)">
-        <option value="">— Deliverable seçin —</option>${opts}
-      </select>
-    </div>
-  </div>
-  <div id="xPageContent"></div>`;
+  return `<div class="bph"><div class="bpht">⭐ Best Practice Referansları</div><div class="bphs">SAP Activate metodolojisinden alınan resmi içerikler. AI karşılaştırmasında otomatik kullanılır.</div></div>${fh}`;
 }
 
-/* ═══════════════════════════════════════════════
-   ACTIONS
-═══════════════════════════════════════════════ */
-function gotoPhase(phId) {
-  const first = WS.find(ws => cellDelivs(phId, ws.id).length > 0);
-  if (first) openCell(phId, first.id);
-}
-function openCell(ph, ws) {
-  const ds = cellDelivs(ph, ws);
-  if (!ds.length) return;
-  S.view='cell'; S.cell={phaseId:ph,wsId:ws}; S.delivId=ds[0].id; S.tab='tasks';
-  render();
-}
-function gotoDash() { S.view='dashboard'; S.cell=null; S.delivId=null; render(); }
-function goExcel() { S.view='excel'; render(); }
-function selDeliv(id) { S.delivId=id; S.tab='tasks'; render(); }
-function selTab(t) { S.tab=t; render(); }
-function tabLabel(t) { return { tasks:'📋 Görevler', progress:'📊 İlerleme', accelerators:'🚀 Accelerators', excel:'🤖 AI Compare' }[t]||t; }
-
-function toggleTask(delivId, idx) {
-  if (!S.progress[delivId]) S.progress[delivId] = { status:'not-started', pct:0, notes:'', assignee:'', due:'', checks:{} };
-  const p = S.progress[delivId];
-  if (!p.checks) p.checks = {};
-  p.checks[idx] = !p.checks[idx];
-  const d = findDeliv(delivId);
-  if (d) {
-    const done = Object.values(p.checks).filter(Boolean).length;
-    p.pct = Math.round((done / d.tasks.length) * 100);
-    if (p.pct === 100) p.status = 'completed';
-    else if (p.pct > 0) p.status = 'in-progress';
-    else p.status = 'not-started';
+/* AI TAB */
+function rAI(d,p){
+  const hasBP=d.hasBP;const con=S.files[d.id];
+  const bpSec=hasBP
+    ?`<div class="bppl"><span class="bppi">⭐</span><div><div class="bppt">Best Practice Otomatik Yüklendi</div><div class="bpps">${(BP[d.id]?.files||[]).map(f=>f.name).join(' + ')}</div></div></div>`
+    :`<div style="background:var(--sf2);border:1px solid var(--bd);border-radius:var(--rs);padding:10px 12px;margin-bottom:10px;font-size:11px;color:var(--tx3)">Bu deliverable için Best Practice henüz yüklenmedi. Diğer fazların dosyaları eklenince kullanılabilir olacak.</div>`;
+  const upSec=`<div class="stt" style="margin-top:10px">📨 Müşteri / Danışman Dosyası</div>
+    <div class="upz ${con?'ld':''}" onclick="trUp('cu_${d.id}')"><div class="uzi">${con?'✅':'📁'}</div><div class="uzn">${con?con.name:'Müşteri dosyasını yükle'}</div><div class="uzs">.xlsx / .xls / .csv</div></div>
+    <input type="file" id="cu_${d.id}" accept=".xlsx,.xls,.csv" class="hidden" onchange="fUp(this,'${d.id}')">`;
+  const canRun=hasBP&&con;
+  const btn=canRun
+    ?`<button class="btn btn-g btn-w mt2" onclick="runAI('${d.id}')">🤖 AI Karşılaştırmayı Başlat</button>`
+    :`<div style="text-align:center;font-size:11px;color:var(--tx3);padding:8px">${!hasBP?'Best Practice bu faz için henüz yüklenmedi.':!con?'Müşteri dosyasını yükleyince karşılaştırma yapabilirsiniz.':''}</div>`;
+  let res='';
+  if(p.air){
+    const bnr=p.ai==='ok'
+      ?`<div class="bnrg"><span class="bni">🟢</span><div><div class="bnt">Onaylandı — Yeşile geçirildi</div><div class="bns">Ön ekranda yeşil renkte gösterilecek.</div></div></div>`
+      :`<div class="bnry"><span class="bni">🟡</span><div class="bnt" style="color:#92400E">AI fark tespit etti — Sarı işaretlendi<div class="bns">Değerlendirmenize göre onaylayabilirsiniz.</div></div><button class="btn btn-ok" style="margin-left:auto;white-space:nowrap" onclick="appr('${d.id}')">✅ Onayla → Yeşile Geçir</button></div>`;
+    res=`<div class="mt3">${bnr}<div class="row" style="margin-bottom:10px"><div class="stt" style="margin:0">🤖 Analiz Sonucu</div><button class="btn btn-s" style="margin-left:auto" onclick="dlRep('${d.id}')">⬇️ Rapor İndir</button></div>${p.air}</div>`;
   }
-  save(); render();
-}
-function setStatus(delivId, status) {
-  if (!S.progress[delivId]) S.progress[delivId] = { status, pct:0, notes:'', assignee:'', due:'', checks:{} };
-  S.progress[delivId].status = status;
-  save(); render();
-}
-function slidePct(delivId, val) {
-  if (!S.progress[delivId]) S.progress[delivId] = { status:'not-started', pct:parseInt(val), notes:'', assignee:'', due:'', checks:{} };
-  S.progress[delivId].pct = parseInt(val);
-  const el = document.getElementById(`pd_${delivId}`);
-  if (el) el.textContent = val + '%';
-}
-function setField(delivId, field, val) {
-  if (!S.progress[delivId]) S.progress[delivId] = { status:'not-started', pct:0, notes:'', assignee:'', due:'', checks:{} };
-  S.progress[delivId][field] = val;
-}
-function saveProg(delivId) { save(); toast('✅ Kaydedildi'); }
-
-function trigUp(id) { document.getElementById(id)?.click(); }
-async function fileUp(input, type, delivId) {
-  const file = input.files[0]; if (!file) return;
-  try {
-    const data = await readXL(file);
-    if (type==='tpl') S.templates[delivId] = { name: file.name, data };
-    else S.consultFiles[delivId] = { name: file.name, data };
-    toast(`✅ ${file.name} yüklendi`);
-    render();
-  } catch(e) { toast('❌ Dosya okunamadı'); }
-}
-function readXL(file) {
-  return new Promise((res, rej) => {
-    const r = new FileReader();
-    r.onload = e => {
-      try {
-        const wb = XLSX.read(e.target.result, { type:'binary' });
-        const out = {};
-        wb.SheetNames.forEach(s => { out[s] = XLSX.utils.sheet_to_json(wb.Sheets[s], { header:1, defval:'' }); });
-        res(out);
-      } catch(err) { rej(err); }
-    };
-    r.onerror = rej;
-    r.readAsBinaryString(file);
-  });
-}
-function xlToText(data) {
-  return Object.entries(data).map(([s, rows]) =>
-    `=== Sheet: ${s} ===\n${rows.slice(0,60).map(r => r.join(' | ')).join('\n')}`
-  ).join('\n\n');
+  return `${bpSec}${upSec}${btn}${res}`;
 }
 
-async function runAI(delivId) {
-  const tpl = S.templates[delivId], con = S.consultFiles[delivId];
-  if (!tpl || !con) return;
-  const d = findDeliv(delivId);
-  loading(true, 'AI analiz ediyor… (~20 sn)');
-  try {
-    const prompt = `Sen bir SAP S/4HANA implementasyon QA uzmanısın.
+/* XL STANDALONE */
+function rXL(){
+  const opts=Object.entries(DB).flatMap(([key,ds])=>{const[ph,ws]=key.split('_');const phn=PH.find(p=>p.id===ph)?.name,wsn=WS.find(w=>w.id===ws)?.name;return ds.filter(d=>d.hasBP||d.tpl).map(d=>`<option value="${d.id}">[${phn} › ${wsn}] ${d.name}</option>`);}).join('');
+  return `<div style="background:var(--surface);border-radius:var(--r);box-shadow:var(--sh);padding:18px;margin-bottom:16px">
+    <div style="font-size:14px;font-weight:700;margin-bottom:4px">🤖 AI Excel Karşılaştırma</div>
+    <div style="font-size:11px;color:var(--tx3);margin-bottom:16px">Deliverable seçin, müşteri dosyasını yükleyin, AI Best Practice ile karşılaştırsın.</div>
+    <div class="ff"><label class="fl">Deliverable Seç</label>
+      <select class="fi" onchange="xSel(this.value)"><option value="">— Seçin —</option>${opts}</select>
+    </div>
+  </div><div id="xc"></div>`;
+}
+
+/* ══ ACTIONS ══ */
+function gDash(){S.view='dash';S.cell=null;S.dId=null;render();}
+function goXl(){S.view='xl';render();}
+function gPh(phId){const f=WS.find(ws=>cD(phId,ws.id).length>0);if(f) oCell(phId,f.id);}
+function oCell(ph,ws){const ds=cD(ph,ws);if(!ds.length) return;S.view='cell';S.cell={ph,ws};S.dId=ds[0].id;S.tab=ds[0].hasBP?'bp':'tasks';render();}
+function sDel(id){S.dId=id;S.tab=fD(id)?.hasBP?'bp':'tasks';render();}
+function sTab(t){S.tab=t;render();}
+function tTask(id,i){
+  if(!S.prog[id]) S.prog[id]={st:'ns',pct:0,notes:'',who:'',due:'',chk:{},ai:null,air:null};
+  const p=S.prog[id];if(!p.chk)p.chk={};p.chk[i]=!p.chk[i];
+  const d=fD(id);if(d){const dn=Object.values(p.chk).filter(Boolean).length;p.pct=Math.round((dn/d.tasks.length)*100);p.st=p.pct===100?'dn':p.pct>0?'ip':'ns';}
+  save();render();
+}
+function sSt(id,st){if(!S.prog[id]) S.prog[id]={st,pct:0,notes:'',who:'',due:'',chk:{},ai:null,air:null};S.prog[id].st=st;save();render();}
+function sPct(id,v){if(!S.prog[id]) S.prog[id]={st:'ns',pct:+v,notes:'',who:'',due:'',chk:{},ai:null,air:null};S.prog[id].pct=+v;const e=document.getElementById('pv_'+id);if(e)e.textContent=v+'%';}
+function sF(id,f,v){if(!S.prog[id]) S.prog[id]={st:'ns',pct:0,notes:'',who:'',due:'',chk:{},ai:null,air:null};S.prog[id][f]=v;}
+function svP(id){save();toast('✅ Kaydedildi');}
+function appr(id){
+  if(!S.prog[id]) S.prog[id]={st:'ns',pct:0,notes:'',who:'',due:'',chk:{},ai:null,air:null};
+  S.prog[id].ai='ok';S.prog[id].st='dn';S.prog[id].pct=100;
+  save();toast('🟢 Onaylandı — yeşile geçirildi!');render();
+}
+function trUp(id){document.getElementById(id)?.click();}
+async function fUp(inp,id){
+  const f=inp.files[0];if(!f) return;
+  try{const d=await rdXL(f);S.files[id]={name:f.name,data:d};toast(`✅ ${f.name} yüklendi`);render();}
+  catch(e){toast('❌ Dosya okunamadı');}
+}
+function rdXL(f){return new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>{try{const wb=XLSX.read(e.target.result,{type:'binary'});const o={};wb.SheetNames.forEach(s=>{o[s]=XLSX.utils.sheet_to_json(wb.Sheets[s],{header:1,defval:''});});res(o);}catch(e){rej(e);}};r.onerror=rej;r.readAsBinaryString(f);});}
+function xl2txt(d){return Object.entries(d).map(([s,rows])=>`=== Sheet: ${s} ===\n${rows.slice(0,60).map(r=>r.join(' | ')).join('\n')}`).join('\n\n');}
+function bp2txt(id){
+  const b=BP[id];if(!b) return 'Best Practice bulunamadı.';
+  return b.files.map(f=>{
+    let t=`--- ${f.name} ---\n${f.summary||''}\n`;
+    if(f.sections) f.sections.forEach(s=>{t+=`\n## ${s.title}\n`;s.items.forEach(i=>t+=`• ${i}\n`);});
+    if(f.tableHeaders) t+=`\nŞablon sütunları: ${f.tableHeaders.join(' | ')}\n`;
+    return t;
+  }).join('\n\n');
+}
+async function runAI(id){
+  const con=S.files[id];if(!con) return;const d=fD(id);
+  load2(true,'AI analiz ediyor… (~20 sn)');
+  try{
+    const prompt=`Sen bir SAP S/4HANA implementasyon QA uzmanısın.
 Deliverable: "${d.name}" (SAP Activate – S/4HANA Cloud Private Edition)
 
-İKİ EXCEL DOSYASINI KARŞILAŞTIR:
+BEST PRACTICE İÇERİĞİ (SAP resmi belgelerden):
+${bp2txt(id)}
 
-=== MÜŞTERİ TO-BE ŞABLONU (referans) ===
-${xlToText(tpl.data)}
+MÜŞTERİ / DANIŞMAN DOSYASI:
+${xl2txt(con.data)}
 
-=== DANIŞMAN TESLİMATI ===
-${xlToText(con.data)}
-
-Analiz yap. SADECE şu JSON yapısında yanıt ver, başka metin ekleme:
-{
-  "summary": "2-3 cümle genel özet",
-  "overall_score": 72,
-  "critical_gaps": ["kritik eksik 1", "kritik eksik 2"],
-  "warnings": ["farklılık veya uyarı 1", "uyarı 2"],
-  "additions": ["danışmanın eklediği olumlu katkı"],
-  "recommendations": ["danışmana öneri 1", "öneri 2"]
-}`;
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:1200, messages:[{role:'user',content:prompt}] })
-    });
-    const data = await resp.json();
-    const txt = data.content?.find(b=>b.type==='text')?.text || '';
-    let parsed;
-    try { parsed = JSON.parse(txt.replace(/```json|```/g,'').trim()); }
-    catch(e) { parsed = { summary:txt, overall_score:0, critical_gaps:[], warnings:[], additions:[], recommendations:[] }; }
-    S.aiResults[delivId] = buildAIResult(parsed);
-    loading(false); render();
-  } catch(e) { loading(false); toast('❌ AI hatası: ' + e.message); }
+Karşılaştır. SADECE şu JSON yapısında yanıt ver, başka metin ekleme:
+{"summary":"2-3 cümle genel özet","overall_score":72,"critical_gaps":["yöntemsel eksik 1","eksik 2"],"warnings":["içerik farklılığı","risk","eksik plan"],"additions":["olumlu katkı varsa"],"recommendations":["öneri 1","öneri 2"]}`;
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1200,messages:[{role:'user',content:prompt}]})});
+    const data=await resp.json();
+    const txt=data.content?.find(b=>b.type==='text')?.text||'';
+    let parsed;try{parsed=JSON.parse(txt.replace(/```json|```/g,'').trim());}catch(e){parsed={summary:txt,overall_score:0,critical_gaps:[],warnings:[],additions:[],recommendations:[]};}
+    if(!S.prog[id]) S.prog[id]={st:'ns',pct:0,notes:'',who:'',due:'',chk:{},ai:null,air:null};
+    S.prog[id].air=bldRes(parsed);
+    S.prog[id].ai='diff';
+    save();load2(false);S.tab='ai';render();
+  }catch(e){load2(false);toast('❌ AI hatası: '+e.message);}
+}
+function bldRes(r){
+  const sc=r.overall_score||0;const sc2=sc>=80?'#16A34A':sc>=60?'#D97706':'#DC2626';
+  const sec=(items,hc,bc,em,ttl)=>{if(!items?.length) return '';return`<div class="gps"><div class="gph ${hc}">${em} ${ttl} (${items.length})</div>${items.map(i=>`<div class="gpi" style="border-left-color:${bc}">${i}</div>`).join('')}</div>`;};
+  return `<div class="aisr"><div class="aisn" style="color:${sc2}">${sc}%</div><div><div class="aisl">Best Practice Uyumu</div><div class="aist">${r.summary}</div></div></div>
+    ${sec(r.critical_gaps,'gc','#DC2626','🔴','Yöntemsel / Kritik Eksiklikler')}
+    ${sec(r.warnings,'gw','#D97706','⚠️','İçerik Farklılıkları & Riskler')}
+    ${sec(r.additions,'gi','#1D4ED8','ℹ️','Müşteri Eklemeleri')}
+    ${sec(r.recommendations,'gk','#16A34A','✅','Öneriler')}`;
+}
+function dlRep(id){
+  const d=fD(id),p=gP(id);if(!p.air) return;
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>SAP QA – ${d.name}</title>
+  <style>body{font-family:Arial,sans-serif;max-width:820px;margin:40px auto;color:#1a1a1a}h1{color:#1D4ED8}.gh{padding:6px 10px;border-radius:5px;font-size:13px;font-weight:700;margin-bottom:8px}.gc{background:#FEE2E2;color:#DC2626}.gw{background:#FEF3C7;color:#D97706}.gi{background:#DBEAFE;color:#1D4ED8}.gk{background:#DCFCE7;color:#16A34A}.gpi{padding:7px 10px;border-left:3px solid;background:#F8F9FC;margin:3px 0;font-size:12px}</style></head>
+  <body><h1>SAP Activate QA Raporu</h1><p><b>Deliverable:</b> ${d.name} | <b>Tarih:</b> ${new Date().toLocaleDateString('tr-TR')}</p>
+  ${p.air.replace(/class="gph gc"/g,'class="gh gc"').replace(/class="gph gw"/g,'class="gh gw"').replace(/class="gph gi"/g,'class="gh gi"').replace(/class="gph gk"/g,'class="gh gk"')}</body></html>`;
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([html],{type:'text/html'}));a.download=`QA_${d.id}.html`;a.click();toast('📥 Rapor indirildi');
+}
+function xSel(id){
+  if(!id){document.getElementById('xc').innerHTML='';return;}
+  const d=fD(id);if(!d) return;const p=gP(id);
+  document.getElementById('xc').innerHTML=`<div style="background:var(--surface);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden"><div style="padding:14px 18px;background:var(--sf2);border-bottom:1px solid var(--bd);font-size:13px;font-weight:700">${d.name}</div><div style="padding:18px">${rAI(d,p)}</div></div>`;
 }
 
-function buildAIResult(r) {
-  const sc = r.overall_score || 0;
-  const scColor = sc>=80?'#16A34A':sc>=60?'#D97706':'#DC2626';
-  const sec = (items, hdrCls, bdrColor, emoji, title) => {
-    if (!items?.length) return '';
-    return `<div class="gap-sec">
-      <div class="gap-hdr ${hdrCls}">${emoji} ${title} (${items.length})</div>
-      ${items.map(i=>`<div class="gap-item" style="border-left-color:${bdrColor}">${i}</div>`).join('')}
-    </div>`;
-  };
-  return `<div class="ai-score-row">
-    <div class="ai-score-num" style="color:${scColor}">${sc}%</div>
-    <div><div class="ai-score-lbl">Uyumluluk Skoru</div><div class="ai-score-txt">${r.summary}</div></div>
-  </div>
-  ${sec(r.critical_gaps,'gh-crit','#DC2626','🔴','Kritik Eksiklikler')}
-  ${sec(r.warnings,'gh-warn','#D97706','⚠️','Farklılıklar & Uyarılar')}
-  ${sec(r.additions,'gh-info','#1D4ED8','ℹ️','Danışman Eklemeleri')}
-  ${sec(r.recommendations,'gh-ok','#16A34A','✅','Öneriler')}`;
-}
-
-function dlReport(delivId) {
-  const d = findDeliv(delivId), res = S.aiResults[delivId];
-  if (!res) return;
-  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
-  <title>SAP Activate QA Raporu – ${d.name}</title>
-  <style>body{font-family:Arial,sans-serif;max-width:820px;margin:40px auto;color:#1a1a1a}
-  h1{color:#1D4ED8;font-size:22px;margin-bottom:4px}
-  .meta{color:#666;font-size:13px;margin-bottom:24px;border-bottom:2px solid #E5E7EB;padding-bottom:12px}
-  .score-box{display:flex;align-items:center;gap:16px;background:#F8F9FC;padding:16px;border-radius:8px;margin-bottom:20px}
-  .score-num{font-size:40px;font-weight:800}
-  .sec-hdr{padding:6px 10px;border-radius:5px;font-size:13px;font-weight:700;margin-bottom:8px}
-  .crit{background:#FEE2E2;color:#DC2626}.warn{background:#FEF3C7;color:#D97706}
-  .info{background:#DBEAFE;color:#1D4ED8}.ok{background:#DCFCE7;color:#16A34A}
-  .item{padding:7px 10px;border-left:3px solid;background:#F8F9FC;margin:3px 0;border-radius:0 5px 5px 0;font-size:12px}</style></head>
-  <body>
-  <h1>SAP Activate QA Raporu</h1>
-  <div class="meta"><b>Deliverable:</b> ${d.name} &nbsp;|&nbsp; <b>Tarih:</b> ${new Date().toLocaleDateString('tr-TR')} &nbsp;|&nbsp; <b>Metodoloji:</b> SAP Activate – S/4HANA Cloud Private Edition</div>
-  ${res.replace(/class="ai-score-row"/g,'class="score-box"').replace(/class="ai-score-num"/g,'class="score-num"').replace(/gh-crit/g,'crit').replace(/gh-warn/g,'warn').replace(/gh-info/g,'info').replace(/gh-ok/g,'ok').replace(/gap-sec/g,'').replace(/gap-hdr/g,'sec-hdr').replace(/gap-item/g,'item')}
-  </body></html>`;
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([html],{type:'text/html'}));
-  a.download = `QA_Raporu_${d.name.replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_]/g,'')}.html`;
-  a.click(); toast('📥 Rapor indirildi');
-}
-
-function xPageSel(delivId) {
-  if (!delivId) { document.getElementById('xPageContent').innerHTML=''; return; }
-  const d = findDeliv(delivId);
-  if (!d) return;
-  document.getElementById('xPageContent').innerHTML =
-    `<div class="xcard"><div class="xcard-title">${d.name}</div><div style="margin-top:12px">${renderExcelTab(d)}</div></div>`;
-}
-
-/* ── INIT ── */
-render();
+S.view='dash';render();
 </script>
 </body>
 </html>
