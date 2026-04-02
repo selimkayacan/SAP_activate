@@ -720,7 +720,7 @@ const cD=(ph,ws)=>DB[`${ph}_${ws}`]||[];
 const gP=id=>S.prog[id]||{st:'ns',pct:0,notes:'',who:'',due:'',chk:{},ai:null,air:null};
 const phC=id=>PH.find(p=>p.id===id)?.color||'#666';
 const stC=s=>({ns:'#94A3B8',ip:'#F59E0B',dn:'#22C55E',bl:'#EF4444',rv:'#8B5CF6'}[s]||'#94A3B8');
-const stL=s=>({'ns':'Not Started','ip':'In Progress','dn':'Completed','bl':'Blocked','rv':'In Review'}[s]||s)[s]||s);
+const stL=s=>({'ns':'Not Started','ip':'In Progress','dn':'Completed','bl':'Blocked','rv':'In Review'}[s]||s);
 const stCl=s=>({ns:'sns',ip:'sip',dn:'sdn',bl:'sbl',rv:'srv'}[s]||'sns');
 const tiI=t=>({Template:'📄',Guide:'📖',Checklist:'✅',Reference:'🔗',Tool:'🛠️',Presentation:'📊',Catalog:'📚'}[t]||'📎');
 function phPct(ph){let t=0,c=0;WS.forEach(ws=>cD(ph,ws.id).forEach(d=>{t+=gP(d.id).pct||0;c++;}));return c?Math.round(t/c):0;}
