@@ -234,20 +234,20 @@ body{font-family:var(--fn);background:var(--bg);color:var(--tx);min-height:100vh
 </style>
 </head>
 <body>
-<div class="ovl" id="ovl"><div class="spc"><div class="spn"></div><div class="sptx" id="spTx">AI analizi çalışıyor…</div></div></div>
+<div class="ovl" id="ovl"><div class="spc"><div class="spn"></div><div class="sptx" id="spTx">Running AI analysis…</div></div></div>
 <div class="tst" id="tst"></div>
 
 <header class="hdr">
   <div class="logo"><span class="logo-sap">SAP</span> Activate<div class="logo-div"></div><span class="logo-sub">Governance Tool</span></div>
   <span style="font-size:11px;color:rgba(255,255,255,.4)">S/4HANA Cloud Private Edition</span>
-  <div class="hdr-r"><div id="hChips" style="display:flex;gap:5px"></div><button class="btn btn-g" onclick="goXl()">🤖 AI Compare</button></div>
+  <div class="hdr-r"><div id="hChips" style="display:flex;gap:5px"></div></div>
 </header>
 
 <div class="lgnd">
-  <span style="font-size:11px;font-weight:600;color:var(--tx2)">Renk Kodu:</span>
-  <div class="li"><div class="ldot" style="background:#94A3B8"></div>Normal</div>
-  <div class="li"><div class="ldot" style="background:#F59E0B"></div><strong style="color:#92400E">🟡 Sarı</strong>: AI fark tespit etti — inceleme bekliyor</div>
-  <div class="li"><div class="ldot" style="background:#16A34A"></div><strong style="color:#14532D">🟢 Yeşil</strong>: Onaylandı — tamamlandı</div>
+  <span style="font-size:11px;font-weight:600;color:var(--tx2)">Color Code:</span>
+  <div class="li"><div class="ldot" style="background:#94A3B8"></div>Default</div>
+  <div class="li"><div class="ldot" style="background:#F59E0B"></div><strong style="color:#92400E">🟡 Yellow</strong>: AI detected differences — pending review</div>
+  <div class="li"><div class="ldot" style="background:#16A34A"></div><strong style="color:#14532D">🟢 Green</strong>: Approved &amp; completed</div>
 </div>
 
 <div class="nav"><div class="bc" id="bc"></div><div class="nav-r" id="navR"></div></div>
@@ -256,71 +256,202 @@ body{font-family:var(--fn);background:var(--bg);color:var(--tx);min-height:100vh
 <script>
 /* ══ BEST PRACTICE DATA ══ */
 const BP = {
-  d_ocm1: { files: [
-    { id:'bp1', name:'Customer Organizational Readiness for SAP S/4HANA Cloud', type:'PDF Whitepaper', icon:'📄',
-      source:'SAP Cloud Success Services, June 2022',
-      summary:'SAP S/4HANA Cloud geçişinde organizasyonel hazırlığı sağlamak için Customer COE maturity assessment, rol dönüşümü ve OCM stratejisini kapsar.',
-      sections: [
-        { title:'Discover Fazında Yapılması Gerekenler (SAP Best Practice)', items:[
-          'İş sahipleri (Business Owners) ve Dijital İş Analistlerini belirleyip onboard edin',
-          'Customer COE olgunluk değerlendirmesi yapın — mevcut yetenekleri ve iyileştirme alanlarını tespit edin',
-          'İş kapsamı ve kullanıcı sayısına göre etkilenecek COE rollerini önceden belirleyin',
-          'Benchmark verilerle TCO hesaplaması yapın ve iş gerekçesi (business case) oluşturun',
-          'SAP Meet-the-Expert seanslarına ve OCM webinarlarına katılın',
-          'Fit-to-standard yaklaşımının organizasyonel değişim yönetimi bağlamında ne anlam ifade ettiğini belgeleyin',
+
+  /* ── BUSINESS CASE & VALUE ASSESSMENT ─────────────────────── */
+  d_pm1: { files: [
+    { id:'bp_vlm', name:'SAP S/4HANA Benchmarking Assessment – VLM Guide', type:'PDF Guide', icon:'📈',
+      source:'SAP Global Value Advisory, 2024',
+      summary:'Step-by-step guide for conducting an S/4HANA process maturity and KPI performance assessment using SAP Value Lifecycle Manager (VLM). Provides KPI benchmarking against industry peers and best practice maturity scoring.',
+      sections:[
+        { title:'Assessment Process (5 Steps)', items:[
+          'Step 1 – Register/Login: Access the VLM survey via SAP for Me or direct link. Login via SSO (S-User) or create a new account.',
+          'Step 2 – Company Profile: Enter Organization Level, Geography, Currency, Industry and Sub-Industry to calibrate peer benchmarking.',
+          'Step 3 – Survey Overview: Review survey scope covering Procurement, Sales, Service, Finance, Supply Chain, Manufacturing, HR and IT.',
+          'Step 4 – Collaboration & Delegation: Invite colleagues to collaborate (view-only) or delegate specific sections for editing.',
+          'Step 5 – Complete & Submit: Enter KPI values for each section. All questions are optional but benchmarks are only generated for answered questions.',
         ]},
-        { title:'Customer COE Rol Çerçevesi', items:[
-          'Business Owner: İş alanı sahibi, stratejik ve operasyonel rehberlik sağlar',
-          'Digital Business Analyst: Dijitalleşme ve inovasyon için prototip geliştiren kilit rol',
-          'Key User: Standartlaştırılmış iş süreçlerini kullanan ve yapılandıran kullanıcı',
-          'Business Architect: Uçtan uca iş modeli ve süreç bütünlüğünü sağlar',
-          'Enterprise Architect: Tüm IT peyzajında yönetişim ve strateji',
-          'Release Manager: S/4HANA Cloud release planlaması ve takibi',
+        { title:'KPI Scorecard – Key Features', items:[
+          'Company Value: shown at the top, color-coded vs peer group performance (Bottom 25% / Average / Top 25%).',
+          'Peer Group: automatically selected based on company profile (industry, geography, size). N = number of data points.',
+          'Best Practices Dashboard: shows current vs desired maturity levels with internal gap visualization.',
+          'Maturity Levels: Level 1 = Disparate/Manual/Excel; Level 2 = SAP ERP; Level 3 = SAP S/4HANA On-Premise or Cloud; Level 4 = S/4HANA + additional SAP solutions.',
+          'Recommendations: free text box in each KPI card for notes, observations and suggested actions.',
+          'Download Report: exports full scorecard as PDF for stakeholder presentation.',
         ]},
-        { title:'Başarı Kriterleri — Organizational Readiness', items:[
-          'Üst yönetim sponsorluğu (Executive Sponsor) belirlenmiş ve taahhüt alınmış',
-          'Değişime açık organizasyon kültürü ve liderlik altyapısı oluşturulmuş',
-          'IT ve iş birimi arasında güçlü ortaklık modeli kurulmuş',
-          'Mevcut IT rollerinin S/4HANA Cloud\'a göre yeniden yapılandırılması planlanmış',
-          'SAP Fiori ve yeni kullanıcı deneyimine geçiş için son kullanıcı adaptasyon planı hazır',
-          'Design Thinking ve Agile çalışma yöntemlerine geçiş için eğitim planı oluşturulmuş',
+        { title:'How to Use This in Discovery Phase', items:[
+          'Run the VLM survey with customer key stakeholders (CFO, COO, Procurement Lead, etc.).',
+          'Use benchmark output to quantify the business case and justify ROI for S/4HANA Cloud migration.',
+          'Identify process areas with lowest maturity (Level 1–2) as primary transformation targets.',
+          'Use the TCO benchmark data to support cost savings and payback period calculations.',
+          'Share scorecard with executive sponsor as part of business case presentation.',
         ]},
       ]
     },
-    { id:'bp2', name:'OCM Knowledge Transfer Tracker', type:'PPTX Template', icon:'📊',
-      source:'SAP Activate OCM Template v1.1, March 2024',
-      summary:'OCM bilgi transferi etkinliklerini planlayan ve takip eden şablon. Topic, Delivery Method, Date, Responsible, Status alanlarını içerir.',
-      tableHeaders:['Topic / Konu','Delivery Method','Delivery Date','Responsible','Status','Comments'],
-      tableRows:[
-        ['S/4HANA Cloud geçişinde değişim yönetimi çerçevesi','Online içerik / Bilgi toplantısı','2. hafta','Change Manager','open',''],
-        ['Kullanıcı adaptasyonu ve benimseme stratejisi','Workshop + e-öğrenme','3. hafta','OCM Lead','open',''],
-        ['Fit-to-standard yaklaşımı ve iş birimine etkisi','Yönetim sunumu','4. hafta','PM','open',''],
-      ],
-      statusOpts:['open','in preparation','delivered']
-    }
   ]},
+
+  /* ── HIGH-LEVEL TECHNICAL ASSESSMENT ──────────────────────── */
+  d_tai1: { files: [
+    { id:'bp_rc', name:'SAP Readiness Check – Key Feature Overview', type:'PDF Guide', icon:'🔍',
+      source:'SAP Readiness Check Team, March 2026',
+      summary:'SAP Readiness Check is the primary tool for assessing technical readiness before an S/4HANA conversion. Available via SAP for Me (me.sap.com/readinesscheck) and SAP Cloud ALM. Covers 8+ transformation scenarios.',
+      sections:[
+        { title:'Supported Transformation Scenarios', items:[
+          'SAP S/4HANA (system conversion and new implementation)',
+          'SAP S/4HANA upgrades (release upgrades)',
+          'SAP BW/4HANA migration',
+          'SAP Customer Experience Solutions',
+          'SAP SuccessFactors Solutions',
+          'SAP Cloud ALM readiness',
+          'SAP Datasphere / SAP BW Bridge',
+          'SAP Supply Chain Solutions',
+        ]},
+        { title:'Key Analysis Areas for S/4HANA Readiness Check', items:[
+          'Simplification Items: identifies relevant items for your system based on table content and used transactions. Shows effort ranking (Low/Medium/High).',
+          'Compatibility Scope Analysis: reviews simplification items related to compatibility packages and their planned alternatives.',
+          'Custom Code Analysis: scans all custom ABAP code for compatibility issues with S/4HANA. Critical for effort estimation.',
+          'Add-On Compatibility: validates all installed add-ons against the target S/4HANA release. Incompatible add-ons block conversion.',
+          'Active Business Functions: checks whether active business functions are compatible with the S/4HANA target release.',
+          'SAP S/4HANA Sizing: estimates system sizing requirements for the target landscape.',
+          'Integration Analysis: reviews interface and integration touchpoints for compatibility.',
+          'Financial Data Quality: checks financial data consistency required for S/4HANA migration.',
+          'App Availability & Recommended Fiori Apps: shows which transactions have Fiori equivalents.',
+          'Planned Downtime Calculator: estimates system downtime for the conversion process.',
+        ]},
+        { title:'How to Access and Run Readiness Check', items:[
+          'Access via SAP for Me: navigate to Service & Support → ALM → Readiness Check, or directly at https://me.sap.com/readinesscheck.',
+          'Access via SAP Cloud ALM: available in Implementation and Servicing app catalogs.',
+          'A guided procedure helps prepare the system and run data collection.',
+          'After data collection, create a new analysis and review findings.',
+          'Integration with SAP Cloud ALM enables creating follow-up tasks directly from Readiness Check findings.',
+          'Combined Scenario Analysis: merge results from different Readiness Check runs on the same system for a comprehensive view.',
+        ]},
+        { title:'Best Practice Recommendations for Discovery Phase', items:[
+          'Run SAP Readiness Check as early as possible — ideally during Discover or early Prepare phase.',
+          'Prioritize review of Custom Code Analysis results: volume and complexity of custom code is the #1 effort driver.',
+          'Validate all Add-On compatibility before committing to a go-live timeline.',
+          'Use the Simplification Items report to identify mandatory vs. optional activities and sequence them in the project plan.',
+          'Use Planned Downtime Calculator output to align with business on acceptable cutover window.',
+          'Share the Readiness Check output with the customer's IT team and discuss findings in a technical workshop.',
+        ]},
+      ]
+    },
+  ]},
+
+  /* ── CUSTOMER ORG READINESS ASSESSMENT ────────────────────── */
+  d_ocm1: {
+    hasExcelBP: true,
+    excelBPName: 'S4H_665 Cloud Mindset Assessment.xlsx',
+    excelBPDesc: 'SAP Cloud Mindset Assessment template with 10 readiness questions (Step 1) and obstacle scoring (Step 2). Customer fills in their responses; AI compares against best practice expectations.',
+    excelStructure: {
+      step1: {
+        title: 'Step 1 – Current Cloud Mindset Level (10 Questions)',
+        scale: 'Strongly Disagree | Disagree | Somewhat Disagree | Somewhat Agree | Agree | Strongly Agree',
+        questions: [
+          'My organization is ready to adopt, innovate and adapt to the cloud mindset',
+          'My organization has a clearly communicated and understood digital transformation strategy',
+          'My organization follows the agile methodology and embraces the agile way of working',
+          'All digital initiatives in my organization are well connected',
+          "My organization's employees understand the value of digital transformation",
+          "My organization's employees demonstrate the right cloud mindset for a digital transformation",
+          "My organization's employees have the right skill and roles set to keep the pace of digital transformation",
+          "My organization's employees work across silos",
+          'It is clear to me of the importance for my organization to fit to standard SAP',
+          "My organization's existing IT landscape is capable to cope with rapid changes within the digital transformation",
+        ],
+        scoring: 'Score 10–30: Low as-is maturity | Score 31–49: Medium as-is maturity | Score 50–60: High as-is maturity',
+      },
+      step2: {
+        title: 'Step 2 – Obstacles to Change',
+        fields: [
+          '2.1 Number of affected time zones (1 = one zone, 2 = two zones, 3 = all zones)',
+          '2.2 Weighted number of users (time zone weight × total users in scope)',
+        ],
+        riskMatrix: 'Risk matrix: Low as-is maturity + High obstacles = High Risk; High maturity + Low obstacles = Low Risk',
+      },
+    },
+    files: [
+      { id:'bp_ocm_wp', name:'Customer Organizational Readiness for SAP S/4HANA Cloud', type:'PDF Whitepaper', icon:'📄',
+        source:'SAP Cloud Success Services, June 2022',
+        summary:'Organizational readiness is a key success factor for S/4HANA Cloud. Covers Customer COE capability framework, role transformation, and OCM strategy across all SAP Activate phases.',
+        sections:[
+          { title:'Discover Phase – SAP Recommendations for Customer COE', items:[
+            'Identify and onboard Business Owners and Digital Business Analysts to support the S/4HANA Cloud implementation and future operations.',
+            'Measure Customer COE maturity through a simple assessment to identify key areas of improvement.',
+            'Based on business scope and planned user count, perform initial identification of Customer COE roles impacted by S/4HANA Cloud.',
+            'Use benchmark data to calculate typical TCO costs and build the business case.',
+            'Attend SAP Meet-the-Expert sessions (via SAP Learning Hub) for OCM overview. OCM webinars available to all SAP Preferred Success customers.',
+            'Clearly document what fit-to-standard means for your organization from an OCM perspective.',
+          ]},
+          { title:'Target Customer COE Role Framework', items:[
+            'Business Owner: owns a business domain, responsible for business results, continuous improvement and strategic decisions.',
+            'Digital Business Analyst: responsible for business model innovation and digitalization, works closely with Business Architect.',
+            'Key User: expert user with deep business process knowledge, supports peers and SAP S/4HANA Cloud configuration.',
+            'Business Architect: ensures E2E business model integrity, prototyping of optimized processes, bridges IT and business.',
+            'Enterprise Architect: governance and strategy across whole IT landscape.',
+            'Release Manager: plans and tracks SAP S/4HANA Cloud quarterly releases.',
+            'Test Manager: maintains E2E test plans and coordinates regression testing for each release.',
+            'Change Agent: supports OCM activities from within affected business units (Explore through Run).',
+          ]},
+          { title:'Organizational Readiness – Success Criteria', items:[
+            'Executive Sponsor identified and committed with visible leadership support.',
+            'Organization-wide understanding of fit-to-standard approach and its business impact.',
+            'IT organization has a documented plan for role transformation and reskilling.',
+            'Clear strategy for reducing IT FTEs in traditional operational roles (SAP Basis, Module Experts) that are absorbed by the cloud subscription.',
+            'Business-IT partnership model established for governing digital innovation.',
+            'SAP Fiori adoption plan in place for end-user transition from SAP GUI.',
+            'Design Thinking and Agile working methods introduced to key stakeholders.',
+          ]},
+        ]
+      },
+      { id:'bp_mindset_pptx', name:'Cloud Mindset Assessment Guide', type:'PPTX Guide', icon:'📊',
+        source:'SAP S/4HANA Cloud Enablement, 2020',
+        summary:'The Cloud Mindset Assessment evaluates organizational readiness to adopt S/4HANA Cloud. Assesses current mindset, identifies obstacles and provides risk-based recommendations (Low / Medium / High Risk).',
+        sections:[
+          { title:'Cloud Mindset Building Blocks', items:[
+            'Continuous Innovation: readiness to adopt and adapt to SAP release cycles (2x per year).',
+            'Fit-to-Standard: awareness and acceptance of adopting SAP best practices with minimal customization.',
+            'Dynamic Extensibility & Integrations: ability to leverage SAP BTP extensions and cloud integrations (Ariba, SuccessFactors, etc.).',
+            'Agile Way of Working: embracing agile methodology and cross-functional collaboration.',
+            'Digital Leadership: executive sponsorship and clear digital transformation strategy.',
+          ]},
+          { title:'Risk-Based Recommendations', items:[
+            'Low Risk → Awareness Content: self-enablement materials and SAP Enterprise Support resources.',
+            'Medium Risk → Enhanced Support Content: deep-dive sessions on pain points, OCM deliverables to mitigate risks, incorporated into project plan.',
+            'High Risk (large organizations) → Transformation Package: SAP Digital Culture Advisory workshop, organizational culture assessment, SAP BTP-based innovation services.',
+            'Pain points (questions answered Strongly Disagree/Disagree) trigger specific follow-up recommendations (PP1–PP10).',
+          ]},
+        ]
+      },
+    ]
+  },
+
+  /* ── OCM KNOWLEDGE TRANSFER TRACKER ───────────────────────── */
   d_ocm2: { files: [
-    { id:'bp3', name:'OCM Knowledge Transfer Tracker', type:'PPTX Template', icon:'📊',
+    { id:'bp_ktt', name:'OCM Knowledge Transfer Tracker', type:'PPTX Template', icon:'📊',
       source:'SAP Activate OCM Template v1.1, March 2024',
-      summary:'OCM bilgi transferi etkinliklerini planlayan ve takip eden şablon.',
-      tableHeaders:['Topic / Konu','Delivery Method','Delivery Date','Responsible','Status','Comments'],
+      summary:'Template for planning and tracking OCM knowledge transfer activities. Covers all training topics, delivery methods, ownership, status and comments across the project lifecycle.',
+      tableHeaders:['Topic / Knowledge Area','Delivery Method','Delivery Date','Responsible','Status','Comments'],
       tableRows:[
-        ['S/4HANA Cloud değişim yönetimi','Online içerik','2. hafta','Change Manager','open',''],
-        ['Kullanıcı adaptasyon stratejisi','Workshop','3. hafta','OCM Lead','open',''],
+        ['People side of cloud implementations and change management framework','Online content link / Info session (integrated in project team meeting)','Week 2 of project','Nominated Change Manager','open',''],
+        ['SAP S/4HANA Cloud features and fit-to-standard approach','Workshop + SAP Learning Hub','Week 3','OCM Lead','open',''],
+        ['Role changes and Customer COE target model','Management briefing presentation','Week 4','Project Manager','open',''],
+        ['Agile methodology and sprint-based project approach','Training session','Week 5','Scrum Master','open',''],
+        ['SAP Fiori end-user experience overview','Demo + e-learning','Week 6','Key User Lead','open',''],
       ],
       statusOpts:['open','in preparation','delivered']
-    }
+    },
   ]},
+
 };
 
-/* ══ PHASES + WORKSTREAMS ══ */
+
 const PH=[
-  {id:'discover',name:'Discover',color:'#7C3AED',qg:null,desc:'Çözüm keşfi & değer'},
-  {id:'prepare',name:'Prepare',color:'#1D4ED8',qg:'QG1',desc:'Kurulum & mobilizasyon'},
-  {id:'explore',name:'Explore',color:'#0891B2',qg:'QG2',desc:'Fit-to-Standard'},
-  {id:'realize',name:'Realize',color:'#D97706',qg:'QG3',desc:'Yapılandırma & geliştirme'},
-  {id:'deploy',name:'Deploy',color:'#DC2626',qg:'QG4',desc:'Cutover & canlı'},
-  {id:'run',name:'Run',color:'#16A34A',qg:null,desc:'Operasyon & iyileştirme'},
+  {id:'discover',name:'Discover',color:'#7C3AED',qg:null,desc:'Solution Discovery & Value'},
+  {id:'prepare',name:'Prepare',color:'#1D4ED8',qg:'QG1',desc:'Setup & Mobilization'},
+  {id:'explore',name:'Explore',color:'#0891B2',qg:'QG2',desc:'Fit-to-Standard Analysis'},
+  {id:'realize',name:'Realize',color:'#D97706',qg:'QG3',desc:'Configuration & Development'},
+  {id:'deploy',name:'Deploy',color:'#DC2626',qg:'QG4',desc:'Cutover & Go-Live'},
+  {id:'run',name:'Run',color:'#16A34A',qg:null,desc:'Operations & Improvement'},
 ];
 const WS=[
   {id:'pm',name:'Project Management',icon:'📊'},
@@ -338,240 +469,240 @@ const WS=[
 /* ══ DELIVERABLE DATABASE ══ */
 const DB={
   discover_pm:[
-    {id:'d_pm1',name:'Business Case & Value Assessment',tpl:true,hasBP:false,
-     tasks:['İş hedefleri ve motivasyon tanımla','ROI ve TCO hesapla','Yönetici sponsorluğu al','S/4HANA değer kıyaslaması yap'],
+    {id:'d_pm1',name:'Business Case & Value Assessment',tpl:true,hasBP:true,
+     tasks:['Define business objectives and motivations','Calculate ROI and TCO','Secure executive sponsorship','Conduct S/4HANA value benchmarking'],
      acc:[{n:'Business Case Template',t:'Template'},{n:'TCO Calculator',t:'Tool'},{n:'Value Realization Framework',t:'Guide'}]},
     {id:'d_pm2',name:'Project Charter',tpl:false,hasBP:false,
-     tasks:['Proje kapsamını tanımla','Temel paydaşları belirle','Başarı kriterlerini onayla','Üst yönetim imzasını al'],
+     tasks:['Define project scope','Identify key stakeholders','Confirm success criteria','Obtain executive sign-off'],
      acc:[{n:'Project Charter Template',t:'Template'},{n:'Stakeholder Map',t:'Template'}]},
   ],
   discover_cte:[
     {id:'d_cte1',name:'Solution Discovery Workshop',tpl:false,hasBP:false,
-     tasks:['SAP S/4HANA özellik genel bakışı','Demo sistem erişimi','Fit uyum değerlendirmesi','İş değeri senaryolarını belgele'],
+     tasks:['SAP S/4HANA feature overview','Access demo system','Fit alignment assessment','Document business value scenarios'],
      acc:[{n:'Discovery Workshop Agenda',t:'Template'},{n:'S/4HANA Feature Catalog',t:'Guide'}]},
   ],
   discover_tai:[
-    {id:'d_tai1',name:'High-Level Technical Assessment',tpl:true,hasBP:false,
-     tasks:['Mevcut sistem peyzajını analiz et','Bulut hazırlık seviyesini değerlendir','Entegrasyon karmaşıklığını değerlendir'],
+    {id:'d_tai1',name:'High-Level Technical Assessment',tpl:true,hasBP:true,
+     tasks:['Analyze current system landscape','Evaluate cloud readiness level','Assess integration complexity'],
      acc:[{n:'Technical Assessment Questionnaire',t:'Template'},{n:'Cloud Readiness Checklist',t:'Checklist'}]},
   ],
   discover_ocm:[
     {id:'d_ocm1',name:'Customer Organizational Readiness Assessment',tpl:true,hasBP:true,
-     tasks:['Üst yönetim sponsoru belirle ve taahhüt al','Customer COE olgunluk değerlendirmesini yap','Etkilenecek iş ve IT rollerini haritalandır','Business Owner ve Digital Business Analyst rollerini belirle','TCO hesaplaması ve iş gerekçesini oluştur','Organizasyonel değişim stratejisini belgele'],
+     tasks:['Identify executive sponsor and secure commitment','Conduct Customer COE maturity assessment','Map affected business and IT roles','Identify Business Owner and Digital Business Analyst roles','Build TCO calculation and business case','Document organizational change strategy'],
      acc:[{n:'Customer Readiness Whitepaper',t:'Guide'},{n:'COE Maturity Assessment',t:'Template'},{n:'Stakeholder Analysis Matrix',t:'Template'}]},
     {id:'d_ocm2',name:'OCM Knowledge Transfer Tracker',tpl:true,hasBP:true,
-     tasks:['Bilgi transfer konu listesini hazırla','Her konu için teslimat yöntemini belirle','Sorumlu kişi ve tarihleri ata','Tracker şablonunu doldurup takibe al'],
+     tasks:['Prepare knowledge transfer topic list','Define delivery method for each topic','Assign owners and dates','Complete the tracker template and start monitoring'],
      acc:[{n:'Knowledge Transfer Tracker',t:'Template'},{n:'OCM Enablement Plan',t:'Template'}]},
   ],
   prepare_pm:[
     {id:'p_pm1',name:'Project Governance Framework',tpl:true,hasBP:false,
-     tasks:['RACI matrisini tanımla','Eskalasyon prosedürlerini belirle','Yönlendirme komitesini kur','Toplantı ritm ve karar süreçlerini tanımla'],
+     tasks:['Define the RACI matrix','Define escalation procedures','Establish steering committee','Define meeting cadence and decision processes'],
      acc:[{n:'RACI Template',t:'Template'},{n:'Governance Framework Guide',t:'Guide'},{n:'Decision Log Template',t:'Template'}]},
     {id:'p_pm2',name:'Project Plan & WBS',tpl:true,hasBP:false,
-     tasks:['WBS tanımla','Kaynak ve maliyet planlaması yap','Risk kayıt defterini oluştur','Proje takvimini onayla'],
+     tasks:['Define the Work Breakdown Structure (WBS)','Perform resource and cost planning','Create risk register','Approve project timeline'],
      acc:[{n:'Master Project Plan Template',t:'Template'},{n:'WBS Template',t:'Template'},{n:'Risk Register Template',t:'Template'}]},
     {id:'p_pm3',name:'Kickoff Workshop',tpl:false,hasBP:false,
-     tasks:['Kickoff sunumunu hazırla','Ekip tanışma ve rol tanım seansları','Metodoloji hizalaması','Taahhüt ve imzalama'],
+     tasks:['Prepare kickoff presentation','Team introduction and role definition sessions','Methodology alignment','Commitment and sign-off'],
      acc:[{n:'Kickoff Workshop Agenda',t:'Template'},{n:'Project Kickoff Presentation',t:'Presentation'}]},
     {id:'p_pm4',name:'Quality Gate 1 Review',tpl:false,hasBP:false,
-     tasks:['Proje hazırlığını doğrula','Kaynak mevcudiyetini onayla','QG1 kriterlerini karşıla ve imzala'],
+     tasks:['Verify project readiness','Confirm resource availability','Meet and sign off QG1 criteria'],
      acc:[{n:'QG1 Checklist',t:'Checklist'},{n:'Phase Exit Criteria',t:'Reference'}]},
   ],
   prepare_cte:[
     {id:'p_cte1',name:'Learning & Enablement Plan',tpl:false,hasBP:false,
-     tasks:['Eğitim ihtiyaçlarını belirle','Role dayalı öğrenme yollarını tasarla','SAP eğitim kataloğundan kursları seç'],
+     tasks:['Identify training needs','Design role-based learning paths','Select courses from SAP training catalog'],
      acc:[{n:'Enablement Plan Template',t:'Template'},{n:'Role-Based Learning Catalog',t:'Catalog'}]},
     {id:'p_cte2',name:'SAP Activate & Agile Training',tpl:false,hasBP:false,
-     tasks:['Metodoloji genel bakış seansları','Agile/Scrum temel eğitimi','Cloud ALM araç eğitimi'],
+     tasks:['Methodology overview sessions','Agile/Scrum fundamentals training','Cloud ALM tool training'],
      acc:[{n:'SAP Activate Overview Deck',t:'Presentation'},{n:'Agile Guide for SAP Projects',t:'Guide'}]},
   ],
   prepare_tai:[
     {id:'p_tai1',name:'System Landscape Design',tpl:true,hasBP:false,
-     tasks:['3 katmanlı peyzaj tasarımı (Dev/QA/Prod)','Tenant provisioning planı','Ağ ve güvenlik gereksinimleri'],
+     tasks:['3-tier landscape design (Dev/QA/Prod)','Tenant provisioning plan','Network and security requirements'],
      acc:[{n:'Landscape Design Template',t:'Template'},{n:'Network Requirements Checklist',t:'Checklist'}]},
     {id:'p_tai2',name:'SAP Cloud ALM Setup',tpl:false,hasBP:false,
-     tasks:['SAP Cloud ALM provisioning','Proje konfigürasyonu','Kullanıcı ve rolleri tanımla'],
+     tasks:['SAP Cloud ALM provisioning','Project configuration','Define users and roles'],
      acc:[{n:'Cloud ALM Setup Guide',t:'Guide'},{n:'User Management Guide',t:'Guide'}]},
     {id:'p_tai3',name:'Dev Environment Setup',tpl:false,hasBP:false,
-     tasks:['ABAP Cloud geliştirme ortamı','CI/CD pipeline tasarımı','Transport yönetim konfigürasyonu'],
+     tasks:['ABAP Cloud development environment setup','CI/CD pipeline design','Transport management configuration'],
      acc:[{n:'Dev Environment Checklist',t:'Checklist'},{n:'ABAP Development Standards',t:'Guide'}]},
   ],
   prepare_adc:[
     {id:'p_adc1',name:'Fit-to-Standard Preparation',tpl:true,hasBP:false,
-     tasks:['Scope item aktivasyon listesi hazırla','Workshop katılımcılarını belirle','FTS yaklaşımı ve kurallarını belirle'],
+     tasks:['Prepare scope item activation list','Identify workshop participants','Define FTS approach and rules'],
      acc:[{n:'FTS Preparation Guide',t:'Guide'},{n:'Scope Item Fact Sheets',t:'Reference'}]},
   ],
   prepare_dm:[
     {id:'p_dm1',name:'Data Migration Strategy',tpl:true,hasBP:false,
-     tasks:['Migrasyon nesne listesini belirle','Kaynak sistem veri kalitesi analizi','Migrasyon yaklaşımını karar ver'],
+     tasks:['Define migration object list','Source system data quality analysis','Decide on migration approach'],
      acc:[{n:'Data Migration Strategy Template',t:'Template'},{n:'Data Object Inventory',t:'Template'}]},
   ],
   prepare_ocm:[
     {id:'p_ocm1',name:'Organizational Change Plan',tpl:false,hasBP:false,
-     tasks:['Detaylı değişim etkisi değerlendirmesi','Paydaş angajman planı','İletişim planı ve takvimi','Direnç yönetimi stratejisi'],
+     tasks:['Detailed change impact assessment','Stakeholder engagement plan','Communication plan and schedule','Resistance management strategy'],
      acc:[{n:'OCM Plan Template',t:'Template'},{n:'Change Impact Assessment',t:'Template'},{n:'Communication Plan Template',t:'Template'}]},
   ],
   explore_pm:[
     {id:'e_pm1',name:'Project Monitoring & Control',tpl:false,hasBP:false,
-     tasks:['Haftalık durum raporları hazırla','Steering committee güncellemelerini sun','Bütçe ve zaman çizelgesini takip et'],
+     tasks:['Prepare weekly status reports','Present steering committee updates','Track budget and schedule'],
      acc:[{n:'Status Report Template',t:'Template'},{n:'RAID Log Template',t:'Template'}]},
     {id:'e_pm2',name:'Quality Gate 2 Review',tpl:false,hasBP:false,
-     tasks:['FTS tamamlama incelemesi','Çözüm tasarımı sign-off','QG2 kriterlerini karşıla'],
+     tasks:['FTS completion review','Solution design sign-off','Meet QG2 criteria'],
      acc:[{n:'QG2 Checklist',t:'Checklist'},{n:'Solution Scope Confirmation',t:'Template'}]},
   ],
   explore_adc:[
     {id:'e_adc1',name:'Fit-to-Standard Workshops',tpl:true,hasBP:false,
-     tasks:['FTS workshoplarını yürüt','Konfigürasyon kararlarını belgele','Gap ve gereksinimleri tespit et','Workshop katılımcı onayını al'],
+     tasks:['Conduct FTS workshops','Document configuration decisions','Identify gaps and requirements','Obtain workshop participant approval'],
      acc:[{n:'FTS Workshop Template',t:'Template'},{n:'BPML Template',t:'Template'},{n:'Gap-Fit Analysis Template',t:'Template'}]},
     {id:'e_adc2',name:'Solution Design Document (SDD)',tpl:true,hasBP:false,
-     tasks:['To-be süreçleri belgele','Konfigürasyon workbook tamamla','SDD\'yi onayla'],
+     tasks:['Document to-be processes','Complete configuration workbook','SDD\'yi onayla'],
      acc:[{n:'SDD Template',t:'Template'},{n:'Configuration Workbook',t:'Template'}]},
     {id:'e_adc3',name:'Business Process Master List (BPML)',tpl:true,hasBP:false,
-     tasks:['Kapsam dahilindeki süreçleri derle','SAP best practice\'lere eşle','BPML\'i imzalat'],
+     tasks:['Compile all in-scope processes','Map to SAP best practices','Obtain BPML sign-off'],
      acc:[{n:'BPML Template',t:'Template'},{n:'Process Hierarchy Template',t:'Template'}]},
   ],
   explore_tai:[
     {id:'e_tai1',name:'Integration Architecture Design',tpl:true,hasBP:false,
-     tasks:['Entegrasyon peyzaj tasarımını belgele','API/middleware seçimi','Arayüz envanterini hazırla'],
+     tasks:['Document integration landscape design','Select API/middleware approach','Prepare interface inventory'],
      acc:[{n:'Integration Architecture Template',t:'Template'},{n:'Interface Inventory Sheet',t:'Template'}]},
   ],
   explore_ext:[
     {id:'e_ext1',name:'Extensibility Requirements',tpl:true,hasBP:false,
-     tasks:['Standart dışı gereksinimleri listele','Extensibility tipini sınıflandır','Clean core uyumluluk kontrolü'],
+     tasks:['List non-standard requirements','Classify extensibility type','Clean core compliance check'],
      acc:[{n:'Extensibility Assessment Template',t:'Template'},{n:'WRICEF Log Template',t:'Template'},{n:'Clean Core Guidelines',t:'Guide'}]},
   ],
   explore_tst:[
     {id:'e_tst1',name:'Test Strategy & Planning',tpl:true,hasBP:false,
-     tasks:['Test kapsamını tanımla','Cloud ALM test araçlarını kur','Test ekibi rollerini tanımla'],
+     tasks:['Define test scope and approach','Configure Cloud ALM test tools','Define test team roles'],
      acc:[{n:'Test Strategy Template',t:'Template'},{n:'Cloud ALM Test Management Guide',t:'Guide'}]},
   ],
   explore_dm:[
     {id:'e_dm1',name:'Data Migration Design',tpl:true,hasBP:false,
-     tasks:['Kaynak-hedef eşleme tablosunu oluştur','Veri temizleme kurallarını belirle','Migration Cockpit konfigürasyonunu başlat'],
+     tasks:['Build source-to-target mapping table','Define data cleansing rules','Start Migration Cockpit configuration'],
      acc:[{n:'Data Migration Design Document',t:'Template'},{n:'Data Mapping Template',t:'Template'}]},
   ],
   explore_ocm:[
     {id:'e_ocm1',name:'Detailed Change Impact Assessment',tpl:false,hasBP:false,
-     tasks:['Süreç değişimlerini analiz et','Rol etki analizini tamamla','Risk azaltma planını oluştur'],
+     tasks:['Analyze process changes','Complete role impact analysis','Create risk mitigation plan'],
      acc:[{n:'Change Impact Assessment (Detailed)',t:'Template'},{n:'Role Mapping Template',t:'Template'}]},
     {id:'e_ocm2',name:'Training Needs Analysis',tpl:false,hasBP:false,
-     tasks:['Eğitim müfredatı tanımla','Role-eğitim eşleme matrisini hazırla','Eğitim takvimini tamamla'],
+     tasks:['Define training curriculum','Prepare role-to-training mapping matrix','Finalize training schedule'],
      acc:[{n:'Training Needs Analysis Template',t:'Template'},{n:'Learning Path Matrix',t:'Template'}]},
   ],
   realize_pm:[
     {id:'r_pm1',name:'Sprint Execution & Management',tpl:false,hasBP:false,
-     tasks:['Sprint planlama seanslarını yürüt','Günlük scrum toplantıları kolaylaştır','Sprint review ve retrospektif yap'],
+     tasks:['Conduct sprint planning sessions','Facilitate daily scrum meetings','Conduct sprint reviews and retrospectives'],
      acc:[{n:'Sprint Plan Template',t:'Template'},{n:'Velocity Tracker',t:'Template'}]},
     {id:'r_pm2',name:'Quality Gate 3 Review',tpl:false,hasBP:false,
-     tasks:['Geliştirme tamamlanma incelemesi','Test sonuçlarını gözden geçir','QG3 kriterlerini karşıla'],
+     tasks:['Development completion review','Review test results','Meet QG3 criteria'],
      acc:[{n:'QG3 Checklist',t:'Checklist'},{n:'Test Results Summary',t:'Template'}]},
   ],
   realize_adc:[
     {id:'r_adc1',name:'System Configuration',tpl:true,hasBP:false,
-     tasks:['Sistemi konfigüre et','Scope item aktivasyonlarını gerçekleştir','Birim testleri ile doğrula'],
+     tasks:['Configure the system','Execute scope item activations','Validate with unit tests'],
      acc:[{n:'Configuration Workbook (Completed)',t:'Template'},{n:'Scope Item Activation Guide',t:'Guide'}]},
     {id:'r_adc2',name:'Custom Development (WRICEF)',tpl:true,hasBP:false,
-     tasks:['WRICEF nesnelerini geliştir','Code review tamamla','WRICEF testlerini çalıştır'],
+     tasks:['Develop WRICEF objects','Complete code review','Run WRICEF tests'],
      acc:[{n:'WRICEF Tracker Template',t:'Template'},{n:'Development Standards Guide',t:'Guide'},{n:'Code Review Checklist',t:'Checklist'}]},
     {id:'r_adc3',name:'Solution Walkthrough',tpl:false,hasBP:false,
-     tasks:['Konfigüre edilmiş çözümü iş birimine sun','Geri bildirimleri belgele','Delta gereksinimleri tespit et'],
+     tasks:['Present configured solution to business','Document feedback','Identify delta requirements'],
      acc:[{n:'Solution Walkthrough Template',t:'Template'},{n:'Delta Log Template',t:'Template'}]},
   ],
   realize_ext:[
     {id:'r_ext1',name:'Extensibility Development',tpl:false,hasBP:false,
-     tasks:['In-app extensions geliştir ve test et','Side-by-side BTP geliştirmeleri tamamla','Extensibility nesnelerini dokümante et'],
+     tasks:['Develop and test in-app extensions','Complete side-by-side BTP developments','Document extensibility objects'],
      acc:[{n:'Extensibility Dev Guide',t:'Guide'},{n:'BTP Development Toolkit',t:'Tool'}]},
   ],
   realize_int:[
     {id:'r_int1',name:'Integration Development & Testing',tpl:false,hasBP:false,
-     tasks:['Entegrasyon akışlarını geliştir','Arayüz birim testlerini yap','Uçtan uca entegrasyon testi yürüt'],
+     tasks:['Develop integration flows','Conduct interface unit tests','Execute end-to-end integration tests'],
      acc:[{n:'Integration Test Protocol',t:'Template'},{n:'Error Handling Runbook',t:'Guide'}]},
   ],
   realize_tst:[
     {id:'r_tst1',name:'Unit & String Testing',tpl:false,hasBP:false,
-     tasks:['Geliştirici birim testlerini yürüt','String test senaryolarını çalıştır','Test sonuçlarını belgele'],
+     tasks:['Conduct developer unit tests','Run string test scenarios','Document test results'],
      acc:[{n:'Unit Test Protocol',t:'Template'},{n:'Defect Management Template',t:'Template'}]},
     {id:'r_tst2',name:'System Integration Testing (SIT)',tpl:false,hasBP:false,
-     tasks:['SIT test senaryolarını hazırla','SIT yürütmesini koordine et','SIT tamamlama raporunu hazırla'],
+     tasks:['Prepare SIT test scenarios','Coordinate SIT execution','Prepare SIT completion report'],
      acc:[{n:'SIT Test Plan',t:'Template'},{n:'SIT Defect Log',t:'Template'}]},
     {id:'r_tst3',name:'User Acceptance Testing (UAT)',tpl:true,hasBP:false,
-     tasks:['UAT test senaryolarını hazırla','Key user\'lara UAT eğitimi ver','UAT yürütmesini yönet','UAT sign-off al'],
+     tasks:['Prepare UAT test scenarios','Train key users for UAT','Manage UAT execution','Obtain UAT sign-off'],
      acc:[{n:'UAT Test Plan',t:'Template'},{n:'UAT Sign-off Template',t:'Template'}]},
     {id:'r_tst4',name:'Performance Testing',tpl:false,hasBP:false,
-     tasks:['Performans KPI\'larını tanımla','Yük testi senaryolarını hazırla','Yük testini çalıştır ve analiz et'],
+     tasks:['Define performance KPIs and thresholds','Prepare load test scenarios','Execute load tests and analyze results'],
      acc:[{n:'Performance Test Plan',t:'Template'},{n:'Load Testing Guide',t:'Guide'}]},
   ],
   realize_dm:[
     {id:'r_dm1',name:'Data Migration Development',tpl:true,hasBP:false,
-     tasks:['Migrasyon programlarını geliştir','Veri dönüşümü ve temizleme','Migrasyon program testleri'],
+     tasks:['Develop migration programs','Data transformation and cleansing','Migration program testing'],
      acc:[{n:'Migration Program Specs',t:'Template'},{n:'ETL Mapping Document',t:'Template'}]},
     {id:'r_dm2',name:'Migration Mock Runs',tpl:false,hasBP:false,
-     tasks:['1. mock migrasyon yürütme','Veri kalite sorunlarını çöz','2. mock migrasyon yürütme','Mock sonuçlarını belgele'],
+     tasks:['Execute 1st mock migration run','Resolve data quality issues','Execute 2nd mock migration run','Document mock run results'],
      acc:[{n:'Mock Run Checklist',t:'Checklist'},{n:'Migration Validation Template',t:'Template'}]},
   ],
   realize_ocm:[
     {id:'r_ocm1',name:'Key User Training Delivery',tpl:false,hasBP:false,
-     tasks:['Key user eğitim seanslarını yürüt','Eğitim etkinliğini değerlendir','Eğitim materyallerini güncelle'],
+     tasks:['Conduct key user training sessions','Evaluate training effectiveness','Update training materials'],
      acc:[{n:'Key User Training Schedule',t:'Template'},{n:'Training Feedback Form',t:'Template'}]},
     {id:'r_ocm2',name:'Communication Execution',tpl:false,hasBP:false,
-     tasks:['Planlanan iletişimleri hayata geçir','Proje bültenini yayınla','Değişim habercileri ağını aktif et'],
+     tasks:['Execute planned communications','Publish project newsletter','Activate change ambassador network'],
      acc:[{n:'Communication Calendar',t:'Template'},{n:'Newsletter Template',t:'Template'}]},
   ],
   deploy_pm:[
     {id:'dep_pm1',name:'Cutover Planning & Execution',tpl:true,hasBP:false,
-     tasks:['Detaylı cutover görev listesi hazırla','Cutover provasını yürüt','Git/Gitme kararını ver','Prodüksiyon cutover\'ı tamamla'],
+     tasks:['Prepare detailed cutover task list','Execute cutover rehearsal','Make Go/No-Go decision','Complete production cutover'],
      acc:[{n:'Cutover Plan Template',t:'Template'},{n:'Cutover Task List',t:'Template'},{n:'Hypercare Plan',t:'Template'}]},
     {id:'dep_pm2',name:'Quality Gate 4 – Go-Live Readiness',tpl:false,hasBP:false,
-     tasks:['Final hazırlık değerlendirmesi','İş birimi sign-off belgele','Üst yönetim onayını al'],
+     tasks:['Final readiness assessment','Document business unit sign-off','Obtain executive management approval'],
      acc:[{n:'QG4 Go-Live Checklist',t:'Checklist'},{n:'Go-Live Approval Template',t:'Template'}]},
   ],
   deploy_tai:[
     {id:'dep_tai1',name:'Production System Setup',tpl:false,hasBP:false,
-     tasks:['Prodüksiyon ortamı final konfigürasyonu','Güvenlik sertleştirme kontrolleri','İzleme ve alert araçlarını kur'],
+     tasks:['Final production environment configuration','Security hardening checks','Configure monitoring and alerting tools'],
      acc:[{n:'Production Readiness Checklist',t:'Checklist'},{n:'Security Hardening Guide',t:'Guide'}]},
   ],
   deploy_tst:[
     {id:'dep_tst1',name:'Regression & Smoke Testing',tpl:false,hasBP:false,
-     tasks:['Final regresyon testi yürüt','Cutover sonrası smoke test gerçekleştir','Test sonuçlarını onayla'],
+     tasks:['Execute final regression testing','Conduct post-cutover smoke test','Approve test results'],
      acc:[{n:'Smoke Test Script',t:'Template'},{n:'Regression Test Protocol',t:'Template'}]},
   ],
   deploy_dm:[
     {id:'dep_dm1',name:'Production Data Migration',tpl:true,hasBP:false,
-     tasks:['Final veri çıkarma ve prodüksiyona yükleme','Prodüksiyonda veri doğrulama','Bakiye ve mutabakat kontrolleri','Data migration sign-off belgele'],
+     tasks:['Execute final data extraction and production load','Validate data in production','Balance and reconciliation checks','Document data migration sign-off'],
      acc:[{n:'Production Migration Checklist',t:'Checklist'},{n:'Data Validation Template',t:'Template'}]},
   ],
   deploy_ocm:[
     {id:'dep_ocm1',name:'End-User Training Delivery',tpl:false,hasBP:false,
-     tasks:['Son kullanıcı eğitim seanslarını tamamla','Hızlı referans kartlarını dağıt','Süper kullanıcı ağını aktif et'],
+     tasks:['Complete end-user training sessions','Distribute quick reference cards','Activate super user network'],
      acc:[{n:'End-User Training Schedule',t:'Template'},{n:'Quick Reference Card Template',t:'Template'}]},
     {id:'dep_ocm2',name:'Go-Live Communication',tpl:false,hasBP:false,
-     tasks:['Canlıya geçiş duyurusunu yayınla','Help desk iletişim kanallarını aktif et','Kullanıcı desteğini güvence altına al'],
+     tasks:['Publish go-live announcement','Activate help desk communication channels','Ensure user support readiness'],
      acc:[{n:'Go-Live Announcement Template',t:'Template'},{n:'Help Desk Script',t:'Guide'}]},
   ],
   run_pm:[
     {id:'run_pm1',name:'Hypercare Management',tpl:false,hasBP:false,
-     tasks:['Günlük hypercare görüşmeleri','Sorunları triyaj yap ve önceliklendir','Stabilizasyon metriklerini takip et'],
+     tasks:['Daily hypercare status meetings','Triage and prioritize issues','Track stabilization metrics'],
      acc:[{n:'Hypercare Plan',t:'Template'},{n:'Hypercare Exit Checklist',t:'Checklist'}]},
     {id:'run_pm2',name:'Project Closure',tpl:false,hasBP:false,
-     tasks:['Öğrenilen dersler workshopu','Proje kapanış raporunu hazırla','Proje arşivini oluştur'],
+     tasks:['Lessons learned workshop','Prepare project closure report','Create project archive'],
      acc:[{n:'Lessons Learned Template',t:'Template'},{n:'Project Closure Report',t:'Template'}]},
   ],
   run_tai:[
     {id:'run_tai1',name:'Operations Handover',tpl:false,hasBP:false,
-     tasks:['IT operasyon ekibine devir toplantısı','Runbook ve prosedür dokümantasyonu','Destek modeli ve SLA tanımı'],
+     tasks:['Handover meeting with IT operations team','Runbook and procedure documentation','Define support model and SLAs'],
      acc:[{n:'Operations Handover Checklist',t:'Checklist'},{n:'System Runbook Template',t:'Template'}]},
   ],
   run_ops:[
     {id:'run_ops1',name:'System Monitoring & Support Setup',tpl:false,hasBP:false,
-     tasks:['İzleme panolarını kur','Alert kurallarını yapılandır','Performans baseline oluştur'],
+     tasks:['Configure monitoring dashboards','Configure alert rules','Establish performance baseline'],
      acc:[{n:'Monitoring Dashboard Guide',t:'Guide'},{n:'Alert Configuration Template',t:'Template'}]},
     {id:'run_ops2',name:'Continuous Improvement Planning',tpl:false,hasBP:false,
-     tasks:['Süreç ve sistem KPI\'larını tanımla','Optimizasyon backlog oluştur','Düzenli inceleme toplantı ritmi oluştur'],
+     tasks:['Define process and system KPIs','Create optimization backlog','Establish regular review meeting cadence'],
      acc:[{n:'KPI Dashboard Template',t:'Template'},{n:'Continuous Improvement Framework',t:'Guide'}]},
   ],
   run_ocm:[
     {id:'run_ocm1',name:'Post Go-Live Adoption & Support',tpl:false,hasBP:false,
-     tasks:['Kullanıcı benimseme metriklerini izle','Canlı sonrası kullanıcı anketleri uygula','Uzun vadeli benimseme planını güncelle'],
+     tasks:['Monitor user adoption metrics','Conduct post-go-live user surveys','Update long-term adoption plan'],
      acc:[{n:'Adoption Metrics Dashboard',t:'Template'},{n:'Post Go-Live Survey Template',t:'Template'}]},
   ],
 };
@@ -589,12 +720,12 @@ const cD=(ph,ws)=>DB[`${ph}_${ws}`]||[];
 const gP=id=>S.prog[id]||{st:'ns',pct:0,notes:'',who:'',due:'',chk:{},ai:null,air:null};
 const phC=id=>PH.find(p=>p.id===id)?.color||'#666';
 const stC=s=>({ns:'#94A3B8',ip:'#F59E0B',dn:'#22C55E',bl:'#EF4444',rv:'#8B5CF6'}[s]||'#94A3B8');
-const stL=s=>({ns:'Başlanmadı',ip:'Devam Ediyor',dn:'Tamamlandı',bl:'Engellendi',rv:'İncelemede'}[s]||s);
+const stL=s=>({'ns':'Not Started','ip':'In Progress','dn':'Completed','bl':'Blocked','rv':'In Review'}[s]||s)[s]||s);
 const stCl=s=>({ns:'sns',ip:'sip',dn:'sdn',bl:'sbl',rv:'srv'}[s]||'sns');
 const tiI=t=>({Template:'📄',Guide:'📖',Checklist:'✅',Reference:'🔗',Tool:'🛠️',Presentation:'📊',Catalog:'📚'}[t]||'📎');
 function phPct(ph){let t=0,c=0;WS.forEach(ws=>cD(ph,ws.id).forEach(d=>{t+=gP(d.id).pct||0;c++;}));return c?Math.round(t/c):0;}
 function toast(m){const e=document.getElementById('tst');e.textContent=m;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),2400);}
-function load2(on,t='AI analizi çalışıyor…'){document.getElementById('ovl').classList.toggle('show',on);document.getElementById('spTx').textContent=t;}
+function load2(on,t='Running AI analysis…'){document.getElementById('ovl').classList.toggle('show',on);document.getElementById('spTx').textContent=t;}
 
 /* ══ RENDER ══ */
 function render(){
@@ -608,8 +739,8 @@ function rChips(){document.getElementById('hChips').innerHTML=PH.map(p=>`<span c
 function rNav(){
   const bc=document.getElementById('bc'),nr=document.getElementById('navR');
   if(S.view==='dash'){bc.innerHTML=`<span class="bcc">📊 Dashboard</span>`;nr.innerHTML=`<span class="txs txm">${allD().length} deliverable</span>`;}
-  else if(S.view==='cell'){const ph=PH.find(p=>p.id===S.cell.ph),ws=WS.find(w=>w.id===S.cell.ws);bc.innerHTML=`<span class="bcl" onclick="gDash()">Dashboard</span><span class="bcs">›</span><span style="color:${ph.color};font-weight:600">${ph.name}</span><span class="bcs">›</span><span class="bcc">${ws.name}</span>`;nr.innerHTML=`<button class="btn btn-s" onclick="gDash()">← Geri</button>`;}
-  else if(S.view==='xl'){bc.innerHTML=`<span class="bcl" onclick="gDash()">Dashboard</span><span class="bcs">›</span><span class="bcc">🤖 AI Compare</span>`;nr.innerHTML=`<button class="btn btn-s" onclick="gDash()">← Geri</button>`;}
+  else if(S.view==='cell'){const ph=PH.find(p=>p.id===S.cell.ph),ws=WS.find(w=>w.id===S.cell.ws);bc.innerHTML=`<span class="bcl" onclick="gDash()">Dashboard</span><span class="bcs">›</span><span style="color:${ph.color};font-weight:600">${ph.name}</span><span class="bcs">›</span><span class="bcc">${ws.name}</span>`;nr.innerHTML=`<button class="btn btn-s" onclick="gDash()">← Back</button>`;}
+  else if(S.view==='xl'){bc.innerHTML=`<span class="bcl" onclick="gDash()">Dashboard</span><span class="bcs">›</span><span class="bcc">🤖 AI Compare</span>`;nr.innerHTML=`<button class="btn btn-s" onclick="gDash()">← Back</button>`;}
 }
 
 /* DASHBOARD */
@@ -663,18 +794,18 @@ function rCell(){
         <span class="din2">${p.pct}%</span>
       </div>
     </div>`;}).join('');
-  const rp=S.dId?rRight():`<div class="rp"><div class="rpe">← Bir deliverable seçin</div></div>`;
+  const rp=S.dId?rRight():`<div class="rp"><div class="rpe">← Select a deliverable</div></div>`;
   return `<div class="row" style="margin-bottom:14px">
     <span class="dpl" style="background:${phase.color}">${phase.name}</span>
     <span style="font-size:13px;font-weight:600">${wss.icon} ${wss.name}</span>
-    <span class="txs txm" style="margin-left:auto">${ds.length} deliverable</span>
+    <span class="txs txm" style="margin-left:auto">${ds.length} deliverables</span>
   </div>
   <div class="dtl"><div class="dvp"><div class="dvph">Deliverables <span class="dvpbg">${ds.length}</span></div>${list}</div>${rp}</div>`;
 }
 function rRight(){
   const d=fD(S.dId);if(!d) return '';const p=gP(S.dId);
   const tabs=['tasks','progress','bp','ai'].map(t=>{
-    const lbl={tasks:'📋 Görevler',progress:'📊 İlerleme',bp:'⭐ Best Practice',ai:'🤖 AI Compare'}[t];
+    const lbl={tasks:'📋 Tasks',progress:'📊 Progress',bp:'⭐ Best Practice',ai:'🤖 AI Compare'}[t];
     if(t==='bp'&&!d.hasBP) return '';
     return `<div class="tab ${S.tab===t?'act':''}" onclick="sTab('${t}')">${lbl}</div>`;
   }).filter(Boolean).join('');
@@ -685,9 +816,9 @@ function rRight(){
         <span class="sb ${stCl(p.st)}">${stL(p.st)}</span>
         <span class="txm" style="font-size:10px;font-family:var(--mo)">${p.pct}%</span>
         ${d.hasBP?'<span style="font-size:10px;background:#EFF6FF;color:#1D4ED8;padding:2px 7px;border-radius:4px;font-weight:600">⭐ Best Practice</span>':''}
-        ${d.tpl?'<span style="font-size:10px;background:#F0FDF4;color:#16A34A;padding:2px 7px;border-radius:4px;font-weight:600">📋 Şablon</span>':''}
-        ${p.ai==='diff'?'<span class="sb sdf">🟡 Fark Tespit Edildi</span>':''}
-        ${p.ai==='ok'?'<span class="sb sap">🟢 Onaylandı</span>':''}
+        ${d.tpl?'<span style="font-size:10px;background:#F0FDF4;color:#16A34A;padding:2px 7px;border-radius:4px;font-weight:600">📋 Template</span>':''}
+        ${p.ai==='diff'?'<span class="sb sdf">🟡 Differences Found</span>':''}
+        ${p.ai==='ok'?'<span class="sb sap">🟢 Approved</span>':''}
       </div>
     </div>
     <div class="tabs">${tabs}</div>
@@ -698,18 +829,18 @@ function rTab(d,p){
   if(S.tab==='tasks'){
     const dn=Object.values(p.chk||{}).filter(Boolean).length;
     const items=d.tasks.map((t,i)=>{const c=p.chk?.[i];return`<li class="ti"><div class="tck ${c?'dn':''}" onclick="tTask('${d.id}',${i})">${c?'✓':''}</div><span class="${c?'tsd':''}">${t}</span></li>`;}).join('');
-    return `<div class="stt">Görevler (${dn}/${d.tasks.length})</div><ul class="tl">${items}</ul>`;
+    return `<div class="stt">Tasks (${dn}/${d.tasks.length})</div><ul class="tl">${items}</ul>`;
   }
   if(S.tab==='progress'){
     const ss=[['ns','sbns'],['ip','sbip'],['dn','sbdn'],['bl','sbbl'],['rv','sbrv']];
-    return `<div class="stt">Durum</div>
+    return `<div class="stt">Status</div>
       <div class="str">${ss.map(([s,c])=>`<button class="sbn ${c} ${p.st===s?'act':''}" onclick="sSt('${d.id}','${s}')">${stL(s)}</button>`).join('')}</div>
-      <div class="stt">Tamamlanma %</div>
+      <div class="stt">Completion %</div>
       <div class="slr"><input type="range" min="0" max="100" value="${p.pct}" class="psl" oninput="sPct('${d.id}',this.value)"><span class="pv" id="pv_${d.id}">${p.pct}%</span></div>
-      <div class="ff"><label class="fl">Sorumlu</label><input class="fi" type="text" value="${p.who||''}" placeholder="Ad Soyad" oninput="sF('${d.id}','who',this.value)"></div>
-      <div class="ff"><label class="fl">Bitiş Tarihi</label><input class="fi" type="date" value="${p.due||''}" oninput="sF('${d.id}','due',this.value)"></div>
-      <div class="ff"><label class="fl">Notlar</label><textarea class="fta" placeholder="Notlar…" oninput="sF('${d.id}','notes',this.value)">${p.notes||''}</textarea></div>
-      <button class="btn btn-p btn-w" onclick="svP('${d.id}')">💾 Kaydet</button>`;
+      <div class="ff"><label class="fl">Owner</label><input class="fi" type="text" value="${p.who||''}" placeholder="Full Name" oninput="sF('${d.id}','who',this.value)"></div>
+      <div class="ff"><label class="fl">Due Date</label><input class="fi" type="date" value="${p.due||''}" oninput="sF('${d.id}','due',this.value)"></div>
+      <div class="ff"><label class="fl">Notes</label><textarea class="fta" placeholder="Notes…" oninput="sF('${d.id}','notes',this.value)">${p.notes||''}</textarea></div>
+      <button class="btn btn-p btn-w" onclick="svP('${d.id}')">💾 Save</button>`;
   }
   if(S.tab==='bp') return rBP(d);
   if(S.tab==='ai') return rAI(d,p);
@@ -719,36 +850,77 @@ function rTab(d,p){
 
 /* BEST PRACTICE TAB */
 function rBP(d){
-  const bpd=BP[d.id];if(!bpd) return `<div class="rpe">Best Practice içeriği yüklenmedi.</div>`;
-  const fh=bpd.files.map(f=>{
-    let body=`<div style="font-size:10px;color:var(--tx3);margin-bottom:10px">Kaynak: ${f.source}</div>`;
-    if(f.summary) body+=`<div class="bps"><div class="bpst">📌 Özet</div><p style="font-size:11px;color:var(--tx2);line-height:1.6">${f.summary}</p></div>`;
+  const bpd=BP[d.id];if(!bpd) return `<div class="rpe">No Best Practice content loaded for this deliverable.</div>`;
+  let out='';
+  // Excel BP structure card (e.g. d_ocm1)
+  if(bpd.hasExcelBP){
+    const s=bpd.excelStructure;
+    const qs=s.step1.questions.map((q,i)=>`<li class="bpci"><span class="bpico">▸</span><span><strong>Q${i+1}:</strong> ${q}</span></li>`).join('');
+    const fs=s.step2.fields.map(f=>`<li class="bpci"><span class="bpico">▸</span><span>${f}</span></li>`).join('');
+    out+=`<div class="bpfc">
+      <div class="bpfh"><span class="bpfi">📊</span><span class="bpfn">${bpd.excelBPName}</span><span class="bpft">Excel Template</span></div>
+      <div class="bpfb">
+        <div style="font-size:10px;color:var(--tx3);margin-bottom:10px">${bpd.excelBPDesc}</div>
+        <div class="bps"><div class="bpst">${s.step1.title}</div>
+          <div style="font-size:10px;color:var(--tx2);margin-bottom:6px">Scale: ${s.step1.scale}</div>
+          <ul class="bpcl">${qs}</ul>
+          <div style="margin-top:6px;font-size:10px;padding:6px 8px;background:#EFF6FF;border-radius:4px;color:#1D4ED8">${s.step1.scoring}</div>
+        </div>
+        <div class="bps"><div class="bpst">${s.step2.title}</div>
+          <ul class="bpcl">${fs}</ul>
+          <div style="margin-top:6px;font-size:10px;color:var(--tx2)">${s.step2.riskMatrix}</div>
+        </div>
+      </div>
+    </div>`;
+  }
+  // Regular file cards
+  const fh=(bpd.files||[]).map(f=>{
+    let body=`<div style="font-size:10px;color:var(--tx3);margin-bottom:10px">Source: ${f.source}</div>`;
+    if(f.summary) body+=`<div class="bps"><div class="bpst">📌 Summary</div><p style="font-size:11px;color:var(--tx2);line-height:1.6">${f.summary}</p></div>`;
     if(f.sections) f.sections.forEach(s=>{body+=`<div class="bps"><div class="bpst">📋 ${s.title}</div><ul class="bpcl">${s.items.map(i=>`<li class="bpci"><span class="bpico">▸</span><span>${i}</span></li>`).join('')}</ul></div>`;});
-    if(f.tableHeaders){const th=f.tableHeaders.map(h=>`<th>${h}</th>`).join('');const tr=f.tableRows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('');body+=`<div class="bps"><div class="bpst">📊 Şablon Yapısı</div><div style="overflow-x:auto"><table class="bptb"><thead><tr>${th}</tr></thead><tbody>${tr}</tbody></table></div></div>`;if(f.statusOpts) body+=`<div style="margin-top:8px;font-size:11px;color:var(--tx2)"><strong>Durum değerleri:</strong> ${f.statusOpts.join(' → ')}</div>`;}
+    if(f.tableHeaders){const th=f.tableHeaders.map(h=>`<th>${h}</th>`).join('');const tr=f.tableRows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('');body+=`<div class="bps"><div class="bpst">📊 Template Structure</div><div style="overflow-x:auto"><table class="bptb"><thead><tr>${th}</tr></thead><tbody>${tr}</tbody></table></div></div>`;if(f.statusOpts) body+=`<div style="margin-top:8px;font-size:11px;color:var(--tx2)"><strong>Status values:</strong> ${f.statusOpts.join(' → ')}</div>`;}
     return `<div class="bpfc"><div class="bpfh"><span class="bpfi">${f.icon}</span><span class="bpfn">${f.name}</span><span class="bpft">${f.type}</span></div><div class="bpfb">${body}</div></div>`;
   }).join('');
-  return `<div class="bph"><div class="bpht">⭐ Best Practice Referansları</div><div class="bphs">SAP Activate metodolojisinden alınan resmi içerikler. AI karşılaştırmasında otomatik kullanılır.</div></div>${fh}`;
+  return `<div class="bph"><div class="bpht">⭐ Best Practice References</div><div class="bphs">Official SAP Activate content. Automatically used in AI comparison.</div></div>${out}${fh}`;
 }
 
 /* AI TAB */
 function rAI(d,p){
-  const hasBP=d.hasBP;const con=S.files[d.id];
-  const bpSec=hasBP
-    ?`<div class="bppl"><span class="bppi">⭐</span><div><div class="bppt">Best Practice Otomatik Yüklendi</div><div class="bpps">${(BP[d.id]?.files||[]).map(f=>f.name).join(' + ')}</div></div></div>`
-    :`<div style="background:var(--sf2);border:1px solid var(--bd);border-radius:var(--rs);padding:10px 12px;margin-bottom:10px;font-size:11px;color:var(--tx3)">Bu deliverable için Best Practice henüz yüklenmedi. Diğer fazların dosyaları eklenince kullanılabilir olacak.</div>`;
-  const upSec=`<div class="stt" style="margin-top:10px">📨 Müşteri / Danışman Dosyası</div>
-    <div class="upz ${con?'ld':''}" onclick="trUp('cu_${d.id}')"><div class="uzi">${con?'✅':'📁'}</div><div class="uzn">${con?con.name:'Müşteri dosyasını yükle'}</div><div class="uzs">.xlsx / .xls / .csv</div></div>
+  const bpd=BP[d.id];
+  const hasExcelBP=bpd&&bpd.hasExcelBP;
+  const hasBP=d.hasBP;
+  const con=S.files[d.id];
+  let bpSec='';
+  if(hasExcelBP){
+    bpSec=`<div class="bppl"><span class="bppi">📊</span><div>
+      <div class="bppt">Best Practice Template Pre-Loaded</div>
+      <div class="bpps">${bpd.excelBPName}</div>
+    </div></div>
+    <div style="background:var(--sf2);border:1px solid var(--bd);border-radius:var(--rs);padding:10px 12px;margin-bottom:10px;font-size:11px;color:var(--tx2)">
+      <strong>Template:</strong> ${bpd.excelStructure.step1.questions.length} cloud readiness questions (Strongly Disagree → Strongly Agree) + obstacle scoring.
+      Upload the customer's completed version of this template for AI gap analysis.
+    </div>`;
+  } else if(hasBP){
+    bpSec=`<div class="bppl"><span class="bppi">⭐</span><div>
+      <div class="bppt">Best Practice Content Pre-Loaded</div>
+      <div class="bpps">${(bpd&&bpd.files||[]).map(f=>f.name).join(' + ')}</div>
+    </div></div>`;
+  } else {
+    bpSec=`<div style="background:var(--sf2);border:1px solid var(--bd);border-radius:var(--rs);padding:10px 12px;margin-bottom:10px;font-size:11px;color:var(--tx3)">No Best Practice content loaded for this deliverable yet.</div>`;
+  }
+  const canRun=(hasBP||hasExcelBP)&&con;
+  const upSec=`<div class="stt" style="margin-top:10px">📨 Customer / Consultant File</div>
+    <div class="upz ${con?'ld':''}" onclick="trUp('cu_${d.id}')"><div class="uzi">${con?'✅':'📁'}</div><div class="uzn">${con?con.name:'Upload customer file'}</div><div class="uzs">.xlsx / .xls / .csv</div></div>
     <input type="file" id="cu_${d.id}" accept=".xlsx,.xls,.csv" class="hidden" onchange="fUp(this,'${d.id}')">`;
-  const canRun=hasBP&&con;
   const btn=canRun
-    ?`<button class="btn btn-g btn-w mt2" onclick="runAI('${d.id}')">🤖 AI Karşılaştırmayı Başlat</button>`
-    :`<div style="text-align:center;font-size:11px;color:var(--tx3);padding:8px">${!hasBP?'Best Practice bu faz için henüz yüklenmedi.':!con?'Müşteri dosyasını yükleyince karşılaştırma yapabilirsiniz.':''}</div>`;
+    ?`<button class="btn btn-g btn-w mt2" onclick="runAI('${d.id}')">🤖 Run AI Comparison</button>`
+    :`<div style="text-align:center;font-size:11px;color:var(--tx3);padding:8px">${!(hasBP||hasExcelBP)?'No Best Practice loaded for this deliverable.':!con?'Upload the customer file to enable AI comparison.':''}</div>`;
   let res='';
   if(p.air){
     const bnr=p.ai==='ok'
-      ?`<div class="bnrg"><span class="bni">🟢</span><div><div class="bnt">Onaylandı — Yeşile geçirildi</div><div class="bns">Ön ekranda yeşil renkte gösterilecek.</div></div></div>`
-      :`<div class="bnry"><span class="bni">🟡</span><div class="bnt" style="color:#92400E">AI fark tespit etti — Sarı işaretlendi<div class="bns">Değerlendirmenize göre onaylayabilirsiniz.</div></div><button class="btn btn-ok" style="margin-left:auto;white-space:nowrap" onclick="appr('${d.id}')">✅ Onayla → Yeşile Geçir</button></div>`;
-    res=`<div class="mt3">${bnr}<div class="row" style="margin-bottom:10px"><div class="stt" style="margin:0">🤖 Analiz Sonucu</div><button class="btn btn-s" style="margin-left:auto" onclick="dlRep('${d.id}')">⬇️ Rapor İndir</button></div>${p.air}</div>`;
+      ?`<div class="bnrg"><span class="bni">🟢</span><div><div class="bnt">Approved — Marked as completed (green)</div><div class="bns">This step is shown in green on the dashboard.</div></div></div>`
+      :`<div class="bnry"><span class="bni">🟡</span><div class="bnt" style="color:#92400E">AI detected differences — Marked yellow<div class="bns">Review the findings, then approve when satisfied.</div></div><button class="btn btn-ok" style="margin-left:auto;white-space:nowrap" onclick="appr('${d.id}')">✅ Approve → Mark Green</button></div>`;
+    res=`<div class="mt3">${bnr}<div class="row" style="margin-bottom:10px"><div class="stt" style="margin:0">🤖 AI Analysis Result</div><button class="btn btn-s" style="margin-left:auto" onclick="dlRep('${d.id}')">⬇️ Download Report</button></div>${p.air}</div>`;
   }
   return `${bpSec}${upSec}${btn}${res}`;
 }
@@ -757,10 +929,10 @@ function rAI(d,p){
 function rXL(){
   const opts=Object.entries(DB).flatMap(([key,ds])=>{const[ph,ws]=key.split('_');const phn=PH.find(p=>p.id===ph)?.name,wsn=WS.find(w=>w.id===ws)?.name;return ds.filter(d=>d.hasBP||d.tpl).map(d=>`<option value="${d.id}">[${phn} › ${wsn}] ${d.name}</option>`);}).join('');
   return `<div style="background:var(--surface);border-radius:var(--r);box-shadow:var(--sh);padding:18px;margin-bottom:16px">
-    <div style="font-size:14px;font-weight:700;margin-bottom:4px">🤖 AI Excel Karşılaştırma</div>
-    <div style="font-size:11px;color:var(--tx3);margin-bottom:16px">Deliverable seçin, müşteri dosyasını yükleyin, AI Best Practice ile karşılaştırsın.</div>
-    <div class="ff"><label class="fl">Deliverable Seç</label>
-      <select class="fi" onchange="xSel(this.value)"><option value="">— Seçin —</option>${opts}</select>
+    <div style="font-size:14px;font-weight:700;margin-bottom:4px">🤖 AI Excel Comparison</div>
+    <div style="font-size:11px;color:var(--tx3);margin-bottom:16px">Select a deliverable, upload the customer file, and let AI compare against Best Practice.</div>
+    <div class="ff"><label class="fl">Select Deliverable</label>
+      <select class="fi" onchange="xSel(this.value)"><option value="">— Select —</option>${opts}</select>
     </div>
   </div><div id="xc"></div>`;
 }
@@ -781,44 +953,99 @@ function tTask(id,i){
 function sSt(id,st){if(!S.prog[id]) S.prog[id]={st,pct:0,notes:'',who:'',due:'',chk:{},ai:null,air:null};S.prog[id].st=st;save();render();}
 function sPct(id,v){if(!S.prog[id]) S.prog[id]={st:'ns',pct:+v,notes:'',who:'',due:'',chk:{},ai:null,air:null};S.prog[id].pct=+v;const e=document.getElementById('pv_'+id);if(e)e.textContent=v+'%';}
 function sF(id,f,v){if(!S.prog[id]) S.prog[id]={st:'ns',pct:0,notes:'',who:'',due:'',chk:{},ai:null,air:null};S.prog[id][f]=v;}
-function svP(id){save();toast('✅ Kaydedildi');}
+function svP(id){save();toast('✅ Saved');}
 function appr(id){
   if(!S.prog[id]) S.prog[id]={st:'ns',pct:0,notes:'',who:'',due:'',chk:{},ai:null,air:null};
   S.prog[id].ai='ok';S.prog[id].st='dn';S.prog[id].pct=100;
-  save();toast('🟢 Onaylandı — yeşile geçirildi!');render();
+  save();toast('🟢 Approved — marked green!');render();
 }
 function trUp(id){document.getElementById(id)?.click();}
 async function fUp(inp,id){
   const f=inp.files[0];if(!f) return;
-  try{const d=await rdXL(f);S.files[id]={name:f.name,data:d};toast(`✅ ${f.name} yüklendi`);render();}
-  catch(e){toast('❌ Dosya okunamadı');}
+  try{const d=await rdXL(f);S.files[id]={name:f.name,data:d};toast(`✅ ${f.name} loaded`);render();}
+  catch(e){toast('❌ File could not be read');}
 }
 function rdXL(f){return new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>{try{const wb=XLSX.read(e.target.result,{type:'binary'});const o={};wb.SheetNames.forEach(s=>{o[s]=XLSX.utils.sheet_to_json(wb.Sheets[s],{header:1,defval:''});});res(o);}catch(e){rej(e);}};r.onerror=rej;r.readAsBinaryString(f);});}
 function xl2txt(d){return Object.entries(d).map(([s,rows])=>`=== Sheet: ${s} ===\n${rows.slice(0,60).map(r=>r.join(' | ')).join('\n')}`).join('\n\n');}
 function bp2txt(id){
-  const b=BP[id];if(!b) return 'Best Practice bulunamadı.';
-  return b.files.map(f=>{
-    let t=`--- ${f.name} ---\n${f.summary||''}\n`;
-    if(f.sections) f.sections.forEach(s=>{t+=`\n## ${s.title}\n`;s.items.forEach(i=>t+=`• ${i}\n`);});
-    if(f.tableHeaders) t+=`\nŞablon sütunları: ${f.tableHeaders.join(' | ')}\n`;
+  const b=BP[id];if(!b) return 'No Best Practice data found.';
+  if(b.hasExcelBP){
+    const s=b.excelStructure;
+    let t=`=== BEST PRACTICE TEMPLATE: ${b.excelBPName} ===
+${b.excelBPDesc}
+
+`;
+    t+=`STEP 1 – CLOUD MINDSET ASSESSMENT (${s.step1.questions.length} questions)
+`;
+    t+=`Scale: ${s.step1.scale}
+
+`;
+    s.step1.questions.forEach((q,i)=>{ t+=`Q${i+1}: ${q}
+`; });
+    t+=`
+Scoring: ${s.step1.scoring}
+
+`;
+    t+=`STEP 2 – OBSTACLES TO CHANGE
+`;
+    s.step2.fields.forEach(f=>{ t+=`• ${f}
+`; });
+    t+=`
+Risk assessment: ${s.step2.riskMatrix}
+
+`;
+    if(b.files) b.files.forEach(f=>{
+      t+=`
+=== ${f.name} ===
+${f.summary||''}
+`;
+      if(f.sections) f.sections.forEach(s2=>{t+=`
+## ${s2.title}
+`;s2.items.forEach(i=>t+=`• ${i}
+`);});
+    });
     return t;
-  }).join('\n\n');
+  }
+  return b.files.map(f=>{
+    let t=`--- ${f.name} ---
+${f.summary||''}
+`;
+    if(f.sections) f.sections.forEach(s=>{t+=`
+## ${s.title}
+`;s.items.forEach(i=>t+=`• ${i}
+`);});
+    if(f.tableHeaders) t+=`
+Template columns: ${f.tableHeaders.join(' | ')}
+`;
+    return t;
+  }).join('
+
+');
 }
+
 async function runAI(id){
   const con=S.files[id];if(!con) return;const d=fD(id);
-  load2(true,'AI analiz ediyor… (~20 sn)');
+  load2(true,'Running AI analysis… (~20 sec)');
   try{
-    const prompt=`Sen bir SAP S/4HANA implementasyon QA uzmanısın.
-Deliverable: "${d.name}" (SAP Activate – S/4HANA Cloud Private Edition)
+    const prompt=`You are a senior SAP S/4HANA implementation quality assurance expert specializing in SAP Activate methodology.
 
-BEST PRACTICE İÇERİĞİ (SAP resmi belgelerden):
+DELIVERABLE: ${d.name}
+PROJECT: SAP Activate – S/4HANA Cloud Private Edition
+
+BEST PRACTICE REFERENCE (official SAP materials):
 ${bp2txt(id)}
 
-MÜŞTERİ / DANIŞMAN DOSYASI:
+CUSTOMER / CONSULTANT FILE SUBMITTED:
 ${xl2txt(con.data)}
 
-Karşılaştır. SADECE şu JSON yapısında yanıt ver, başka metin ekleme:
-{"summary":"2-3 cümle genel özet","overall_score":72,"critical_gaps":["yöntemsel eksik 1","eksik 2"],"warnings":["içerik farklılığı","risk","eksik plan"],"additions":["olumlu katkı varsa"],"recommendations":["öneri 1","öneri 2"]}`;
+Compare the customer file against the SAP Best Practice above. Identify:
+1. Methodological gaps (missing steps, wrong approach, skipped mandatory activities)
+2. Content differences and risks (incomplete sections, inconsistencies, red flags)
+3. Positive additions the customer made beyond the standard template
+4. Specific recommendations for the consulting team
+
+Respond ONLY with valid JSON — no markdown, no extra text:
+{"summary":"2-3 sentence executive summary","overall_score":72,"critical_gaps":["critical gap 1","gap 2"],"warnings":["content risk 1","risk 2"],"additions":["positive addition if any"],"recommendations":["recommendation 1","recommendation 2"]}`;
     const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1200,messages:[{role:'user',content:prompt}]})});
     const data=await resp.json();
     const txt=data.content?.find(b=>b.type==='text')?.text||'';
@@ -827,24 +1054,24 @@ Karşılaştır. SADECE şu JSON yapısında yanıt ver, başka metin ekleme:
     S.prog[id].air=bldRes(parsed);
     S.prog[id].ai='diff';
     save();load2(false);S.tab='ai';render();
-  }catch(e){load2(false);toast('❌ AI hatası: '+e.message);}
+  }catch(e){load2(false);toast('❌ AI error: '+e.message);}
 }
 function bldRes(r){
   const sc=r.overall_score||0;const sc2=sc>=80?'#16A34A':sc>=60?'#D97706':'#DC2626';
   const sec=(items,hc,bc,em,ttl)=>{if(!items?.length) return '';return`<div class="gps"><div class="gph ${hc}">${em} ${ttl} (${items.length})</div>${items.map(i=>`<div class="gpi" style="border-left-color:${bc}">${i}</div>`).join('')}</div>`;};
-  return `<div class="aisr"><div class="aisn" style="color:${sc2}">${sc}%</div><div><div class="aisl">Best Practice Uyumu</div><div class="aist">${r.summary}</div></div></div>
-    ${sec(r.critical_gaps,'gc','#DC2626','🔴','Yöntemsel / Kritik Eksiklikler')}
-    ${sec(r.warnings,'gw','#D97706','⚠️','İçerik Farklılıkları & Riskler')}
-    ${sec(r.additions,'gi','#1D4ED8','ℹ️','Müşteri Eklemeleri')}
-    ${sec(r.recommendations,'gk','#16A34A','✅','Öneriler')}`;
+  return `<div class="aisr"><div class="aisn" style="color:${sc2}">${sc}%</div><div><div class="aisl">Best Practice Alignment</div><div class="aist">${r.summary}</div></div></div>
+    ${sec(r.critical_gaps,'gc','#DC2626','🔴','Methodological / Critical Gaps')}
+    ${sec(r.warnings,'gw','#D97706','⚠️','Content Differences & Risks')}
+    ${sec(r.additions,'gi','#1D4ED8','ℹ️','Customer Additions')}
+    ${sec(r.recommendations,'gk','#16A34A','✅','Recommendations')}`;
 }
 function dlRep(id){
   const d=fD(id),p=gP(id);if(!p.air) return;
   const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>SAP QA – ${d.name}</title>
   <style>body{font-family:Arial,sans-serif;max-width:820px;margin:40px auto;color:#1a1a1a}h1{color:#1D4ED8}.gh{padding:6px 10px;border-radius:5px;font-size:13px;font-weight:700;margin-bottom:8px}.gc{background:#FEE2E2;color:#DC2626}.gw{background:#FEF3C7;color:#D97706}.gi{background:#DBEAFE;color:#1D4ED8}.gk{background:#DCFCE7;color:#16A34A}.gpi{padding:7px 10px;border-left:3px solid;background:#F8F9FC;margin:3px 0;font-size:12px}</style></head>
-  <body><h1>SAP Activate QA Raporu</h1><p><b>Deliverable:</b> ${d.name} | <b>Tarih:</b> ${new Date().toLocaleDateString('tr-TR')}</p>
+  <body><h1>SAP Activate QA Report</h1><p><b>Deliverable:</b> ${d.name} | <b>Date:</b> ${new Date().toLocaleDateString('tr-TR')}</p>
   ${p.air.replace(/class="gph gc"/g,'class="gh gc"').replace(/class="gph gw"/g,'class="gh gw"').replace(/class="gph gi"/g,'class="gh gi"').replace(/class="gph gk"/g,'class="gh gk"')}</body></html>`;
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([html],{type:'text/html'}));a.download=`QA_${d.id}.html`;a.click();toast('📥 Rapor indirildi');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([html],{type:'text/html'}));a.download=`QA_${d.id}.html`;a.click();toast('📥 Report downloaded');
 }
 function xSel(id){
   if(!id){document.getElementById('xc').innerHTML='';return;}
