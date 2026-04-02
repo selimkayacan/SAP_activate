@@ -1,15 +1,14 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>SAP Activate | Governance Tool</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
+<title>SAP Activate | PM Tool</title>
 <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root{
-  --bg:#F0F2F7;--surface:#fff;--sf2:#F8F9FC;--bd:#E2E6EF;
+  --bg:#F0F2F7;--srf:#fff;--sf2:#F8F9FC;--bd:#E2E6EF;
   --tx:#0F172A;--tx2:#475569;--tx3:#94A3B8;--navy:#0F172A;
   --r:10px;--rs:6px;
   --sh:0 1px 3px rgba(0,0,0,.08),0 4px 16px rgba(0,0,0,.04);
@@ -17,1040 +16,660 @@
   --fn:'Lexend',sans-serif;--mo:'JetBrains Mono',monospace;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:var(--fn);background:var(--bg);color:var(--tx);min-height:100vh;font-size:14px;line-height:1.5;}
+body{font-family:var(--fn);background:var(--bg);color:var(--tx);font-size:13px;line-height:1.5;min-height:100vh;}
 
 /* HEADER */
-.hdr{background:var(--navy);color:#fff;height:54px;display:flex;align-items:center;padding:0 20px;gap:14px;position:sticky;top:0;z-index:200;box-shadow:0 2px 12px rgba(0,0,0,.25);}
-.logo{font-size:15px;font-weight:800;letter-spacing:-.4px;display:flex;align-items:center;gap:6px;}
+.hdr{background:var(--navy);color:#fff;height:50px;display:flex;align-items:center;padding:0 16px;gap:10px;position:sticky;top:0;z-index:300;box-shadow:0 2px 10px rgba(0,0,0,.3);}
+.logo{font-size:14px;font-weight:800;display:flex;align-items:center;gap:6px;flex-shrink:0;}
 .logo-sap{color:#F0AB00;}
-.logo-div{width:1px;height:18px;background:rgba(255,255,255,.2);}
-.logo-sub{font-size:12px;font-weight:400;color:rgba(255,255,255,.5);}
-.hdr-r{margin-left:auto;display:flex;align-items:center;gap:8px;}
-.pchip{padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer;color:#fff;white-space:nowrap;}
-.pchip:hover{opacity:.8;}
-
-/* LEGEND */
-.lgnd{background:var(--surface);border-bottom:1px solid var(--bd);padding:6px 20px;display:flex;align-items:center;gap:16px;font-size:11px;}
-.li{display:flex;align-items:center;gap:5px;color:var(--tx2);}
-.ldot{width:10px;height:10px;border-radius:50%;}
-
-/* NAV */
-.nav{background:var(--surface);border-bottom:1px solid var(--bd);padding:0 20px;display:flex;align-items:center;height:42px;}
-.bc{display:flex;align-items:center;gap:6px;font-size:12px;}
-.bcl{color:#1D4ED8;cursor:pointer;font-weight:500;}.bcl:hover{text-decoration:underline;}
-.bcs{color:var(--tx3);}
-.bcc{color:var(--tx2);font-weight:500;}
-.nav-r{margin-left:auto;display:flex;gap:8px;}
-
-/* BUTTONS */
-.btn{padding:6px 14px;border-radius:var(--rs);font-size:12px;font-weight:600;font-family:var(--fn);cursor:pointer;border:none;transition:all .15s;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;}
+.logo-sep{width:1px;height:16px;background:rgba(255,255,255,.2);}
+.logo-sub{font-size:11px;font-weight:400;color:rgba(255,255,255,.5);}
+.proj-badge{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:3px 12px;font-size:11px;font-weight:600;color:#fff;cursor:pointer;max-width:240px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex-shrink:0;}
+.proj-badge:hover{background:rgba(255,255,255,.22);}
+.hdr-r{margin-left:auto;display:flex;align-items:center;gap:7px;}
+.btn{padding:5px 12px;border-radius:var(--rs);font-size:11px;font-weight:600;font-family:var(--fn);cursor:pointer;border:none;transition:all .15s;display:inline-flex;align-items:center;gap:4px;white-space:nowrap;}
 .btn-p{background:#1D4ED8;color:#fff;}.btn-p:hover{background:#1e40af;}
-.btn-s{background:var(--sf2);color:var(--tx2);border:1px solid var(--bd);}.btn-s:hover{background:var(--bd);}
+.btn-s{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2);}.btn-s:hover{background:rgba(255,255,255,.22);}
+.btn-d{background:var(--sf2);color:var(--tx2);border:1px solid var(--bd);}.btn-d:hover{background:var(--bd);}
 .btn-g{background:#F0AB00;color:var(--navy);}.btn-g:hover{background:#d99e00;}
 .btn-ok{background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0;}
-.btn-w{width:100%;justify-content:center;}
+.btn-danger{background:#FEE2E2;color:#DC2626;border:1px solid #FCA5A5;}
+.btn-full{width:100%;justify-content:center;}
 
-/* MAIN */
-.main{padding:18px 20px;}
+.main{padding:14px 16px;}
 
-/* SUMMARY */
-.srow{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:18px;}
-.scard{background:var(--surface);border-radius:var(--r);padding:13px 14px;box-shadow:var(--sh);border-top:3px solid;cursor:pointer;transition:transform .15s,box-shadow .15s;}
-.scard:hover{transform:translateY(-2px);box-shadow:var(--sh2);}
-.sc-ph{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:3px;}
-.sc-pct{font-size:24px;font-weight:800;font-family:var(--mo);line-height:1.1;}
-.sc-mt{font-size:10px;color:var(--tx3);margin-top:2px;}
-.sc-bar{margin-top:8px;height:4px;border-radius:2px;background:var(--bg);overflow:hidden;}
-.sc-fill{height:100%;border-radius:2px;transition:width .5s;}
+/* PROJECT PICKER */
+.picker-wrap{max-width:520px;margin:50px auto 0;background:var(--srf);border-radius:var(--r);box-shadow:var(--sh2);overflow:hidden;}
+.picker-hdr{background:var(--navy);padding:22px 22px 18px;color:#fff;}
+.picker-title{font-size:19px;font-weight:800;margin-bottom:3px;}
+.picker-sub{font-size:11px;color:rgba(255,255,255,.5);}
+.picker-body{padding:18px 22px;}
+.sec-lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--tx3);margin-bottom:9px;}
+.new-row{display:flex;gap:8px;margin-bottom:18px;}
+.fi{width:100%;padding:8px 11px;border:1px solid var(--bd);border-radius:var(--rs);font-family:var(--fn);font-size:12px;background:var(--srf);color:var(--tx);outline:none;}
+.fi:focus{border-color:#1D4ED8;}
+.proj-list{display:flex;flex-direction:column;gap:5px;max-height:280px;overflow-y:auto;}
+.proj-item{display:flex;align-items:center;gap:9px;padding:9px 11px;border:1px solid var(--bd);border-radius:var(--rs);cursor:pointer;transition:all .15s;}
+.proj-item:hover{border-color:#1D4ED8;background:#EFF6FF;}
+.pi-ico{font-size:15px;}
+.pi-name{font-size:12px;font-weight:600;flex:1;}
+.pi-date{font-size:10px;color:var(--tx3);}
+.pi-del{font-size:11px;color:var(--tx3);padding:2px 6px;border-radius:3px;cursor:pointer;}.pi-del:hover{background:#FEE2E2;color:#DC2626;}
+.empty-msg{text-align:center;color:var(--tx3);font-size:12px;padding:22px;}
+
+/* LEGEND BAR */
+.lgnd{background:var(--srf);border-bottom:1px solid var(--bd);padding:6px 16px;display:flex;align-items:center;gap:14px;font-size:11px;flex-wrap:wrap;}
+.leg{display:flex;align-items:center;gap:4px;color:var(--tx2);}
+.ldot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
 
 /* MATRIX */
-.mx{background:var(--surface);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;}
-.mxh{display:grid;grid-template-columns:200px repeat(6,1fr);border-bottom:2px solid var(--bd);}
-.mhc{padding:10px 14px;font-size:11px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;border-right:1px solid var(--bd);background:var(--sf2);display:flex;align-items:center;}
-.mhp{padding:10px;text-align:center;cursor:pointer;border-right:1px solid rgba(255,255,255,.15);}
-.mhp:last-child{border-right:none;}
-.mhp:hover{filter:brightness(1.1);}
-.mhpn{font-size:13px;font-weight:800;color:#fff;}
-.mhpd{font-size:10px;color:rgba(255,255,255,.6);margin-top:2px;}
-.qgt{display:inline-flex;align-items:center;gap:3px;background:rgba(255,255,255,.18);padding:2px 7px;border-radius:10px;font-size:10px;font-weight:700;color:#fff;margin-top:5px;border:1px solid rgba(255,255,255,.25);}
-.mxr{display:grid;grid-template-columns:200px repeat(6,1fr);border-bottom:1px solid var(--bd);}
-.mxr:last-child{border-bottom:none;}
-.wsl{padding:8px 14px;border-right:1px solid var(--bd);background:var(--sf2);display:flex;align-items:center;gap:7px;font-size:11px;font-weight:500;}
-.wsi{font-size:13px;}
-.mc{padding:7px 8px;border-right:1px solid var(--bd);cursor:pointer;transition:background .12s;min-height:62px;position:relative;}
-.mc:last-child{border-right:none;}
-.mc:hover{background:#F1F5FF;}
-.mc.emp{cursor:default;background:repeating-linear-gradient(45deg,transparent,transparent 5px,rgba(0,0,0,.012) 5px,rgba(0,0,0,.012) 10px);}
-.mc.emp:hover{background:repeating-linear-gradient(45deg,transparent,transparent 5px,rgba(0,0,0,.012) 5px,rgba(0,0,0,.012) 10px);}
-.cis{display:flex;flex-direction:column;gap:2px;}
-.ci{display:flex;align-items:center;gap:4px;font-size:10px;line-height:1.3;}
-.cin{color:var(--tx2);}
-.ciy{color:#92400E;font-weight:600;}
-.cig{color:#14532D;font-weight:600;}
-.cdot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
-.cm{font-size:9px;color:var(--tx3);margin-top:1px;}
-.cpct{position:absolute;bottom:4px;right:6px;font-size:9px;font-family:var(--mo);color:var(--tx3);}
-.cpb{position:absolute;bottom:0;left:0;right:0;height:3px;}
-.cpbf{height:100%;transition:width .3s;}
+.mx-outer{background:var(--srf);border-radius:var(--r);box-shadow:var(--sh);overflow:auto;}
+.mx-table{width:100%;border-collapse:collapse;min-width:920px;}
 
-/* DETAIL */
-.dtl{display:grid;grid-template-columns:260px 1fr;gap:14px;}
-.dpl{padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;color:#fff;}
-.dvp{background:var(--surface);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;display:flex;flex-direction:column;}
-.dvph{padding:12px 14px;border-bottom:1px solid var(--bd);background:var(--sf2);display:flex;align-items:center;justify-content:space-between;font-size:12px;font-weight:700;}
-.dvpbg{background:var(--navy);color:#fff;padding:2px 7px;border-radius:10px;font-size:10px;font-family:var(--mo);}
-.di{padding:10px 14px;border-bottom:1px solid var(--bd);cursor:pointer;transition:background .1s;}
-.di:hover{background:var(--sf2);}
-.di.sel{background:#EFF6FF;border-left:3px solid #1D4ED8;padding-left:11px;}
-.di:last-child{border-bottom:none;}
-.din{font-size:11px;font-weight:500;margin-bottom:5px;line-height:1.4;}
-.din.hy{color:#92400E;}.din.hg{color:#14532D;}
-.dir{display:flex;align-items:center;gap:7px;}
-.dib{flex:1;height:3px;background:var(--bg);border-radius:2px;overflow:hidden;}
-.dibf{height:100%;border-radius:2px;}
-.din2{font-size:10px;font-family:var(--mo);color:var(--tx3);min-width:26px;text-align:right;}
+/* WS header col */
+.mxh-ws{background:var(--sf2);padding:8px 12px;font-size:11px;font-weight:700;color:var(--tx2);text-transform:uppercase;letter-spacing:.4px;border-right:2px solid var(--bd);border-bottom:2px solid var(--bd);position:sticky;left:0;z-index:2;min-width:155px;}
 
-/* RIGHT PANEL */
-.rp{background:var(--surface);border-radius:var(--r);box-shadow:var(--sh);display:flex;flex-direction:column;overflow:hidden;}
-.rpe{display:flex;align-items:center;justify-content:center;min-height:200px;color:var(--tx3);font-size:12px;}
-.rph{padding:14px 18px;border-bottom:1px solid var(--bd);background:var(--sf2);}
-.rphn{font-size:13px;font-weight:700;margin-bottom:6px;}
-.rphm{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+/* Phase header cols */
+.mxh-ph{padding:9px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.2);border-bottom:2px solid var(--bd);vertical-align:middle;}
+.mxh-ph:last-child{border-right:none;}
+.ph-name-big{font-size:14px;font-weight:800;color:#fff;letter-spacing:-.3px;}
 
-/* TABS */
+/* WS label cells (sticky) */
+.mx-ws{background:var(--sf2);padding:7px 12px;border-right:2px solid var(--bd);border-bottom:1px solid var(--bd);font-size:11px;font-weight:500;vertical-align:top;position:sticky;left:0;z-index:1;min-width:155px;}
+
+/* Task cells */
+.mx-td{padding:5px 6px;border-right:1px solid var(--bd);border-bottom:1px solid var(--bd);vertical-align:top;min-height:54px;}
+.mx-td:last-child{border-right:none;}
+.mx-td.clickable:hover{background:#F1F5FF;cursor:pointer;}
+.mx-td.empty{cursor:default;background:repeating-linear-gradient(45deg,transparent,transparent 4px,rgba(0,0,0,.013) 4px,rgba(0,0,0,.013) 8px);}
+
+/* L2 chips */
+.chip{display:flex;align-items:center;gap:4px;padding:3px 5px;margin-bottom:2px;border-radius:4px;font-size:10px;cursor:pointer;transition:background .1s;line-height:1.3;}
+.chip:hover{background:rgba(0,0,0,.05);}
+.cdot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.cname{flex:1;color:var(--tx2);}
+.cname.cy{color:#92400E;font-weight:600;}
+.cname.cg{color:#14532D;font-weight:600;}
+.cpct{font-size:9px;font-family:var(--mo);color:var(--tx3);}
+
+/* Footer row */
+.mx-foot{border-top:2px solid var(--bd);}
+.mxf-ws{background:var(--sf2);padding:6px 12px;font-size:10px;font-weight:600;color:var(--tx3);border-right:2px solid var(--bd);position:sticky;left:0;z-index:1;}
+.mxf-ph{padding:8px 10px;text-align:center;border-right:1px solid var(--bd);}
+.mxf-ph:last-child{border-right:none;}
+.ph-pct{font-size:15px;font-weight:800;font-family:var(--mo);}
+.ph-desc{font-size:10px;margin-top:2px;}
+.ph-qg{display:inline-flex;align-items:center;gap:2px;padding:1px 7px;border-radius:10px;font-size:9px;font-weight:700;margin-top:3px;background:rgba(0,0,0,.06);}
+
+/* DRAWER */
+.drw-bg{position:fixed;inset:0;background:rgba(0,0,0,.28);z-index:400;display:none;}
+.drw-bg.show{display:block;}
+.drw{position:fixed;top:0;right:0;bottom:0;width:680px;max-width:96vw;background:var(--srf);box-shadow:-4px 0 24px rgba(0,0,0,.15);z-index:500;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .22s ease;}
+.drw.open{transform:translateX(0);}
+.drw-hdr{padding:13px 16px;border-bottom:1px solid var(--bd);background:var(--sf2);}
+.drw-title{font-size:14px;font-weight:700;margin-bottom:5px;line-height:1.3;padding-right:28px;position:relative;}
+.drw-close{position:absolute;top:0;right:0;font-size:16px;cursor:pointer;color:var(--tx3);padding:2px 5px;border-radius:4px;}.drw-close:hover{background:var(--bd);color:var(--tx);}
+.drw-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
 .tabs{display:flex;border-bottom:1px solid var(--bd);background:var(--sf2);}
-.tab{padding:9px 15px;font-size:11px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;color:var(--tx2);transition:all .15s;white-space:nowrap;}
-.tab:hover{color:var(--tx);}
-.tab.act{color:#1D4ED8;border-bottom-color:#1D4ED8;background:var(--surface);}
-.tc{padding:18px;overflow-y:auto;flex:1;max-height:calc(100vh - 290px);}
+.tab{padding:8px 14px;font-size:11px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;color:var(--tx2);white-space:nowrap;}
+.tab.act{color:#1D4ED8;border-bottom-color:#1D4ED8;background:var(--srf);}
+.drw-body{padding:15px;overflow-y:auto;flex:1;}
 
 /* STATUS BADGES */
 .sb{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;}
-.sns{background:#F1F5F9;color:#64748B;}
-.sip{background:#FEF3C7;color:#D97706;}
-.sdn{background:#DCFCE7;color:#16A34A;}
-.sbl{background:#FEE2E2;color:#DC2626;}
-.srv{background:#EDE9FE;color:#7C3AED;}
-.sdf{background:#FEF3C7;color:#92400E;border:1px solid #FDE68A;}
-.sap{background:#DCFCE7;color:#14532D;border:1px solid #BBF7D0;}
+.s-ns{background:#F1F5F9;color:#64748B;}.s-ip{background:#FEF3C7;color:#D97706;}
+.s-dn{background:#DCFCE7;color:#16A34A;}.s-bl{background:#FEE2E2;color:#DC2626;}
+.s-rv{background:#EDE9FE;color:#7C3AED;}
+.s-df{background:#FEF3C7;color:#92400E;border:1px solid #FDE68A;}
+.s-ap{background:#DCFCE7;color:#14532D;border:1px solid #BBF7D0;}
 
 /* TASKS */
-.stt{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--tx3);margin-bottom:10px;}
-.tl{list-style:none;}
-.ti{display:flex;align-items:flex-start;gap:9px;padding:7px 0;border-bottom:1px solid var(--bd);font-size:12px;}
-.ti:last-child{border-bottom:none;}
-.tck{width:15px;height:15px;border:1.5px solid var(--bd);border-radius:4px;cursor:pointer;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all .15s;font-size:9px;}
-.tck.dn{background:#22C55E;border-color:#22C55E;color:#fff;}
-.tsd{text-decoration:line-through;color:var(--tx3);}
+.stt{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--tx3);margin-bottom:8px;}
+.l3-list{list-style:none;}
+.l3-item{display:flex;align-items:flex-start;gap:7px;padding:6px 0;border-bottom:1px solid var(--bd);font-size:12px;}
+.l3-item:last-child{border-bottom:none;}
+.chk{width:14px;height:14px;border:1.5px solid var(--bd);border-radius:3px;cursor:pointer;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;font-size:8px;transition:all .15s;}
+.chk.dn{background:#22C55E;border-color:#22C55E;color:#fff;}
+.task-txt{flex:1;line-height:1.4;}
+.task-txt.done{text-decoration:line-through;color:var(--tx3);}
+.task-txt.del{text-decoration:line-through;color:#FCA5A5;}
+.rm-btn{font-size:11px;color:var(--tx3);cursor:pointer;padding:1px 4px;border-radius:3px;flex-shrink:0;line-height:1;}.rm-btn:hover{background:#FEE2E2;color:#DC2626;}
+.add-row{display:flex;gap:7px;margin-top:10px;}
 
 /* PROGRESS */
-.str{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:14px;}
-.sbn{padding:4px 11px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid transparent;font-family:var(--fn);transition:all .15s;}
-.sbns{background:#F1F5F9;color:var(--tx2);border-color:var(--bd);}
-.sbip{background:#FEF3C7;color:#D97706;border-color:#F59E0B;}
-.sbdn{background:#DCFCE7;color:#16A34A;border-color:#22C55E;}
-.sbbl{background:#FEE2E2;color:#DC2626;border-color:#EF4444;}
-.sbrv{background:#EDE9FE;color:#7C3AED;border-color:#8B5CF6;}
+.stbns{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:11px;}
+.sbn{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid transparent;font-family:var(--fn);}
+.sbn-ns{background:#F1F5F9;color:var(--tx2);border-color:var(--bd);}
+.sbn-ip{background:#FEF3C7;color:#D97706;border-color:#F59E0B;}
+.sbn-dn{background:#DCFCE7;color:#16A34A;border-color:#22C55E;}
+.sbn-bl{background:#FEE2E2;color:#DC2626;border-color:#EF4444;}
+.sbn-rv{background:#EDE9FE;color:#7C3AED;border-color:#8B5CF6;}
 .sbn.act{box-shadow:0 0 0 2px currentColor;}
-.slr{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
-.psl{flex:1;-webkit-appearance:none;height:6px;border-radius:3px;background:var(--bg);outline:none;}
-.psl::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#1D4ED8;cursor:pointer;}
-.pv{font-family:var(--mo);font-size:13px;font-weight:600;width:38px;text-align:right;}
-.ff{margin-bottom:11px;}
-.fl{font-size:11px;font-weight:600;color:var(--tx2);margin-bottom:4px;display:block;}
-.fi,.fta{width:100%;padding:7px 10px;border:1px solid var(--bd);border-radius:var(--rs);font-family:var(--fn);font-size:12px;background:var(--surface);color:var(--tx);outline:none;transition:border-color .15s;}
-.fi:focus,.fta:focus{border-color:#1D4ED8;}
-.fta{resize:vertical;min-height:72px;}
+.slr{display:flex;align-items:center;gap:9px;margin-bottom:11px;}
+.psl{flex:1;-webkit-appearance:none;height:5px;border-radius:3px;background:var(--bg);outline:none;}
+.psl::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:#1D4ED8;cursor:pointer;}
+.pv{font-family:var(--mo);font-size:12px;font-weight:600;width:34px;text-align:right;}
+.ff{margin-bottom:10px;}
+.fl{font-size:11px;font-weight:600;color:var(--tx2);margin-bottom:3px;display:block;}
+.fta{width:100%;padding:7px 10px;border:1px solid var(--bd);border-radius:var(--rs);font-family:var(--fn);font-size:12px;background:var(--srf);color:var(--tx);outline:none;resize:vertical;min-height:64px;}
+.fta:focus{border-color:#1D4ED8;}
 
-/* BEST PRACTICE */
-.bph{background:linear-gradient(135deg,#0F172A,#1D4ED8);border-radius:var(--rs);padding:14px 16px;margin-bottom:14px;color:#fff;}
-.bpht{font-size:13px;font-weight:700;margin-bottom:4px;}
-.bphs{font-size:11px;color:rgba(255,255,255,.65);}
-.bpfc{border:1px solid var(--bd);border-radius:var(--rs);overflow:hidden;margin-bottom:12px;}
-.bpfh{padding:10px 13px;background:var(--sf2);display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--bd);}
-.bpfi{font-size:16px;}
-.bpfn{font-size:12px;font-weight:600;flex:1;}
-.bpft{font-size:10px;padding:2px 6px;border-radius:4px;background:#EFF6FF;color:#1D4ED8;font-weight:600;}
-.bpfb{padding:13px;}
-.bps{margin-bottom:12px;}
-.bpst{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#1D4ED8;margin-bottom:7px;}
-.bpcl{list-style:none;}
-.bpci{display:flex;align-items:flex-start;gap:7px;padding:5px 0;border-bottom:1px solid var(--bd);font-size:11px;color:var(--tx2);}
-.bpci:last-child{border-bottom:none;}
-.bpico{color:#1D4ED8;flex-shrink:0;margin-top:1px;}
-.bptb{width:100%;border-collapse:collapse;font-size:11px;}
-.bptb th{background:var(--sf2);padding:6px 8px;text-align:left;font-weight:600;border:1px solid var(--bd);color:var(--tx2);}
-.bptb td{padding:5px 8px;border:1px solid var(--bd);color:var(--tx2);}
-
-/* AI COMPARE */
-.upz{border:2px dashed var(--bd);border-radius:var(--r);padding:18px 12px;text-align:center;cursor:pointer;transition:all .2s;background:var(--sf2);}
+/* TEMPLATE / AI */
+.upz{border:2px dashed var(--bd);border-radius:var(--r);padding:18px;text-align:center;cursor:pointer;transition:all .2s;background:var(--sf2);margin-bottom:10px;}
 .upz:hover{border-color:#1D4ED8;background:#EFF6FF;}
 .upz.ld{border-color:#22C55E;background:#F0FDF4;}
-.uzi{font-size:22px;margin-bottom:5px;}
-.uzn{font-size:11px;font-weight:500;color:var(--tx2);}
-.uzs{font-size:10px;color:var(--tx3);margin-top:3px;}
-.bppl{background:linear-gradient(135deg,#EFF6FF,#DBEAFE);border:1px solid #BFDBFE;border-radius:var(--r);padding:12px;margin-bottom:12px;display:flex;align-items:center;gap:10px;}
-.bppi{font-size:20px;}
-.bppt{font-size:11px;font-weight:500;color:#1D4ED8;}
-.bpps{font-size:10px;color:#2563EB;margin-top:2px;}
-.aisr{display:flex;align-items:center;gap:12px;background:var(--sf2);border-radius:var(--rs);padding:12px;margin-bottom:12px;}
-.aisn{font-size:32px;font-weight:800;font-family:var(--mo);}
-.aisl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--tx3);}
-.aist{font-size:11px;color:var(--tx2);margin-top:3px;}
-.gps{margin-bottom:13px;}
-.gph{font-size:11px;font-weight:700;padding:5px 9px;border-radius:var(--rs);margin-bottom:6px;display:flex;align-items:center;gap:5px;}
-.gc{background:#FEE2E2;color:#DC2626;}
-.gw{background:#FEF3C7;color:#D97706;}
-.gi{background:#DBEAFE;color:#1D4ED8;}
-.gk{background:#DCFCE7;color:#16A34A;}
-.gpi{padding:7px 10px;border-left:3px solid;background:var(--sf2);margin-bottom:3px;border-radius:0 var(--rs) var(--rs) 0;font-size:11px;line-height:1.4;}
+.upz-ico{font-size:22px;margin-bottom:5px;}
+.upz-name{font-size:11px;font-weight:500;color:var(--tx2);}
+.upz-sub{font-size:10px;color:var(--tx3);margin-top:2px;}
+.preloaded{background:linear-gradient(135deg,#EFF6FF,#DBEAFE);border:1px solid #BFDBFE;border-radius:var(--r);padding:10px;margin-bottom:10px;display:flex;align-items:center;gap:9px;}
+.pre-ico{font-size:17px;}
+.pre-txt{font-size:11px;font-weight:600;color:#1D4ED8;}
+.pre-sub{font-size:10px;color:#2563EB;margin-top:2px;}
 
-/* BANNERS */
-.bnry{background:#FFFBEB;border:1px solid #FDE68A;border-radius:var(--rs);padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px;}
-.bnrg{background:#F0FDF4;border:1px solid #BBF7D0;border-radius:var(--rs);padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px;}
-.bni{font-size:18px;}
-.bnt{font-size:11px;font-weight:600;flex:1;}
-.bns{font-size:10px;margin-top:2px;font-weight:400;}
+/* QA REPORT */
+.qa-sec{margin-bottom:13px;}
+.qa-hdr{font-size:11px;font-weight:700;padding:5px 9px;border-radius:var(--rs);margin-bottom:6px;display:flex;align-items:center;gap:5px;}
+.qa-cr{background:#FEE2E2;color:#DC2626;}
+.qa-od{background:#FEF3C7;color:#D97706;}
+.qa-ms{background:#DBEAFE;color:#1D4ED8;}
+.qa-df{background:#FEF9C3;color:#92400E;}
+.qa-ok{background:#DCFCE7;color:#16A34A;}
+.qa-it{padding:7px 10px;border-left:3px solid;background:var(--sf2);margin-bottom:3px;border-radius:0 var(--rs) var(--rs) 0;font-size:11px;line-height:1.5;}
+.score-row{display:flex;align-items:center;gap:12px;background:var(--sf2);border-radius:var(--rs);padding:11px;margin-bottom:12px;}
+.score-num{font-size:28px;font-weight:800;font-family:var(--mo);}
+.score-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--tx3);}
+.score-txt{font-size:11px;color:var(--tx2);margin-top:3px;}
+.bn-y{background:#FFFBEB;border:1px solid #FDE68A;border-radius:var(--rs);padding:10px 12px;margin-bottom:10px;display:flex;align-items:center;gap:9px;}
+.bn-g{background:#F0FDF4;border:1px solid #BBF7D0;border-radius:var(--rs);padding:10px 12px;margin-bottom:10px;display:flex;align-items:center;gap:9px;}
+.bn-ico{font-size:16px;}.bn-txt{font-size:11px;font-weight:600;flex:1;}.bn-sub{font-size:10px;margin-top:2px;font-weight:400;}
 
-/* OVERLAY + TOAST */
-.ovl{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;align-items:center;justify-content:center;z-index:1000;}
+/* OVERLAY / TOAST */
+.ovl{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;z-index:600;}
 .ovl.show{display:flex;}
-.spc{background:var(--surface);border-radius:var(--r);padding:24px 32px;text-align:center;box-shadow:var(--sh2);}
-.spn{width:34px;height:34px;border:3px solid var(--bg);border-top-color:#1D4ED8;border-radius:50%;animation:spin .75s linear infinite;margin:0 auto 12px;}
+.sc{background:var(--srf);border-radius:var(--r);padding:24px 30px;text-align:center;box-shadow:var(--sh2);}
+.spn{width:30px;height:30px;border:3px solid var(--bg);border-top-color:#1D4ED8;border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 10px;}
 @keyframes spin{to{transform:rotate(360deg);}}
-.sptx{font-size:12px;color:var(--tx2);font-weight:500;}
-.tst{position:fixed;bottom:20px;right:20px;background:var(--navy);color:#fff;padding:9px 16px;border-radius:var(--r);font-size:12px;box-shadow:var(--sh2);transform:translateY(50px);opacity:0;transition:all .25s;z-index:300;}
-.tst.show{transform:translateY(0);opacity:1;}
-
-/* UTILS */
+.sptx{font-size:12px;color:var(--tx2);}
+.toast{position:fixed;bottom:16px;right:16px;background:var(--navy);color:#fff;padding:8px 14px;border-radius:var(--r);font-size:12px;box-shadow:var(--sh2);transform:translateY(36px);opacity:0;transition:all .2s;z-index:700;}
+.toast.show{transform:translateY(0);opacity:1;}
 .hidden{display:none!important;}
-.fade{animation:fi .2s ease;}
-@keyframes fi{from{opacity:0;transform:translateY(3px);}to{opacity:1;transform:translateY(0);}}
-.txm{color:var(--tx3);}
-.txs{font-size:12px;}
-.mt2{margin-top:8px;}.mt3{margin-top:12px;}
+.fade{animation:fi .18s ease;}
+@keyframes fi{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
 .row{display:flex;align-items:center;gap:8px;}
-@media(max-width:1100px){.mx{overflow-x:auto;}.mxh,.mxr{min-width:950px;}}
+.mt2{margin-top:8px;}.mt3{margin-top:12px;}
+.txm{color:var(--tx3);}.txs{font-size:11px;}
 </style>
 </head>
 <body>
-<div class="ovl" id="ovl"><div class="spc"><div class="spn"></div><div class="sptx" id="spTx">Running AI analysis…</div></div></div>
-<div class="tst" id="tst"></div>
-
-<header class="hdr">
-  <div class="logo"><span class="logo-sap">SAP</span> Activate<div class="logo-div"></div><span class="logo-sub">Governance Tool</span></div>
-  <span style="font-size:11px;color:rgba(255,255,255,.4)">S/4HANA Cloud Private Edition</span>
-  <div class="hdr-r"><div id="hChips" style="display:flex;gap:5px"></div></div>
-</header>
-
-<div class="lgnd">
-  <span style="font-size:11px;font-weight:600;color:var(--tx2)">Color Code:</span>
-  <div class="li"><div class="ldot" style="background:#94A3B8"></div>Default</div>
-  <div class="li"><div class="ldot" style="background:#F59E0B"></div><strong style="color:#92400E">🟡 Yellow</strong>: AI detected differences — pending review</div>
-  <div class="li"><div class="ldot" style="background:#16A34A"></div><strong style="color:#14532D">🟢 Green</strong>: Approved &amp; completed</div>
+<div class="ovl" id="ovl"><div class="sc"><div class="spn"></div><div class="sptx" id="spTx">Running QA analysis…</div></div></div>
+<div class="toast" id="toast"></div>
+<div class="drw-bg" id="drwBg" onclick="closeDrawer()"></div>
+<div class="drw" id="drw">
+  <div class="drw-hdr" id="drwHdr"></div>
+  <div class="tabs" id="drwTabs"></div>
+  <div class="drw-body" id="drwBody"></div>
 </div>
 
-<div class="nav"><div class="bc" id="bc"></div><div class="nav-r" id="navR"></div></div>
-<div class="main fade" id="main"></div>
+<header class="hdr">
+  <div class="logo"><span class="logo-sap">SAP</span> Activate<div class="logo-sep"></div><span class="logo-sub">PM Tool</span></div>
+  <div class="proj-badge" id="projBadge" onclick="showPicker()">📁 Select Project</div>
+  <div class="hdr-r" id="hdrR"></div>
+</header>
+
+<div class="lgnd" id="lgnd" style="display:none">
+  <span style="font-size:11px;font-weight:600;color:var(--tx2)">Status:</span>
+  <div class="leg"><div class="ldot" style="background:#94A3B8"></div>Not Started</div>
+  <div class="leg"><div class="ldot" style="background:#F59E0B"></div>In Progress</div>
+  <div class="leg"><div class="ldot" style="background:#22C55E"></div>Completed</div>
+  <div class="leg"><div class="ldot" style="background:#EF4444"></div>Blocked</div>
+  <div class="leg" style="border-left:1px solid var(--bd);padding-left:12px"><div class="ldot" style="background:#F59E0B"></div><span style="color:#92400E;font-weight:600">🟡 AI: Differences</span></div>
+  <div class="leg"><div class="ldot" style="background:#16A34A"></div><span style="color:#14532D;font-weight:600">🟢 AI: Approved</span></div>
+</div>
+
+<div class="main" id="main"></div>
 
 <script>
-/* ══ BEST PRACTICE DATA ══ */
-const BP = {
+/* ══════════════ DATA ══════════════ */
+const PHASES=["DISCOVER","PREPARE","EXPLORE","REALIZE","DEPLOY","RUN"];
+const PH_DESC={"DISCOVER":"Solution Discovery & Value","PREPARE":"Setup & Mobilization","EXPLORE":"Fit-to-Standard Analysis","REALIZE":"Configuration & Development","DEPLOY":"Cutover & Go-Live","RUN":"Operations & Improvement"};
+const PH_COLOR={"DISCOVER":"#7C3AED","PREPARE":"#1D4ED8","EXPLORE":"#0891B2","REALIZE":"#D97706","DEPLOY":"#DC2626","RUN":"#16A34A"};
+const PH_QG={"PREPARE":"QG1","EXPLORE":"QG2","REALIZE":"QG3","DEPLOY":"QG4"};
+const WS=["Project Management","Tech. Architecture & Infrastructure","App. Design & Configuration","Extensibility & Clean Core Strategy","Integration","Data Management","Testing","Analytics","Org. Change Management","Customer Team Enablement","Operations"];
+const L2M={"Project Management__DISCOVER":["Strategic Planning","Discovery Assessment","Application Value and Scoping"],"Project Management__PREPARE":["Project Initiation and Governance","Project Plans, Schedule and Budget","Project Standards, Infrastructure, and Solution","Project Kick-Off and Onboarding","Value Determination","Prepare Phase Closure and Sign-Off"],"Project Management__EXPLORE":["Execution and Monitoring of Project","Value Realization","Release and Sprint Plan","Explore Phase Closure and Sign-Off"],"Project Management__REALIZE":["Sprint Planning and Execution","Sprint Closing","Value Realization","Cutover Preparation","Realize Phase Closure and Sign-Off"],"Project Management__DEPLOY":["Execution and Monitoring of Project","Deploy Phase Closure and Sign-Off"],"Project Management__RUN":["Governance Model","Value Management"],"Tech. Architecture & Infrastructure__DISCOVER":["Conversion Readiness Assessment"],"Tech. Architecture & Infrastructure__PREPARE":["Getting Started with your SAP Implementation","Supporting Tools for Implementation","Request Initial System Access","Initial System Access for SAP Cloud ALM","Initial System Access for SAP S/4HANA Cloud Private Edition","Technical Project Preparation","Pre-Conversion Projects Execution","Transition Planning","System Conversion Planning","Transition Preparation"],"Tech. Architecture & Infrastructure__EXPLORE":["System Conversion Execution of the Sandbox/Shell System","Additional Activities in the Converted Sandbox/Shell System","User Access and Security Planning and Design","Sizing Validation"],"Tech. Architecture & Infrastructure__REALIZE":["Quality System Initial Access","Initial Quality System Setup","Production System Request","System Conversion Execution of the Development System","System Conversion Execution of the Quality System","Production System Initial Access","User Access and Security Implementation"],"Tech. Architecture & Infrastructure__DEPLOY":["System Conversion Execution of the Dress Rehearsal System","System Conversion Execution of the Production System (Cutover)","System Go-Live"],"App. Design & Configuration__PREPARE":["Business Driven Configuration Assessment","Solution Scope","Fit-to-Standard Preparation For Specific Features","Fit-to-Standard Workshop Preparation"],"App. Design & Configuration__EXPLORE":["Fit-to-Standard Workshops for Specific Features","Fit-to-Standard Workshop Execution","Fit-to-Standard Workshop Documentation","Fit-to-Standard Workshop Validation","User Experience Design","SAP Build Planning and Design","SAP Build Setup"],"App. Design & Configuration__REALIZE":["Solution Configuration","Product Enhancements","Set up SAP Build in the Quality System","Set up SAP Build in Production System"],"Extensibility & Clean Core Strategy__DISCOVER":["Introduction to RISE with SAP","Clean Core Quality Gate 0"],"Extensibility & Clean Core Strategy__PREPARE":["Clean Core Quality Gate 1"],"Extensibility & Clean Core Strategy__EXPLORE":["Custom Code Deep Dive Analysis","Extension Planning and Design","Clean Core Quality Gate 2"],"Extensibility & Clean Core Strategy__REALIZE":["Extension Development in the Development and Quality Systems","Deploy Extensions to the Production System","Clean Core Quality Gate 3"],"Extensibility & Clean Core Strategy__RUN":["Clean Core Quality Gate 5"],"Integration__PREPARE":["Prepare Integration Setup"],"Integration__EXPLORE":["Integration Planning and Design","Integration Review and Redesign"],"Integration__REALIZE":["Integration Setup in Development and Quality Landscape","Integration Validation","Set up Integration in the Production System"],"Data Management__PREPARE":["Data Migration Approach and Plan"],"Data Management__EXPLORE":["Data Migration Planning and Design","Data Load Preparation"],"Data Management__REALIZE":["Data Migration Execution","Data Migration in the Development Tenant","Data Migration in the Test Tenant"],"Data Management__DEPLOY":["Production Cutover"],"Testing__EXPLORE":["Test Planning"],"Testing__REALIZE":["Test Preparation","Test Execution"],"Testing__DEPLOY":["Dress Rehearsal"],"Analytics__PREPARE":["Analytics Approach and Plan"],"Analytics__EXPLORE":["Analytics Planning and Design"],"Analytics__REALIZE":["Analytics Configuration in the Quality System","Analytics Configuration in the Production System"],"Org. Change Management__DISCOVER":["Organizational Change Management Overview"],"Org. Change Management__PREPARE":["Change Concept","Change Plan","Stakeholder Analysis","Communication Analysis and Plan"],"Org. Change Management__EXPLORE":["Communication Plan Execution"],"Org. Change Management__REALIZE":["Detailed Change Impact Analysis"],"Customer Team Enablement__DISCOVER":["Cloud Trial"],"Customer Team Enablement__PREPARE":["Customer Team Self-Enablement","Enablement Strategy","Learning Needs Analysis for Project Team","Content Development Tool Deployment"],"Customer Team Enablement__EXPLORE":["Learning Needs Analysis for Users"],"Customer Team Enablement__REALIZE":["Enablement Content Development","Enablement Delivery"],"Customer Team Enablement__RUN":["Identify Innovation and Growth Opportunities"],"Operations__DISCOVER":["Operation and Support Assessment"],"Operations__PREPARE":["Operations Planning"],"Operations__EXPLORE":["Operations Impact Evaluation and Design"],"Operations__REALIZE":["Operations Implementation"],"Operations__DEPLOY":["Operations Readiness","Production Hypercare Support","Handover to Support Organization"],"Operations__RUN":["Service Management","Ongoing System Operations","Incident and Problem Management"]};
+const L3M={"Project Management__DISCOVER__Strategic Planning":["Create an Innovation Strategy and a High-Level Road Map","Run an Innovation Discovery and Design Workshop","Create a 360-Degree View on Security","Define the Analytics Architecture","Establish a Clean Process Framework"],"Project Management__DISCOVER__Discovery Assessment":["Executing a Digital Discovery Assessment","Generate Digital Discovery Report","Select the Right Cloud Partner","Execute the Cloud Mindset"],"Project Management__DISCOVER__Application Value and Scoping":["Discover the Value of SAP S/4HANA Cloud for Your Company","Identify the value of SAP S/4HANA on Existing Business Processes","Run a Usage and Data Profiling Analysis","Run the Establish the Business Value of User Experience Workshop","Define the Implementation Strategy","Create a Strategic Road Map and Value Case"],"Project Management__PREPARE__Project Initiation and Governance":["Join Embedded Launch Activities in SAP S/4HANA Cloud Private Edition Onboarding Journey","Confirm Receipt of Pre-Sales Handover Deliverables"],"Project Management__PREPARE__Project Plans, Schedule and Budget":["Create Project Schedule and Budget","Assign Resources and Refine Project Tasks in SAP Cloud ALM","Align Project Schedules"],"Project Management__PREPARE__Project Standards, Infrastructure, and Solution":["Define Project Standards","Set Up Project Team Logistics and Infrastructure","Define Standards on Certifications"],"Project Management__PREPARE__Project Kick-Off and Onboarding":["Onboard Project Team","Conduct Kickoff Workshop"],"Project Management__PREPARE__Value Determination":["Validate and Complete Value Map","Prepare Value Map","Obtain copy of Value Case or Business Case document from the presales team"],"Project Management__PREPARE__Prepare Phase Closure and Sign-Off":["Conduct Project Quality Gate for Prepare Phase"],"Project Management__EXPLORE__Execution and Monitoring of Project":["Monitor Project Progress and Issues","Communicate Project Status","Manage Project Scope"],"Project Management__EXPLORE__Release and Sprint Plan":["Plan Releases and Sprints","Define Sprint Backlog"],"Project Management__EXPLORE__Explore Phase Closure and Sign-Off":["Conduct Project Quality Gate for Explore Phase"],"Project Management__REALIZE__Sprint Planning and Execution":["Plan Sprint","Execute Sprint","Conduct Sprint Review and Retrospective"],"Project Management__REALIZE__Sprint Closing":["Close Sprint","Update Backlog"],"Project Management__REALIZE__Cutover Preparation":["Develop Cutover Plan","Conduct Cutover Rehearsal"],"Project Management__REALIZE__Realize Phase Closure and Sign-Off":["Conduct Project Quality Gate for Realize Phase"],"Project Management__DEPLOY__Execution and Monitoring of Project":["Monitor Go-Live Readiness","Execute Cutover Activities"],"Project Management__DEPLOY__Deploy Phase Closure and Sign-Off":["Conduct Project Quality Gate for Deploy Phase","Execute Go-Live Sign-Off"],"Project Management__RUN__Governance Model":["Establish Governance Model","Define Continuous Improvement Process"],"Tech. Architecture & Infrastructure__DISCOVER__Conversion Readiness Assessment":["Run SAP Readiness Check","Analyze Custom Code","Assess Add-on Compatibility","Review Simplification Items"],"Tech. Architecture & Infrastructure__PREPARE__Getting Started with your SAP Implementation":["Access SAP Cloud ALM","Review Implementation Guides","Set Up Project Environment"],"Tech. Architecture & Infrastructure__EXPLORE__System Conversion Execution of the Sandbox/Shell System":["Execute System Conversion on Sandbox","Validate Conversion Results","Document Issues and Resolutions"],"Tech. Architecture & Infrastructure__REALIZE__Quality System Initial Access":["Request Quality System Access","Configure Quality System","Validate Quality System Setup"],"Tech. Architecture & Infrastructure__DEPLOY__System Go-Live":["Execute Production Cutover","Validate Production System","Confirm Go-Live Readiness"],"App. Design & Configuration__PREPARE__Business Driven Configuration Assessment":["Assess Current Business Processes","Identify Configuration Requirements","Define Scope"],"App. Design & Configuration__EXPLORE__Fit-to-Standard Workshop Execution":["Conduct Fit-to-Standard Workshops","Document Configuration Decisions","Identify Gaps and Extensions"],"App. Design & Configuration__REALIZE__Solution Configuration":["Configure Solution","Validate Configuration","Document Final Configuration"],"Extensibility & Clean Core Strategy__DISCOVER__Introduction to RISE with SAP":["Review RISE with SAP Offering","Assess Clean Core Readiness","Plan Clean Core Strategy"],"Extensibility & Clean Core Strategy__EXPLORE__Custom Code Deep Dive Analysis":["Analyze Custom Code Volume","Classify Custom Code","Develop Remediation Plan"],"Extensibility & Clean Core Strategy__REALIZE__Extension Development in the Development and Quality Systems":["Develop Extensions","Unit Test Extensions","Deploy to Quality System"],"Integration__PREPARE__Prepare Integration Setup":["Identify Integration Scenarios","Plan Integration Architecture","Select Integration Tools"],"Integration__EXPLORE__Integration Planning and Design":["Design Integration Architecture","Create Integration Specifications","Review and Approve Design"],"Integration__REALIZE__Integration Setup in Development and Quality Landscape":["Implement Integration Flows","Test Integration Scenarios","Validate End-to-End Processes"],"Data Management__PREPARE__Data Migration Approach and Plan":["Define Migration Strategy","Identify Source Systems","Create Migration Plan"],"Data Management__EXPLORE__Data Migration Planning and Design":["Design Migration Objects","Create Mapping Documents","Plan Data Cleansing"],"Data Management__REALIZE__Data Migration Execution":["Execute Migration Programs","Validate Migrated Data","Resolve Data Quality Issues"],"Data Management__DEPLOY__Production Cutover":["Execute Production Data Load","Validate Production Data","Sign Off on Data Migration"],"Testing__EXPLORE__Test Planning":["Define Test Strategy","Create Test Plan","Set Up Test Environment"],"Testing__REALIZE__Test Preparation":["Create Test Cases","Prepare Test Data","Configure Test Tools"],"Testing__REALIZE__Test Execution":["Execute Unit Tests","Execute Integration Tests","Execute UAT","Document Test Results"],"Testing__DEPLOY__Dress Rehearsal":["Execute Dress Rehearsal","Validate Cutover Procedures","Document Lessons Learned"],"Analytics__PREPARE__Analytics Approach and Plan":["Define Analytics Strategy","Identify Analytics Requirements","Plan Analytics Implementation"],"Analytics__EXPLORE__Analytics Planning and Design":["Design Analytics Architecture","Create Analytics Specifications","Review and Approve Design"],"Analytics__REALIZE__Analytics Configuration in the Quality System":["Configure Analytics in QA","Validate Analytics Scenarios","Document Configuration"],"Org. Change Management__DISCOVER__Organizational Change Management Overview":["Assess Organizational Readiness","Identify Change Impacts","Define OCM Strategy"],"Org. Change Management__PREPARE__Change Concept":["Develop Change Management Concept","Define Change Vision","Align with Stakeholders"],"Org. Change Management__PREPARE__Change Plan":["Create Detailed Change Plan","Define OCM Activities","Assign OCM Resources"],"Org. Change Management__PREPARE__Stakeholder Analysis":["Identify Key Stakeholders","Assess Stakeholder Impact","Define Engagement Strategy"],"Org. Change Management__PREPARE__Communication Analysis and Plan":["Develop Communication Strategy","Create Communication Plan","Define Communication Channels"],"Org. Change Management__EXPLORE__Communication Plan Execution":["Execute Communication Activities","Monitor Communication Effectiveness","Adjust Plan as Needed"],"Org. Change Management__REALIZE__Detailed Change Impact Analysis":["Conduct Detailed Impact Assessment","Update Change Plan","Execute Change Activities"],"Customer Team Enablement__DISCOVER__Cloud Trial":["Access Trial System","Explore SAP S/4HANA Cloud Features","Document Findings"],"Customer Team Enablement__PREPARE__Customer Team Self-Enablement":["Identify Training Needs","Select Training Content","Execute Training"],"Customer Team Enablement__REALIZE__Enablement Content Development":["Develop Training Materials","Create e-Learning Content","Validate Training Content"],"Customer Team Enablement__REALIZE__Enablement Delivery":["Deliver End-User Training","Conduct Super User Training","Evaluate Training Effectiveness"],"Operations__DISCOVER__Operation and Support Assessment":["Assess Current Operations","Identify Support Requirements","Plan Operations Transition"],"Operations__PREPARE__Operations Planning":["Define Operations Model","Plan Monitoring and Support","Identify Operations Tools"],"Operations__REALIZE__Operations Implementation":["Implement Operations Procedures","Set Up Monitoring","Configure Support Tools"],"Operations__DEPLOY__Operations Readiness":["Validate Operations Readiness","Execute Go-Live Support Plan","Hand Over to Operations"],"Operations__RUN__Service Management":["Manage Service Levels","Monitor System Performance","Optimize Operations"]};
 
-  /* ── BUSINESS CASE & VALUE ASSESSMENT ─────────────────────── */
-  d_pm1: { files: [
-    { id:'bp_vlm', name:'SAP S/4HANA Benchmarking Assessment – VLM Guide', type:'PDF Guide', icon:'📈',
-      source:'SAP Global Value Advisory, 2024',
-      summary:'Step-by-step guide for conducting an S/4HANA process maturity and KPI performance assessment using SAP Value Lifecycle Manager (VLM). Provides KPI benchmarking against industry peers and best practice maturity scoring.',
-      sections:[
-        { title:'Assessment Process (5 Steps)', items:[
-          'Step 1 – Register/Login: Access the VLM survey via SAP for Me or direct link. Login via SSO (S-User) or create a new account.',
-          'Step 2 – Company Profile: Enter Organization Level, Geography, Currency, Industry and Sub-Industry to calibrate peer benchmarking.',
-          'Step 3 – Survey Overview: Review survey scope covering Procurement, Sales, Service, Finance, Supply Chain, Manufacturing, HR and IT.',
-          'Step 4 – Collaboration & Delegation: Invite colleagues to collaborate (view-only) or delegate specific sections for editing.',
-          'Step 5 – Complete & Submit: Enter KPI values for each section. All questions are optional but benchmarks are only generated for answered questions.',
-        ]},
-        { title:'KPI Scorecard – Key Features', items:[
-          'Company Value: shown at the top, color-coded vs peer group performance (Bottom 25% / Average / Top 25%).',
-          'Peer Group: automatically selected based on company profile (industry, geography, size). N = number of data points.',
-          'Best Practices Dashboard: shows current vs desired maturity levels with internal gap visualization.',
-          'Maturity Levels: Level 1 = Disparate/Manual/Excel; Level 2 = SAP ERP; Level 3 = SAP S/4HANA On-Premise or Cloud; Level 4 = S/4HANA + additional SAP solutions.',
-          'Recommendations: free text box in each KPI card for notes, observations and suggested actions.',
-          'Download Report: exports full scorecard as PDF for stakeholder presentation.',
-        ]},
-        { title:'How to Use This in Discovery Phase', items:[
-          'Run the VLM survey with customer key stakeholders (CFO, COO, Procurement Lead, etc.).',
-          'Use benchmark output to quantify the business case and justify ROI for S/4HANA Cloud migration.',
-          'Identify process areas with lowest maturity (Level 1–2) as primary transformation targets.',
-          'Use the TCO benchmark data to support cost savings and payback period calculations.',
-          'Share scorecard with executive sponsor as part of business case presentation.',
-        ]},
-      ]
-    },
-  ]},
+/* ══════════════ STATE ══════════════ */
+let PROJS={}, CUR=null;
+let DS={ws:null,ph:null,l2:null,tab:'tasks'};
+let CF={};  // current files {key: {tpl,cust}}
 
-  /* ── HIGH-LEVEL TECHNICAL ASSESSMENT ──────────────────────── */
-  d_tai1: { files: [
-    { id:'bp_rc', name:'SAP Readiness Check – Key Feature Overview', type:'PDF Guide', icon:'🔍',
-      source:'SAP Readiness Check Team, March 2026',
-      summary:'SAP Readiness Check is the primary tool for assessing technical readiness before an S/4HANA conversion. Available via SAP for Me (me.sap.com/readinesscheck) and SAP Cloud ALM. Covers 8+ transformation scenarios.',
-      sections:[
-        { title:'Supported Transformation Scenarios', items:[
-          'SAP S/4HANA (system conversion and new implementation)',
-          'SAP S/4HANA upgrades (release upgrades)',
-          'SAP BW/4HANA migration',
-          'SAP Customer Experience Solutions',
-          'SAP SuccessFactors Solutions',
-          'SAP Cloud ALM readiness',
-          'SAP Datasphere / SAP BW Bridge',
-          'SAP Supply Chain Solutions',
-        ]},
-        { title:'Key Analysis Areas for S/4HANA Readiness Check', items:[
-          'Simplification Items: identifies relevant items for your system based on table content and used transactions. Shows effort ranking (Low/Medium/High).',
-          'Compatibility Scope Analysis: reviews simplification items related to compatibility packages and their planned alternatives.',
-          'Custom Code Analysis: scans all custom ABAP code for compatibility issues with S/4HANA. Critical for effort estimation.',
-          'Add-On Compatibility: validates all installed add-ons against the target S/4HANA release. Incompatible add-ons block conversion.',
-          'Active Business Functions: checks whether active business functions are compatible with the S/4HANA target release.',
-          'SAP S/4HANA Sizing: estimates system sizing requirements for the target landscape.',
-          'Integration Analysis: reviews interface and integration touchpoints for compatibility.',
-          'Financial Data Quality: checks financial data consistency required for S/4HANA migration.',
-          'App Availability & Recommended Fiori Apps: shows which transactions have Fiori equivalents.',
-          'Planned Downtime Calculator: estimates system downtime for the conversion process.',
-        ]},
-        { title:'How to Access and Run Readiness Check', items:[
-          'Access via SAP for Me: navigate to Service & Support → ALM → Readiness Check, or directly at https://me.sap.com/readinesscheck.',
-          'Access via SAP Cloud ALM: available in Implementation and Servicing app catalogs.',
-          'A guided procedure helps prepare the system and run data collection.',
-          'After data collection, create a new analysis and review findings.',
-          'Integration with SAP Cloud ALM enables creating follow-up tasks directly from Readiness Check findings.',
-          'Combined Scenario Analysis: merge results from different Readiness Check runs on the same system for a comprehensive view.',
-        ]},
-        { title:'Best Practice Recommendations for Discovery Phase', items:[
-          'Run SAP Readiness Check as early as possible — ideally during Discover or early Prepare phase.',
-          'Prioritize review of Custom Code Analysis results: volume and complexity of custom code is the #1 effort driver.',
-          'Validate all Add-On compatibility before committing to a go-live timeline.',
-          'Use the Simplification Items report to identify mandatory vs. optional activities and sequence them in the project plan.',
-          'Use Planned Downtime Calculator output to align with business on acceptable cutover window.',
-          'Share the Readiness Check output with the customer IT team and discuss findings in a technical workshop.',
-        ]},
-      ]
-    },
-  ]},
-
-  /* ── CUSTOMER ORG READINESS ASSESSMENT ────────────────────── */
-  d_ocm1: {
-    hasExcelBP: true,
-    excelBPName: 'S4H_665 Cloud Mindset Assessment.xlsx',
-    excelBPDesc: 'SAP Cloud Mindset Assessment template with 10 readiness questions (Step 1) and obstacle scoring (Step 2). Customer fills in their responses; AI compares against best practice expectations.',
-    excelStructure: {
-      step1: {
-        title: 'Step 1 – Current Cloud Mindset Level (10 Questions)',
-        scale: 'Strongly Disagree | Disagree | Somewhat Disagree | Somewhat Agree | Agree | Strongly Agree',
-        questions: [
-          'My organization is ready to adopt, innovate and adapt to the cloud mindset',
-          'My organization has a clearly communicated and understood digital transformation strategy',
-          'My organization follows the agile methodology and embraces the agile way of working',
-          'All digital initiatives in my organization are well connected',
-          "My organization employees understand the value of digital transformation",
-          "My organization employees demonstrate the right cloud mindset for a digital transformation",
-          "My organization employees have the right skill and roles set to keep the pace of digital transformation",
-          "My organization employees work across silos",
-          'It is clear to me of the importance for my organization to fit to standard SAP',
-          "My organization existing IT landscape is capable to cope with rapid changes within the digital transformation",
-        ],
-        scoring: 'Score 10–30: Low as-is maturity | Score 31–49: Medium as-is maturity | Score 50–60: High as-is maturity',
-      },
-      step2: {
-        title: 'Step 2 – Obstacles to Change',
-        fields: [
-          '2.1 Number of affected time zones (1 = one zone, 2 = two zones, 3 = all zones)',
-          '2.2 Weighted number of users (time zone weight × total users in scope)',
-        ],
-        riskMatrix: 'Risk matrix: Low as-is maturity + High obstacles = High Risk; High maturity + Low obstacles = Low Risk',
-      },
-    },
-    files: [
-      { id:'bp_ocm_wp', name:'Customer Organizational Readiness for SAP S/4HANA Cloud', type:'PDF Whitepaper', icon:'📄',
-        source:'SAP Cloud Success Services, June 2022',
-        summary:'Organizational readiness is a key success factor for S/4HANA Cloud. Covers Customer COE capability framework, role transformation, and OCM strategy across all SAP Activate phases.',
-        sections:[
-          { title:'Discover Phase – SAP Recommendations for Customer COE', items:[
-            'Identify and onboard Business Owners and Digital Business Analysts to support the S/4HANA Cloud implementation and future operations.',
-            'Measure Customer COE maturity through a simple assessment to identify key areas of improvement.',
-            'Based on business scope and planned user count, perform initial identification of Customer COE roles impacted by S/4HANA Cloud.',
-            'Use benchmark data to calculate typical TCO costs and build the business case.',
-            'Attend SAP Meet-the-Expert sessions (via SAP Learning Hub) for OCM overview. OCM webinars available to all SAP Preferred Success customers.',
-            'Clearly document what fit-to-standard means for your organization from an OCM perspective.',
-          ]},
-          { title:'Target Customer COE Role Framework', items:[
-            'Business Owner: owns a business domain, responsible for business results, continuous improvement and strategic decisions.',
-            'Digital Business Analyst: responsible for business model innovation and digitalization, works closely with Business Architect.',
-            'Key User: expert user with deep business process knowledge, supports peers and SAP S/4HANA Cloud configuration.',
-            'Business Architect: ensures E2E business model integrity, prototyping of optimized processes, bridges IT and business.',
-            'Enterprise Architect: governance and strategy across whole IT landscape.',
-            'Release Manager: plans and tracks SAP S/4HANA Cloud quarterly releases.',
-            'Test Manager: maintains E2E test plans and coordinates regression testing for each release.',
-            'Change Agent: supports OCM activities from within affected business units (Explore through Run).',
-          ]},
-          { title:'Organizational Readiness – Success Criteria', items:[
-            'Executive Sponsor identified and committed with visible leadership support.',
-            'Organization-wide understanding of fit-to-standard approach and its business impact.',
-            'IT organization has a documented plan for role transformation and reskilling.',
-            'Clear strategy for reducing IT FTEs in traditional operational roles (SAP Basis, Module Experts) that are absorbed by the cloud subscription.',
-            'Business-IT partnership model established for governing digital innovation.',
-            'SAP Fiori adoption plan in place for end-user transition from SAP GUI.',
-            'Design Thinking and Agile working methods introduced to key stakeholders.',
-          ]},
-        ]
-      },
-      { id:'bp_mindset_pptx', name:'Cloud Mindset Assessment Guide', type:'PPTX Guide', icon:'📊',
-        source:'SAP S/4HANA Cloud Enablement, 2020',
-        summary:'The Cloud Mindset Assessment evaluates organizational readiness to adopt S/4HANA Cloud. Assesses current mindset, identifies obstacles and provides risk-based recommendations (Low / Medium / High Risk).',
-        sections:[
-          { title:'Cloud Mindset Building Blocks', items:[
-            'Continuous Innovation: readiness to adopt and adapt to SAP release cycles (2x per year).',
-            'Fit-to-Standard: awareness and acceptance of adopting SAP best practices with minimal customization.',
-            'Dynamic Extensibility & Integrations: ability to leverage SAP BTP extensions and cloud integrations (Ariba, SuccessFactors, etc.).',
-            'Agile Way of Working: embracing agile methodology and cross-functional collaboration.',
-            'Digital Leadership: executive sponsorship and clear digital transformation strategy.',
-          ]},
-          { title:'Risk-Based Recommendations', items:[
-            'Low Risk → Awareness Content: self-enablement materials and SAP Enterprise Support resources.',
-            'Medium Risk → Enhanced Support Content: deep-dive sessions on pain points, OCM deliverables to mitigate risks, incorporated into project plan.',
-            'High Risk (large organizations) → Transformation Package: SAP Digital Culture Advisory workshop, organizational culture assessment, SAP BTP-based innovation services.',
-            'Pain points (questions answered Strongly Disagree/Disagree) trigger specific follow-up recommendations (PP1–PP10).',
-          ]},
-        ]
-      },
-    ]
-  },
-
-  /* ── OCM KNOWLEDGE TRANSFER TRACKER ───────────────────────── */
-  d_ocm2: { files: [
-    { id:'bp_ktt', name:'OCM Knowledge Transfer Tracker', type:'PPTX Template', icon:'📊',
-      source:'SAP Activate OCM Template v1.1, March 2024',
-      summary:'Template for planning and tracking OCM knowledge transfer activities. Covers all training topics, delivery methods, ownership, status and comments across the project lifecycle.',
-      tableHeaders:['Topic / Knowledge Area','Delivery Method','Delivery Date','Responsible','Status','Comments'],
-      tableRows:[
-        ['People side of cloud implementations and change management framework','Online content link / Info session (integrated in project team meeting)','Week 2 of project','Nominated Change Manager','open',''],
-        ['SAP S/4HANA Cloud features and fit-to-standard approach','Workshop + SAP Learning Hub','Week 3','OCM Lead','open',''],
-        ['Role changes and Customer COE target model','Management briefing presentation','Week 4','Project Manager','open',''],
-        ['Agile methodology and sprint-based project approach','Training session','Week 5','Scrum Master','open',''],
-        ['SAP Fiori end-user experience overview','Demo + e-learning','Week 6','Key User Lead','open',''],
-      ],
-      statusOpts:['open','in preparation','delivered']
-    },
-  ]},
-
-};
-
-
-const PH=[
-  {id:'discover',name:'Discover',color:'#7C3AED',qg:null,desc:'Solution Discovery & Value'},
-  {id:'prepare',name:'Prepare',color:'#1D4ED8',qg:'QG1',desc:'Setup & Mobilization'},
-  {id:'explore',name:'Explore',color:'#0891B2',qg:'QG2',desc:'Fit-to-Standard Analysis'},
-  {id:'realize',name:'Realize',color:'#D97706',qg:'QG3',desc:'Configuration & Development'},
-  {id:'deploy',name:'Deploy',color:'#DC2626',qg:'QG4',desc:'Cutover & Go-Live'},
-  {id:'run',name:'Run',color:'#16A34A',qg:null,desc:'Operations & Improvement'},
-];
-const WS=[
-  {id:'pm',name:'Project Management',icon:'📊'},
-  {id:'cte',name:'Customer Team Enablement',icon:'🎓'},
-  {id:'tai',name:'Tech. Architecture & Infra.',icon:'🏗️'},
-  {id:'adc',name:'App. Design & Configuration',icon:'⚙️'},
-  {id:'ext',name:'Extensibility',icon:'🔧'},
-  {id:'int',name:'Integration',icon:'🔗'},
-  {id:'tst',name:'Testing',icon:'🧪'},
-  {id:'dm',name:'Data Management',icon:'💾'},
-  {id:'ops',name:'Operations',icon:'🖥️'},
-  {id:'ocm',name:'Org. Change Management',icon:'👥'},
-];
-
-/* ══ DELIVERABLE DATABASE ══ */
-const DB={
-  discover_pm:[
-    {id:'d_pm1',name:'Business Case & Value Assessment',tpl:true,hasBP:true,
-     tasks:['Define business objectives and motivations','Calculate ROI and TCO','Secure executive sponsorship','Conduct S/4HANA value benchmarking'],
-     acc:[{n:'Business Case Template',t:'Template'},{n:'TCO Calculator',t:'Tool'},{n:'Value Realization Framework',t:'Guide'}]},
-    {id:'d_pm2',name:'Project Charter',tpl:false,hasBP:false,
-     tasks:['Define project scope','Identify key stakeholders','Confirm success criteria','Obtain executive sign-off'],
-     acc:[{n:'Project Charter Template',t:'Template'},{n:'Stakeholder Map',t:'Template'}]},
-  ],
-  discover_cte:[
-    {id:'d_cte1',name:'Solution Discovery Workshop',tpl:false,hasBP:false,
-     tasks:['SAP S/4HANA feature overview','Access demo system','Fit alignment assessment','Document business value scenarios'],
-     acc:[{n:'Discovery Workshop Agenda',t:'Template'},{n:'S/4HANA Feature Catalog',t:'Guide'}]},
-  ],
-  discover_tai:[
-    {id:'d_tai1',name:'High-Level Technical Assessment',tpl:true,hasBP:true,
-     tasks:['Analyze current system landscape','Evaluate cloud readiness level','Assess integration complexity'],
-     acc:[{n:'Technical Assessment Questionnaire',t:'Template'},{n:'Cloud Readiness Checklist',t:'Checklist'}]},
-  ],
-  discover_ocm:[
-    {id:'d_ocm1',name:'Customer Organizational Readiness Assessment',tpl:true,hasBP:true,
-     tasks:['Identify executive sponsor and secure commitment','Conduct Customer COE maturity assessment','Map affected business and IT roles','Identify Business Owner and Digital Business Analyst roles','Build TCO calculation and business case','Document organizational change strategy'],
-     acc:[{n:'Customer Readiness Whitepaper',t:'Guide'},{n:'COE Maturity Assessment',t:'Template'},{n:'Stakeholder Analysis Matrix',t:'Template'}]},
-    {id:'d_ocm2',name:'OCM Knowledge Transfer Tracker',tpl:true,hasBP:true,
-     tasks:['Prepare knowledge transfer topic list','Define delivery method for each topic','Assign owners and dates','Complete the tracker template and start monitoring'],
-     acc:[{n:'Knowledge Transfer Tracker',t:'Template'},{n:'OCM Enablement Plan',t:'Template'}]},
-  ],
-  prepare_pm:[
-    {id:'p_pm1',name:'Project Governance Framework',tpl:true,hasBP:false,
-     tasks:['Define the RACI matrix','Define escalation procedures','Establish steering committee','Define meeting cadence and decision processes'],
-     acc:[{n:'RACI Template',t:'Template'},{n:'Governance Framework Guide',t:'Guide'},{n:'Decision Log Template',t:'Template'}]},
-    {id:'p_pm2',name:'Project Plan & WBS',tpl:true,hasBP:false,
-     tasks:['Define the Work Breakdown Structure (WBS)','Perform resource and cost planning','Create risk register','Approve project timeline'],
-     acc:[{n:'Master Project Plan Template',t:'Template'},{n:'WBS Template',t:'Template'},{n:'Risk Register Template',t:'Template'}]},
-    {id:'p_pm3',name:'Kickoff Workshop',tpl:false,hasBP:false,
-     tasks:['Prepare kickoff presentation','Team introduction and role definition sessions','Methodology alignment','Commitment and sign-off'],
-     acc:[{n:'Kickoff Workshop Agenda',t:'Template'},{n:'Project Kickoff Presentation',t:'Presentation'}]},
-    {id:'p_pm4',name:'Quality Gate 1 Review',tpl:false,hasBP:false,
-     tasks:['Verify project readiness','Confirm resource availability','Meet and sign off QG1 criteria'],
-     acc:[{n:'QG1 Checklist',t:'Checklist'},{n:'Phase Exit Criteria',t:'Reference'}]},
-  ],
-  prepare_cte:[
-    {id:'p_cte1',name:'Learning & Enablement Plan',tpl:false,hasBP:false,
-     tasks:['Identify training needs','Design role-based learning paths','Select courses from SAP training catalog'],
-     acc:[{n:'Enablement Plan Template',t:'Template'},{n:'Role-Based Learning Catalog',t:'Catalog'}]},
-    {id:'p_cte2',name:'SAP Activate & Agile Training',tpl:false,hasBP:false,
-     tasks:['Methodology overview sessions','Agile/Scrum fundamentals training','Cloud ALM tool training'],
-     acc:[{n:'SAP Activate Overview Deck',t:'Presentation'},{n:'Agile Guide for SAP Projects',t:'Guide'}]},
-  ],
-  prepare_tai:[
-    {id:'p_tai1',name:'System Landscape Design',tpl:true,hasBP:false,
-     tasks:['3-tier landscape design (Dev/QA/Prod)','Tenant provisioning plan','Network and security requirements'],
-     acc:[{n:'Landscape Design Template',t:'Template'},{n:'Network Requirements Checklist',t:'Checklist'}]},
-    {id:'p_tai2',name:'SAP Cloud ALM Setup',tpl:false,hasBP:false,
-     tasks:['SAP Cloud ALM provisioning','Project configuration','Define users and roles'],
-     acc:[{n:'Cloud ALM Setup Guide',t:'Guide'},{n:'User Management Guide',t:'Guide'}]},
-    {id:'p_tai3',name:'Dev Environment Setup',tpl:false,hasBP:false,
-     tasks:['ABAP Cloud development environment setup','CI/CD pipeline design','Transport management configuration'],
-     acc:[{n:'Dev Environment Checklist',t:'Checklist'},{n:'ABAP Development Standards',t:'Guide'}]},
-  ],
-  prepare_adc:[
-    {id:'p_adc1',name:'Fit-to-Standard Preparation',tpl:true,hasBP:false,
-     tasks:['Prepare scope item activation list','Identify workshop participants','Define FTS approach and rules'],
-     acc:[{n:'FTS Preparation Guide',t:'Guide'},{n:'Scope Item Fact Sheets',t:'Reference'}]},
-  ],
-  prepare_dm:[
-    {id:'p_dm1',name:'Data Migration Strategy',tpl:true,hasBP:false,
-     tasks:['Define migration object list','Source system data quality analysis','Decide on migration approach'],
-     acc:[{n:'Data Migration Strategy Template',t:'Template'},{n:'Data Object Inventory',t:'Template'}]},
-  ],
-  prepare_ocm:[
-    {id:'p_ocm1',name:'Organizational Change Plan',tpl:false,hasBP:false,
-     tasks:['Detailed change impact assessment','Stakeholder engagement plan','Communication plan and schedule','Resistance management strategy'],
-     acc:[{n:'OCM Plan Template',t:'Template'},{n:'Change Impact Assessment',t:'Template'},{n:'Communication Plan Template',t:'Template'}]},
-  ],
-  explore_pm:[
-    {id:'e_pm1',name:'Project Monitoring & Control',tpl:false,hasBP:false,
-     tasks:['Prepare weekly status reports','Present steering committee updates','Track budget and schedule'],
-     acc:[{n:'Status Report Template',t:'Template'},{n:'RAID Log Template',t:'Template'}]},
-    {id:'e_pm2',name:'Quality Gate 2 Review',tpl:false,hasBP:false,
-     tasks:['FTS completion review','Solution design sign-off','Meet QG2 criteria'],
-     acc:[{n:'QG2 Checklist',t:'Checklist'},{n:'Solution Scope Confirmation',t:'Template'}]},
-  ],
-  explore_adc:[
-    {id:'e_adc1',name:'Fit-to-Standard Workshops',tpl:true,hasBP:false,
-     tasks:['Conduct FTS workshops','Document configuration decisions','Identify gaps and requirements','Obtain workshop participant approval'],
-     acc:[{n:'FTS Workshop Template',t:'Template'},{n:'BPML Template',t:'Template'},{n:'Gap-Fit Analysis Template',t:'Template'}]},
-    {id:'e_adc2',name:'Solution Design Document (SDD)',tpl:true,hasBP:false,
-     tasks:['Document to-be processes','Complete configuration workbook','SDD\'yi onayla'],
-     acc:[{n:'SDD Template',t:'Template'},{n:'Configuration Workbook',t:'Template'}]},
-    {id:'e_adc3',name:'Business Process Master List (BPML)',tpl:true,hasBP:false,
-     tasks:['Compile all in-scope processes','Map to SAP best practices','Obtain BPML sign-off'],
-     acc:[{n:'BPML Template',t:'Template'},{n:'Process Hierarchy Template',t:'Template'}]},
-  ],
-  explore_tai:[
-    {id:'e_tai1',name:'Integration Architecture Design',tpl:true,hasBP:false,
-     tasks:['Document integration landscape design','Select API/middleware approach','Prepare interface inventory'],
-     acc:[{n:'Integration Architecture Template',t:'Template'},{n:'Interface Inventory Sheet',t:'Template'}]},
-  ],
-  explore_ext:[
-    {id:'e_ext1',name:'Extensibility Requirements',tpl:true,hasBP:false,
-     tasks:['List non-standard requirements','Classify extensibility type','Clean core compliance check'],
-     acc:[{n:'Extensibility Assessment Template',t:'Template'},{n:'WRICEF Log Template',t:'Template'},{n:'Clean Core Guidelines',t:'Guide'}]},
-  ],
-  explore_tst:[
-    {id:'e_tst1',name:'Test Strategy & Planning',tpl:true,hasBP:false,
-     tasks:['Define test scope and approach','Configure Cloud ALM test tools','Define test team roles'],
-     acc:[{n:'Test Strategy Template',t:'Template'},{n:'Cloud ALM Test Management Guide',t:'Guide'}]},
-  ],
-  explore_dm:[
-    {id:'e_dm1',name:'Data Migration Design',tpl:true,hasBP:false,
-     tasks:['Build source-to-target mapping table','Define data cleansing rules','Start Migration Cockpit configuration'],
-     acc:[{n:'Data Migration Design Document',t:'Template'},{n:'Data Mapping Template',t:'Template'}]},
-  ],
-  explore_ocm:[
-    {id:'e_ocm1',name:'Detailed Change Impact Assessment',tpl:false,hasBP:false,
-     tasks:['Analyze process changes','Complete role impact analysis','Create risk mitigation plan'],
-     acc:[{n:'Change Impact Assessment (Detailed)',t:'Template'},{n:'Role Mapping Template',t:'Template'}]},
-    {id:'e_ocm2',name:'Training Needs Analysis',tpl:false,hasBP:false,
-     tasks:['Define training curriculum','Prepare role-to-training mapping matrix','Finalize training schedule'],
-     acc:[{n:'Training Needs Analysis Template',t:'Template'},{n:'Learning Path Matrix',t:'Template'}]},
-  ],
-  realize_pm:[
-    {id:'r_pm1',name:'Sprint Execution & Management',tpl:false,hasBP:false,
-     tasks:['Conduct sprint planning sessions','Facilitate daily scrum meetings','Conduct sprint reviews and retrospectives'],
-     acc:[{n:'Sprint Plan Template',t:'Template'},{n:'Velocity Tracker',t:'Template'}]},
-    {id:'r_pm2',name:'Quality Gate 3 Review',tpl:false,hasBP:false,
-     tasks:['Development completion review','Review test results','Meet QG3 criteria'],
-     acc:[{n:'QG3 Checklist',t:'Checklist'},{n:'Test Results Summary',t:'Template'}]},
-  ],
-  realize_adc:[
-    {id:'r_adc1',name:'System Configuration',tpl:true,hasBP:false,
-     tasks:['Configure the system','Execute scope item activations','Validate with unit tests'],
-     acc:[{n:'Configuration Workbook (Completed)',t:'Template'},{n:'Scope Item Activation Guide',t:'Guide'}]},
-    {id:'r_adc2',name:'Custom Development (WRICEF)',tpl:true,hasBP:false,
-     tasks:['Develop WRICEF objects','Complete code review','Run WRICEF tests'],
-     acc:[{n:'WRICEF Tracker Template',t:'Template'},{n:'Development Standards Guide',t:'Guide'},{n:'Code Review Checklist',t:'Checklist'}]},
-    {id:'r_adc3',name:'Solution Walkthrough',tpl:false,hasBP:false,
-     tasks:['Present configured solution to business','Document feedback','Identify delta requirements'],
-     acc:[{n:'Solution Walkthrough Template',t:'Template'},{n:'Delta Log Template',t:'Template'}]},
-  ],
-  realize_ext:[
-    {id:'r_ext1',name:'Extensibility Development',tpl:false,hasBP:false,
-     tasks:['Develop and test in-app extensions','Complete side-by-side BTP developments','Document extensibility objects'],
-     acc:[{n:'Extensibility Dev Guide',t:'Guide'},{n:'BTP Development Toolkit',t:'Tool'}]},
-  ],
-  realize_int:[
-    {id:'r_int1',name:'Integration Development & Testing',tpl:false,hasBP:false,
-     tasks:['Develop integration flows','Conduct interface unit tests','Execute end-to-end integration tests'],
-     acc:[{n:'Integration Test Protocol',t:'Template'},{n:'Error Handling Runbook',t:'Guide'}]},
-  ],
-  realize_tst:[
-    {id:'r_tst1',name:'Unit & String Testing',tpl:false,hasBP:false,
-     tasks:['Conduct developer unit tests','Run string test scenarios','Document test results'],
-     acc:[{n:'Unit Test Protocol',t:'Template'},{n:'Defect Management Template',t:'Template'}]},
-    {id:'r_tst2',name:'System Integration Testing (SIT)',tpl:false,hasBP:false,
-     tasks:['Prepare SIT test scenarios','Coordinate SIT execution','Prepare SIT completion report'],
-     acc:[{n:'SIT Test Plan',t:'Template'},{n:'SIT Defect Log',t:'Template'}]},
-    {id:'r_tst3',name:'User Acceptance Testing (UAT)',tpl:true,hasBP:false,
-     tasks:['Prepare UAT test scenarios','Train key users for UAT','Manage UAT execution','Obtain UAT sign-off'],
-     acc:[{n:'UAT Test Plan',t:'Template'},{n:'UAT Sign-off Template',t:'Template'}]},
-    {id:'r_tst4',name:'Performance Testing',tpl:false,hasBP:false,
-     tasks:['Define performance KPIs and thresholds','Prepare load test scenarios','Execute load tests and analyze results'],
-     acc:[{n:'Performance Test Plan',t:'Template'},{n:'Load Testing Guide',t:'Guide'}]},
-  ],
-  realize_dm:[
-    {id:'r_dm1',name:'Data Migration Development',tpl:true,hasBP:false,
-     tasks:['Develop migration programs','Data transformation and cleansing','Migration program testing'],
-     acc:[{n:'Migration Program Specs',t:'Template'},{n:'ETL Mapping Document',t:'Template'}]},
-    {id:'r_dm2',name:'Migration Mock Runs',tpl:false,hasBP:false,
-     tasks:['Execute 1st mock migration run','Resolve data quality issues','Execute 2nd mock migration run','Document mock run results'],
-     acc:[{n:'Mock Run Checklist',t:'Checklist'},{n:'Migration Validation Template',t:'Template'}]},
-  ],
-  realize_ocm:[
-    {id:'r_ocm1',name:'Key User Training Delivery',tpl:false,hasBP:false,
-     tasks:['Conduct key user training sessions','Evaluate training effectiveness','Update training materials'],
-     acc:[{n:'Key User Training Schedule',t:'Template'},{n:'Training Feedback Form',t:'Template'}]},
-    {id:'r_ocm2',name:'Communication Execution',tpl:false,hasBP:false,
-     tasks:['Execute planned communications','Publish project newsletter','Activate change ambassador network'],
-     acc:[{n:'Communication Calendar',t:'Template'},{n:'Newsletter Template',t:'Template'}]},
-  ],
-  deploy_pm:[
-    {id:'dep_pm1',name:'Cutover Planning & Execution',tpl:true,hasBP:false,
-     tasks:['Prepare detailed cutover task list','Execute cutover rehearsal','Make Go/No-Go decision','Complete production cutover'],
-     acc:[{n:'Cutover Plan Template',t:'Template'},{n:'Cutover Task List',t:'Template'},{n:'Hypercare Plan',t:'Template'}]},
-    {id:'dep_pm2',name:'Quality Gate 4 – Go-Live Readiness',tpl:false,hasBP:false,
-     tasks:['Final readiness assessment','Document business unit sign-off','Obtain executive management approval'],
-     acc:[{n:'QG4 Go-Live Checklist',t:'Checklist'},{n:'Go-Live Approval Template',t:'Template'}]},
-  ],
-  deploy_tai:[
-    {id:'dep_tai1',name:'Production System Setup',tpl:false,hasBP:false,
-     tasks:['Final production environment configuration','Security hardening checks','Configure monitoring and alerting tools'],
-     acc:[{n:'Production Readiness Checklist',t:'Checklist'},{n:'Security Hardening Guide',t:'Guide'}]},
-  ],
-  deploy_tst:[
-    {id:'dep_tst1',name:'Regression & Smoke Testing',tpl:false,hasBP:false,
-     tasks:['Execute final regression testing','Conduct post-cutover smoke test','Approve test results'],
-     acc:[{n:'Smoke Test Script',t:'Template'},{n:'Regression Test Protocol',t:'Template'}]},
-  ],
-  deploy_dm:[
-    {id:'dep_dm1',name:'Production Data Migration',tpl:true,hasBP:false,
-     tasks:['Execute final data extraction and production load','Validate data in production','Balance and reconciliation checks','Document data migration sign-off'],
-     acc:[{n:'Production Migration Checklist',t:'Checklist'},{n:'Data Validation Template',t:'Template'}]},
-  ],
-  deploy_ocm:[
-    {id:'dep_ocm1',name:'End-User Training Delivery',tpl:false,hasBP:false,
-     tasks:['Complete end-user training sessions','Distribute quick reference cards','Activate super user network'],
-     acc:[{n:'End-User Training Schedule',t:'Template'},{n:'Quick Reference Card Template',t:'Template'}]},
-    {id:'dep_ocm2',name:'Go-Live Communication',tpl:false,hasBP:false,
-     tasks:['Publish go-live announcement','Activate help desk communication channels','Ensure user support readiness'],
-     acc:[{n:'Go-Live Announcement Template',t:'Template'},{n:'Help Desk Script',t:'Guide'}]},
-  ],
-  run_pm:[
-    {id:'run_pm1',name:'Hypercare Management',tpl:false,hasBP:false,
-     tasks:['Daily hypercare status meetings','Triage and prioritize issues','Track stabilization metrics'],
-     acc:[{n:'Hypercare Plan',t:'Template'},{n:'Hypercare Exit Checklist',t:'Checklist'}]},
-    {id:'run_pm2',name:'Project Closure',tpl:false,hasBP:false,
-     tasks:['Lessons learned workshop','Prepare project closure report','Create project archive'],
-     acc:[{n:'Lessons Learned Template',t:'Template'},{n:'Project Closure Report',t:'Template'}]},
-  ],
-  run_tai:[
-    {id:'run_tai1',name:'Operations Handover',tpl:false,hasBP:false,
-     tasks:['Handover meeting with IT operations team','Runbook and procedure documentation','Define support model and SLAs'],
-     acc:[{n:'Operations Handover Checklist',t:'Checklist'},{n:'System Runbook Template',t:'Template'}]},
-  ],
-  run_ops:[
-    {id:'run_ops1',name:'System Monitoring & Support Setup',tpl:false,hasBP:false,
-     tasks:['Configure monitoring dashboards','Configure alert rules','Establish performance baseline'],
-     acc:[{n:'Monitoring Dashboard Guide',t:'Guide'},{n:'Alert Configuration Template',t:'Template'}]},
-    {id:'run_ops2',name:'Continuous Improvement Planning',tpl:false,hasBP:false,
-     tasks:['Define process and system KPIs','Create optimization backlog','Establish regular review meeting cadence'],
-     acc:[{n:'KPI Dashboard Template',t:'Template'},{n:'Continuous Improvement Framework',t:'Guide'}]},
-  ],
-  run_ocm:[
-    {id:'run_ocm1',name:'Post Go-Live Adoption & Support',tpl:false,hasBP:false,
-     tasks:['Monitor user adoption metrics','Conduct post-go-live user surveys','Update long-term adoption plan'],
-     acc:[{n:'Adoption Metrics Dashboard',t:'Template'},{n:'Post Go-Live Survey Template',t:'Template'}]},
-  ],
-};
-
-/* ══ STATE ══ */
-let S={view:'dashboard',cell:null,dId:null,tab:'tasks',prog:{},files:{}};
-function save(){try{localStorage.setItem('sap_v3',JSON.stringify({prog:S.prog}));}catch(e){}}
-function load(){try{const d=JSON.parse(localStorage.getItem('sap_v3')||'{}');S.prog=d.prog||{};}catch(e){}}
+function save(){try{localStorage.setItem('sap_pm4',JSON.stringify(PROJS));}catch(e){}}
+function load(){try{PROJS=JSON.parse(localStorage.getItem('sap_pm4')||'{}');}catch(e){}}
 load();
+if(Object.keys(PROJS).length>0&&!CUR) CUR=Object.keys(PROJS)[0];
 
-/* ══ HELPERS ══ */
-const allD=()=>Object.values(DB).flat();
-const fD=id=>allD().find(d=>d.id===id);
-const cD=(ph,ws)=>DB[`${ph}_${ws}`]||[];
-const gP=id=>S.prog[id]||{st:'ns',pct:0,notes:'',who:'',due:'',chk:{},ai:null,air:null};
-const phC=id=>PH.find(p=>p.id===id)?.color||'#666';
-const stC=s=>({ns:'#94A3B8',ip:'#F59E0B',dn:'#22C55E',bl:'#EF4444',rv:'#8B5CF6'}[s]||'#94A3B8');
-const stL=s=>({'ns':'Not Started','ip':'In Progress','dn':'Completed','bl':'Blocked','rv':'In Review'}[s]||s);
-const stCl=s=>({ns:'sns',ip:'sip',dn:'sdn',bl:'sbl',rv:'srv'}[s]||'sns');
-const tiI=t=>({Template:'📄',Guide:'📖',Checklist:'✅',Reference:'🔗',Tool:'🛠️',Presentation:'📊',Catalog:'📚'}[t]||'📎');
-function phPct(ph){let t=0,c=0;WS.forEach(ws=>cD(ph,ws.id).forEach(d=>{t+=gP(d.id).pct||0;c++;}));return c?Math.round(t/c):0;}
-function toast(m){const e=document.getElementById('tst');e.textContent=m;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),2400);}
-function load2(on,t='Running AI analysis…'){document.getElementById('ovl').classList.toggle('show',on);document.getElementById('spTx').textContent=t;}
+function proj(){return PROJS[CUR];}
+function td(key){return (proj()?.tasks||{})[key]||{st:'ns',pct:0,notes:'',owner:'',due:'',chk:{},del:{},extra:[],ai:null,air:null};}
+function stC(s){return {ns:'#94A3B8',ip:'#F59E0B',dn:'#22C55E',bl:'#EF4444',rv:'#8B5CF6'}[s]||'#94A3B8';}
+function stL(s){return {ns:'Not Started',ip:'In Progress',dn:'Completed',bl:'Blocked',rv:'In Review'}[s]||s;}
+function stK(s){return {ns:'s-ns',ip:'s-ip',dn:'s-dn',bl:'s-bl',rv:'s-rv'}[s]||'s-ns';}
+function key(ws,ph,l2){return ws+'||'+ph+'||'+l2;}
+function getl3(ws,ph,l2){return L3M[ws+'__'+ph+'__'+l2]||[];}
+function l2pct(ws,ph,l2){const t=td(key(ws,ph,l2));return{pct:t.pct||0,st:t.st||'ns',ai:t.ai||null};}
+function phPct(ph){let s=0,c=0;WS.forEach(ws=>(L2M[ws+'__'+ph]||[]).forEach(l2=>{s+=l2pct(ws,ph,l2).pct;c++;}));return c?Math.round(s/c):0;}
+function toast(m){const e=document.getElementById('toast');e.textContent=m;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),2200);}
+function loading(on,t){document.getElementById('ovl').classList.toggle('show',on);if(t)document.getElementById('spTx').textContent=t;}
+function esc(s){return s.replace(/\\/g,'\\\\').replace(/'/g,"\\'");}
 
-/* ══ RENDER ══ */
+/* ══════════════ RENDER ══════════════ */
 function render(){
-  rChips();rNav();
-  const m=document.getElementById('main');m.className='main fade';
-  if(S.view==='dash')m.innerHTML=rDash();
-  else if(S.view==='cell')m.innerHTML=rCell();
-  else if(S.view==='xl')m.innerHTML=rXL();
-}
-function rChips(){document.getElementById('hChips').innerHTML=PH.map(p=>`<span class="pchip" style="background:${p.color}" onclick="gPh('${p.id}')">${p.name} ${phPct(p.id)}%</span>`).join('');}
-function rNav(){
-  const bc=document.getElementById('bc'),nr=document.getElementById('navR');
-  if(S.view==='dash'){bc.innerHTML=`<span class="bcc">📊 Dashboard</span>`;nr.innerHTML=`<span class="txs txm">${allD().length} deliverable</span>`;}
-  else if(S.view==='cell'){const ph=PH.find(p=>p.id===S.cell.ph),ws=WS.find(w=>w.id===S.cell.ws);bc.innerHTML=`<span class="bcl" onclick="gDash()">Dashboard</span><span class="bcs">›</span><span style="color:${ph.color};font-weight:600">${ph.name}</span><span class="bcs">›</span><span class="bcc">${ws.name}</span>`;nr.innerHTML=`<button class="btn btn-s" onclick="gDash()">← Back</button>`;}
-  else if(S.view==='xl'){bc.innerHTML=`<span class="bcl" onclick="gDash()">Dashboard</span><span class="bcs">›</span><span class="bcc">🤖 AI Compare</span>`;nr.innerHTML=`<button class="btn btn-s" onclick="gDash()">← Back</button>`;}
-}
-
-/* DASHBOARD */
-function rDash(){
-  const cards=PH.map(p=>{const pct=phPct(p.id);const cnt=WS.reduce((s,ws)=>s+cD(p.id,ws.id).length,0);
-    return `<div class="scard" style="border-top-color:${p.color};color:${p.color}" onclick="gPh('${p.id}')">
-      <div class="sc-ph">${p.name}</div><div class="sc-pct">${pct}%</div>
-      <div class="sc-mt">${cnt} deliverable</div>
-      <div class="sc-bar"><div class="sc-fill" style="width:${pct}%;background:${p.color}"></div></div>
-    </div>`;}).join('');
-  const hdr=`<div class="mxh"><div class="mhc">Workstream</div>${PH.map(p=>
-    `<div class="mhp" style="background:${p.color}" onclick="gPh('${p.id}')">
-      <div class="mhpn">${p.name}</div><div class="mhpd">${p.desc}</div>
-      ${p.qg?`<div><span class="qgt">🏁 ${p.qg}</span></div>`:''}
-    </div>`).join('')}</div>`;
-  const rows=WS.map(ws=>{
-    const cells=PH.map(ph=>{
-      const ds=cD(ph.id,ws.id);if(!ds.length) return`<div class="mc emp"></div>`;
-      const pct=Math.round(ds.reduce((s,d)=>s+(gP(d.id).pct||0),0)/ds.length);
-      const items=ds.slice(0,3).map(d=>{
-        const p=gP(d.id);const ai=p.ai;
-        let cls='cin',dot=stC(p.st);
-        if(ai==='diff'){cls='ciy';dot='#F59E0B';}
-        if(ai==='ok'){cls='cig';dot='#16A34A';}
-        const fl=ai==='diff'?'🟡':ai==='ok'?'🟢':'';
-        return `<div class="ci ${cls}"><div class="cdot" style="background:${dot}"></div>${fl}${d.name.length>34?d.name.slice(0,34)+'…':d.name}</div>`;
-      }).join('');
-      const more=ds.length>3?`<div class="cm">+${ds.length-3} daha</div>`:'';
-      return `<div class="mc" onclick="oCell('${ph.id}','${ws.id}')">
-        <div class="cis">${items}${more}</div>
-        <div class="cpct">${pct}%</div>
-        <div class="cpb"><div class="cpbf" style="width:${pct}%;background:${ph.color}"></div></div>
-      </div>`;
-    }).join('');
-    return `<div class="mxr"><div class="wsl"><span class="wsi">${ws.icon}</span>${ws.name}</div>${cells}</div>`;
-  }).join('');
-  return `<div class="srow">${cards}</div><div class="mx">${hdr}<div>${rows}</div></div>`;
-}
-
-/* CELL VIEW */
-function rCell(){
-  const{ph,ws}=S.cell;const phase=PH.find(p=>p.id===ph),wss=WS.find(w=>w.id===ws);const ds=cD(ph,ws);
-  const list=ds.map(d=>{
-    const p=gP(d.id);const sel=S.dId===d.id;const ai=p.ai;
-    let nc='din',fl='';if(ai==='diff'){nc='din hy';fl=' 🟡';}if(ai==='ok'){nc='din hg';fl=' 🟢';}
-    const bpt=d.hasBP?`<span style="font-size:9px;background:#EFF6FF;color:#1D4ED8;padding:1px 5px;border-radius:3px;font-weight:700;margin-left:4px">BP</span>`:'';
-    return `<div class="di ${sel?'sel':''}" onclick="sDel('${d.id}')">
-      <div class="${nc}">${d.name}${fl}${bpt}</div>
-      <div class="dir"><span class="sb ${stCl(p.st)}">${stL(p.st)}</span>
-        <div class="dib"><div class="dibf" style="width:${p.pct}%;background:${phase.color}"></div></div>
-        <span class="din2">${p.pct}%</span>
-      </div>
-    </div>`;}).join('');
-  const rp=S.dId?rRight():`<div class="rp"><div class="rpe">← Select a deliverable</div></div>`;
-  return `<div class="row" style="margin-bottom:14px">
-    <span class="dpl" style="background:${phase.color}">${phase.name}</span>
-    <span style="font-size:13px;font-weight:600">${wss.icon} ${wss.name}</span>
-    <span class="txs txm" style="margin-left:auto">${ds.length} deliverables</span>
-  </div>
-  <div class="dtl"><div class="dvp"><div class="dvph">Deliverables <span class="dvpbg">${ds.length}</span></div>${list}</div>${rp}</div>`;
-}
-function rRight(){
-  const d=fD(S.dId);if(!d) return '';const p=gP(S.dId);
-  const tabs=['tasks','progress','bp','ai'].map(t=>{
-    const lbl={tasks:'📋 Tasks',progress:'📊 Progress',bp:'⭐ Best Practice',ai:'🤖 AI Compare'}[t];
-    if(t==='bp'&&!d.hasBP) return '';
-    return `<div class="tab ${S.tab===t?'act':''}" onclick="sTab('${t}')">${lbl}</div>`;
-  }).filter(Boolean).join('');
-  return `<div class="rp">
-    <div class="rph">
-      <div class="rphn">${d.name}</div>
-      <div class="rphm">
-        <span class="sb ${stCl(p.st)}">${stL(p.st)}</span>
-        <span class="txm" style="font-size:10px;font-family:var(--mo)">${p.pct}%</span>
-        ${d.hasBP?'<span style="font-size:10px;background:#EFF6FF;color:#1D4ED8;padding:2px 7px;border-radius:4px;font-weight:600">⭐ Best Practice</span>':''}
-        ${d.tpl?'<span style="font-size:10px;background:#F0FDF4;color:#16A34A;padding:2px 7px;border-radius:4px;font-weight:600">📋 Template</span>':''}
-        ${p.ai==='diff'?'<span class="sb sdf">🟡 Differences Found</span>':''}
-        ${p.ai==='ok'?'<span class="sb sap">🟢 Approved</span>':''}
-      </div>
-    </div>
-    <div class="tabs">${tabs}</div>
-    <div class="tc">${rTab(d,p)}</div>
-  </div>`;
-}
-function rTab(d,p){
-  if(S.tab==='tasks'){
-    const dn=Object.values(p.chk||{}).filter(Boolean).length;
-    const items=d.tasks.map((t,i)=>{const c=p.chk?.[i];return`<li class="ti"><div class="tck ${c?'dn':''}" onclick="tTask('${d.id}',${i})">${c?'✓':''}</div><span class="${c?'tsd':''}">${t}</span></li>`;}).join('');
-    return `<div class="stt">Tasks (${dn}/${d.tasks.length})</div><ul class="tl">${items}</ul>`;
-  }
-  if(S.tab==='progress'){
-    const ss=[['ns','sbns'],['ip','sbip'],['dn','sbdn'],['bl','sbbl'],['rv','sbrv']];
-    return `<div class="stt">Status</div>
-      <div class="str">${ss.map(([s,c])=>`<button class="sbn ${c} ${p.st===s?'act':''}" onclick="sSt('${d.id}','${s}')">${stL(s)}</button>`).join('')}</div>
-      <div class="stt">Completion %</div>
-      <div class="slr"><input type="range" min="0" max="100" value="${p.pct}" class="psl" oninput="sPct('${d.id}',this.value)"><span class="pv" id="pv_${d.id}">${p.pct}%</span></div>
-      <div class="ff"><label class="fl">Owner</label><input class="fi" type="text" value="${p.who||''}" placeholder="Full Name" oninput="sF('${d.id}','who',this.value)"></div>
-      <div class="ff"><label class="fl">Due Date</label><input class="fi" type="date" value="${p.due||''}" oninput="sF('${d.id}','due',this.value)"></div>
-      <div class="ff"><label class="fl">Notes</label><textarea class="fta" placeholder="Notes…" oninput="sF('${d.id}','notes',this.value)">${p.notes||''}</textarea></div>
-      <button class="btn btn-p btn-w" onclick="svP('${d.id}')">💾 Save</button>`;
-  }
-  if(S.tab==='bp') return rBP(d);
-  if(S.tab==='ai') return rAI(d,p);
-  const items=d.acc.map(a=>`<div style="display:flex;align-items:center;gap:7px;padding:9px 11px;border:1px solid var(--bd);border-radius:var(--rs);font-size:11px;background:var(--surface);margin-bottom:5px">${tiI(a.t)} <span style="font-weight:500;flex:1">${a.n}</span><span style="font-size:10px;padding:1px 5px;border-radius:4px;background:var(--sf2);color:var(--tx3)">${a.t}</span></div>`).join('');
-  return `<div class="stt">Accelerators (${d.acc.length})</div>${items}`;
-}
-
-/* BEST PRACTICE TAB */
-function rBP(d){
-  const bpd=BP[d.id];if(!bpd) return `<div class="rpe">No Best Practice content loaded for this deliverable.</div>`;
-  let out='';
-  // Excel BP structure card (e.g. d_ocm1)
-  if(bpd.hasExcelBP){
-    const s=bpd.excelStructure;
-    const qs=s.step1.questions.map((q,i)=>`<li class="bpci"><span class="bpico">▸</span><span><strong>Q${i+1}:</strong> ${q}</span></li>`).join('');
-    const fs=s.step2.fields.map(f=>`<li class="bpci"><span class="bpico">▸</span><span>${f}</span></li>`).join('');
-    out+=`<div class="bpfc">
-      <div class="bpfh"><span class="bpfi">📊</span><span class="bpfn">${bpd.excelBPName}</span><span class="bpft">Excel Template</span></div>
-      <div class="bpfb">
-        <div style="font-size:10px;color:var(--tx3);margin-bottom:10px">${bpd.excelBPDesc}</div>
-        <div class="bps"><div class="bpst">${s.step1.title}</div>
-          <div style="font-size:10px;color:var(--tx2);margin-bottom:6px">Scale: ${s.step1.scale}</div>
-          <ul class="bpcl">${qs}</ul>
-          <div style="margin-top:6px;font-size:10px;padding:6px 8px;background:#EFF6FF;border-radius:4px;color:#1D4ED8">${s.step1.scoring}</div>
-        </div>
-        <div class="bps"><div class="bpst">${s.step2.title}</div>
-          <ul class="bpcl">${fs}</ul>
-          <div style="margin-top:6px;font-size:10px;color:var(--tx2)">${s.step2.riskMatrix}</div>
-        </div>
-      </div>
-    </div>`;
-  }
-  // Regular file cards
-  const fh=(bpd.files||[]).map(f=>{
-    let body=`<div style="font-size:10px;color:var(--tx3);margin-bottom:10px">Source: ${f.source}</div>`;
-    if(f.summary) body+=`<div class="bps"><div class="bpst">📌 Summary</div><p style="font-size:11px;color:var(--tx2);line-height:1.6">${f.summary}</p></div>`;
-    if(f.sections) f.sections.forEach(s=>{body+=`<div class="bps"><div class="bpst">📋 ${s.title}</div><ul class="bpcl">${s.items.map(i=>`<li class="bpci"><span class="bpico">▸</span><span>${i}</span></li>`).join('')}</ul></div>`;});
-    if(f.tableHeaders){const th=f.tableHeaders.map(h=>`<th>${h}</th>`).join('');const tr=f.tableRows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('');body+=`<div class="bps"><div class="bpst">📊 Template Structure</div><div style="overflow-x:auto"><table class="bptb"><thead><tr>${th}</tr></thead><tbody>${tr}</tbody></table></div></div>`;if(f.statusOpts) body+=`<div style="margin-top:8px;font-size:11px;color:var(--tx2)"><strong>Status values:</strong> ${f.statusOpts.join(' → ')}</div>`;}
-    return `<div class="bpfc"><div class="bpfh"><span class="bpfi">${f.icon}</span><span class="bpfn">${f.name}</span><span class="bpft">${f.type}</span></div><div class="bpfb">${body}</div></div>`;
-  }).join('');
-  return `<div class="bph"><div class="bpht">⭐ Best Practice References</div><div class="bphs">Official SAP Activate content. Automatically used in AI comparison.</div></div>${out}${fh}`;
-}
-
-/* AI TAB */
-function rAI(d,p){
-  const bpd=BP[d.id];
-  const hasExcelBP=bpd&&bpd.hasExcelBP;
-  const hasBP=d.hasBP;
-  const con=S.files[d.id];
-  let bpSec='';
-  if(hasExcelBP){
-    bpSec=`<div class="bppl"><span class="bppi">📊</span><div>
-      <div class="bppt">Best Practice Template Pre-Loaded</div>
-      <div class="bpps">${bpd.excelBPName}</div>
-    </div></div>
-    <div style="background:var(--sf2);border:1px solid var(--bd);border-radius:var(--rs);padding:10px 12px;margin-bottom:10px;font-size:11px;color:var(--tx2)">
-      <strong>Template:</strong> ${bpd.excelStructure.step1.questions.length} cloud readiness questions (Strongly Disagree → Strongly Agree) + obstacle scoring.
-      Upload the customer's completed version of this template for AI gap analysis.
-    </div>`;
-  } else if(hasBP){
-    bpSec=`<div class="bppl"><span class="bppi">⭐</span><div>
-      <div class="bppt">Best Practice Content Pre-Loaded</div>
-      <div class="bpps">${(bpd&&bpd.files||[]).map(f=>f.name).join(' + ')}</div>
-    </div></div>`;
+  if(!CUR||!PROJS[CUR]){
+    document.getElementById('lgnd').style.display='none';
+    document.getElementById('projBadge').textContent='📁 Select Project';
+    document.getElementById('hdrR').innerHTML='';
+    renderPicker();
   } else {
-    bpSec=`<div style="background:var(--sf2);border:1px solid var(--bd);border-radius:var(--rs);padding:10px 12px;margin-bottom:10px;font-size:11px;color:var(--tx3)">No Best Practice content loaded for this deliverable yet.</div>`;
+    document.getElementById('lgnd').style.display='flex';
+    document.getElementById('projBadge').textContent='📁 '+PROJS[CUR].name;
+    document.getElementById('hdrR').innerHTML=`<button class="btn btn-s" onclick="showPicker()">⬡ Projects</button><button class="btn btn-g" onclick="exportCSV()">⬇ Export</button>`;
+    renderMatrix();
   }
-  const canRun=(hasBP||hasExcelBP)&&con;
-  const upSec=`<div class="stt" style="margin-top:10px">📨 Customer / Consultant File</div>
-    <div class="upz ${con?'ld':''}" onclick="trUp('cu_${d.id}')"><div class="uzi">${con?'✅':'📁'}</div><div class="uzn">${con?con.name:'Upload customer file'}</div><div class="uzs">.xlsx / .xls / .csv</div></div>
-    <input type="file" id="cu_${d.id}" accept=".xlsx,.xls,.csv" class="hidden" onchange="fUp(this,'${d.id}')">`;
-  const btn=canRun
-    ?`<button class="btn btn-g btn-w mt2" onclick="runAI('${d.id}')">🤖 Run AI Comparison</button>`
-    :`<div style="text-align:center;font-size:11px;color:var(--tx3);padding:8px">${!(hasBP||hasExcelBP)?'No Best Practice loaded for this deliverable.':!con?'Upload the customer file to enable AI comparison.':''}</div>`;
-  let res='';
-  if(p.air){
-    const bnr=p.ai==='ok'
-      ?`<div class="bnrg"><span class="bni">🟢</span><div><div class="bnt">Approved — Marked as completed (green)</div><div class="bns">This step is shown in green on the dashboard.</div></div></div>`
-      :`<div class="bnry"><span class="bni">🟡</span><div class="bnt" style="color:#92400E">AI detected differences — Marked yellow<div class="bns">Review the findings, then approve when satisfied.</div></div><button class="btn btn-ok" style="margin-left:auto;white-space:nowrap" onclick="appr('${d.id}')">✅ Approve → Mark Green</button></div>`;
-    res=`<div class="mt3">${bnr}<div class="row" style="margin-bottom:10px"><div class="stt" style="margin:0">🤖 AI Analysis Result</div><button class="btn btn-s" style="margin-left:auto" onclick="dlRep('${d.id}')">⬇️ Download Report</button></div>${p.air}</div>`;
-  }
-  return `${bpSec}${upSec}${btn}${res}`;
 }
 
-/* XL STANDALONE */
-function rXL(){
-  const opts=Object.entries(DB).flatMap(([key,ds])=>{const[ph,ws]=key.split('_');const phn=PH.find(p=>p.id===ph)?.name,wsn=WS.find(w=>w.id===ws)?.name;return ds.filter(d=>d.hasBP||d.tpl).map(d=>`<option value="${d.id}">[${phn} › ${wsn}] ${d.name}</option>`);}).join('');
-  return `<div style="background:var(--surface);border-radius:var(--r);box-shadow:var(--sh);padding:18px;margin-bottom:16px">
-    <div style="font-size:14px;font-weight:700;margin-bottom:4px">🤖 AI Excel Comparison</div>
-    <div style="font-size:11px;color:var(--tx3);margin-bottom:16px">Select a deliverable, upload the customer file, and let AI compare against Best Practice.</div>
-    <div class="ff"><label class="fl">Select Deliverable</label>
-      <select class="fi" onchange="xSel(this.value)"><option value="">— Select —</option>${opts}</select>
+function renderPicker(){
+  const ids=Object.keys(PROJS);
+  const list=ids.length
+    ? ids.map(id=>`<div class="proj-item" onclick="selProj('${id}')">
+        <span class="pi-ico">📋</span>
+        <span class="pi-name">${PROJS[id].name}</span>
+        <span class="pi-date">${new Date(PROJS[id].created).toLocaleDateString('en-GB')}</span>
+        <span class="pi-del" onclick="event.stopPropagation();delProj('${id}')">✕</span>
+      </div>`).join('')
+    : '<div class="empty-msg">No projects yet. Create your first project above.</div>';
+  document.getElementById('main').innerHTML=`<div class="picker-wrap fade">
+    <div class="picker-hdr"><div class="picker-title">SAP Activate Projects</div>
+    <div class="picker-sub">S/4HANA Cloud Private Edition — Governance &amp; Tracking</div></div>
+    <div class="picker-body">
+      <div class="sec-lbl">Create New Project</div>
+      <div class="new-row">
+        <input class="fi" type="text" id="npn" placeholder="e.g. ABC Corp – S/4HANA Cloud" style="flex:1"
+          onkeydown="if(event.key===\'Enter\')newProj()">
+        <button class="btn btn-p" onclick="newProj()">+ Create</button>
+      </div>
+      ${ids.length?'<div class="sec-lbl">Existing Projects</div>':''}
+      <div class="proj-list">${list}</div>
+    </div></div>`;
+  setTimeout(()=>document.getElementById('npn')?.focus(),100);
+}
+
+function newProj(){
+  const n=document.getElementById('npn')?.value?.trim();
+  if(!n){toast('⚠ Enter a project name');return;}
+  const id='p'+Date.now();
+  PROJS[id]={id,name:n,created:new Date().toISOString(),tasks:{},delL2:{}};
+  save(); CUR=id; toast('✅ Created: '+n); render();
+}
+function selProj(id){CUR=id;render();}
+function delProj(id){
+  if(!confirm('Delete "'+PROJS[id]?.name+'"?'))return;
+  delete PROJS[id];
+  if(CUR===id) CUR=Object.keys(PROJS)[0]||null;
+  save(); render();
+}
+function showPicker(){CUR=null;render();}
+
+/* ══════════════ MATRIX ══════════════ */
+function renderMatrix(){
+  const phHdrs=PHASES.map(ph=>`<th class="mxh-ph" style="background:${PH_COLOR[ph]}">
+    <div class="ph-name-big">${ph}</div>
+  </th>`).join('');
+
+  const wsRows=WS.map(ws=>{
+    const cells=PHASES.map(ph=>{
+      const l2s=(L2M[ws+'__'+ph]||[]).filter(l2=>!proj()?.delL2?.[key(ws,ph,l2)]);
+      if(!l2s.length) return `<td class="mx-td empty"></td>`;
+      const chips=l2s.slice(0,5).map(l2=>{
+        const p=l2pct(ws,ph,l2);
+        let dc=stC(p.st),nc='';
+        if(p.ai==='diff'){dc='#F59E0B';nc='cy';}
+        if(p.ai==='ok'){dc='#16A34A';nc='cg';}
+        const fl=p.ai==='diff'?'🟡 ':p.ai==='ok'?'🟢 ':'';
+        const nm=l2.length>36?l2.slice(0,36)+'…':l2;
+        return `<div class="chip" onclick="openDrw('${esc(ws)}','${ph}','${esc(l2)}')">
+          <div class="cdot" style="background:${dc}"></div>
+          <div class="cname ${nc}">${fl}${nm}</div>
+          <div class="cpct">${p.pct}%</div>
+        </div>`;
+      }).join('');
+      const more=l2s.length>5?`<div style="font-size:9px;color:var(--tx3);padding:0 5px">+${l2s.length-5} more</div>`:'';
+      return `<td class="mx-td clickable">${chips}${more}</td>`;
+    }).join('');
+    return `<tr><td class="mx-ws">${ws}</td>${cells}</tr>`;
+  }).join('');
+
+  const phFoot=PHASES.map(ph=>{
+    const pct=phPct(ph); const c=PH_COLOR[ph]; const qg=PH_QG[ph];
+    return `<td class="mxf-ph">
+      <div class="ph-pct" style="color:${c}">${pct}%</div>
+      <div class="ph-desc" style="color:${c}">${PH_DESC[ph]}</div>
+      ${qg?`<div class="ph-qg" style="color:${c}">🏁 ${qg}</div>`:''}
+    </td>`;
+  }).join('');
+
+  document.getElementById('main').innerHTML=`<div class="mx-outer fade">
+    <table class="mx-table">
+      <thead><tr><th class="mxh-ws">Workstream</th>${phHdrs}</tr></thead>
+      <tbody>${wsRows}</tbody>
+      <tfoot><tr class="mx-foot"><td class="mxf-ws">Phase Status</td>${phFoot}</tr></tfoot>
+    </table></div>`;
+}
+
+/* ══════════════ DRAWER ══════════════ */
+function openDrw(ws,ph,l2){
+  DS={ws,ph,l2,tab:'tasks'};
+  if(!CF[key(ws,ph,l2)]) CF[key(ws,ph,l2)]={};
+  renderDrw();
+  document.getElementById('drwBg').classList.add('show');
+  document.getElementById('drw').classList.add('open');
+}
+function closeDrawer(){
+  document.getElementById('drwBg').classList.remove('show');
+  document.getElementById('drw').classList.remove('open');
+  renderMatrix();
+}
+function renderDrw(){
+  const {ws,ph,l2}=DS; const k=key(ws,ph,l2); const t=td(k); const c=PH_COLOR[ph];
+  document.getElementById('drwHdr').innerHTML=`
+    <div class="drw-title">
+      ${l2}
+      <span class="drw-close" onclick="closeDrawer()">✕</span>
     </div>
-  </div><div id="xc"></div>`;
+    <div class="drw-meta">
+      <span style="background:${c};color:#fff;padding:2px 9px;border-radius:12px;font-size:10px;font-weight:700">${ph}</span>
+      <span class="txs txm">${ws}</span>
+      <span class="sb ${stK(t.st)}">${stL(t.st)}</span>
+      <span style="font-size:10px;font-family:var(--mo);color:var(--tx3)">${t.pct}%</span>
+      ${t.ai==='diff'?'<span class="sb s-df">🟡 Differences</span>':''}
+      ${t.ai==='ok'?'<span class="sb s-ap">🟢 Approved</span>':''}
+    </div>`;
+  document.getElementById('drwTabs').innerHTML=[
+    {id:'tasks',lbl:'📋 Tasks'},{id:'progress',lbl:'📊 Progress'},
+    {id:'template',lbl:'📎 Template'},{id:'ai',lbl:'🤖 AI Compare'}
+  ].map(tb=>`<div class="tab ${DS.tab===tb.id?'act':''}" onclick="switchTab('${tb.id}')">${tb.lbl}</div>`).join('');
+  renderDrwBody();
+}
+function switchTab(t){DS.tab=t;renderDrw();}
+function renderDrwBody(){
+  const {ws,ph,l2,tab}=DS; const k=key(ws,ph,l2); const t=td(k);
+  const body=document.getElementById('drwBody');
+  if(tab==='tasks') body.innerHTML=renderTasks(ws,ph,l2,k,t);
+  else if(tab==='progress') body.innerHTML=renderProgress(k,t);
+  else if(tab==='template') body.innerHTML=renderTemplate(k);
+  else if(tab==='ai') body.innerHTML=renderAI(k,l2,t);
 }
 
-/* ══ ACTIONS ══ */
-function gDash(){S.view='dash';S.cell=null;S.dId=null;render();}
-function goXl(){S.view='xl';render();}
-function gPh(phId){const f=WS.find(ws=>cD(phId,ws.id).length>0);if(f) oCell(phId,f.id);}
-function oCell(ph,ws){const ds=cD(ph,ws);if(!ds.length) return;S.view='cell';S.cell={ph,ws};S.dId=ds[0].id;S.tab=ds[0].hasBP?'bp':'tasks';render();}
-function sDel(id){S.dId=id;S.tab=fD(id)?.hasBP?'bp':'tasks';render();}
-function sTab(t){S.tab=t;render();}
-function tTask(id,i){
-  if(!S.prog[id]) S.prog[id]={st:'ns',pct:0,notes:'',who:'',due:'',chk:{},ai:null,air:null};
-  const p=S.prog[id];if(!p.chk)p.chk={};p.chk[i]=!p.chk[i];
-  const d=fD(id);if(d){const dn=Object.values(p.chk).filter(Boolean).length;p.pct=Math.round((dn/d.tasks.length)*100);p.st=p.pct===100?'dn':p.pct>0?'ip':'ns';}
-  save();render();
+/* TASKS TAB */
+function renderTasks(ws,ph,l2,k,t){
+  const base=getl3(ws,ph,l2);
+  const extra=t.extra||[];
+  const all=[...base,...extra];
+  const del=t.del||{}; const chk=t.chk||{};
+  const active=all.filter((_,i)=>!del[i]);
+  const doneCnt=active.filter((_,i)=>{const ri=all.indexOf(active[i]);return chk[ri];}).length;
+  const items=all.map((tx,i)=>{
+    const isDel=del[i]; const isDone=chk[i];
+    const fid='nt_'+k.replace(/[\|]/g,'_');
+    if(isDel) return `<li class="l3-item">
+      <span class="rm-btn" onclick="restoreT('${k}',${i})" title="Restore">↩</span>
+      <span class="task-txt del">${tx}</span></li>`;
+    return `<li class="l3-item">
+      <div class="chk ${isDone?'dn':''}" onclick="toggleChk('${k}',${i})">${isDone?'✓':''}</div>
+      <span class="task-txt ${isDone?'done':''}">${tx}</span>
+      <span class="rm-btn" onclick="removeT('${k}',${i})" title="Remove">✕</span>
+    </li>`;
+  }).join('');
+  const delCount=Object.keys(del).length;
+  return `<div class="stt">L3 Sub-Tasks (${doneCnt}/${active.length} completed)</div>
+    <ul class="l3-list">${items||'<li style="color:var(--tx3);font-size:12px;padding:8px 0">No sub-tasks defined.</li>'}</ul>
+    ${delCount?`<div style="margin-top:8px;font-size:10px;color:var(--tx3);border-top:1px solid var(--bd);padding-top:8px">${delCount} removed task(s) — click ↩ to restore.</div>`:''}
+    <div class="add-row mt3">
+      <input class="fi" type="text" id="nt_${k.replace(/[\|]/g,'_')}" placeholder="Add custom task…" style="flex:1"
+        onkeydown="if(event.key===\'Enter\')addT('${k}')">
+      <button class="btn btn-p" onclick="addT('${k}')">+ Add</button>
+    </div>`;
 }
-function sSt(id,st){if(!S.prog[id]) S.prog[id]={st,pct:0,notes:'',who:'',due:'',chk:{},ai:null,air:null};S.prog[id].st=st;save();render();}
-function sPct(id,v){if(!S.prog[id]) S.prog[id]={st:'ns',pct:+v,notes:'',who:'',due:'',chk:{},ai:null,air:null};S.prog[id].pct=+v;const e=document.getElementById('pv_'+id);if(e)e.textContent=v+'%';}
-function sF(id,f,v){if(!S.prog[id]) S.prog[id]={st:'ns',pct:0,notes:'',who:'',due:'',chk:{},ai:null,air:null};S.prog[id][f]=v;}
-function svP(id){save();toast('✅ Saved');}
-function appr(id){
-  if(!S.prog[id]) S.prog[id]={st:'ns',pct:0,notes:'',who:'',due:'',chk:{},ai:null,air:null};
-  S.prog[id].ai='ok';S.prog[id].st='dn';S.prog[id].pct=100;
-  save();toast('🟢 Approved — marked green!');render();
+
+/* PROGRESS TAB */
+function renderProgress(k,t){
+  const ss=[['ns','sbn-ns'],['ip','sbn-ip'],['dn','sbn-dn'],['bl','sbn-bl'],['rv','sbn-rv']];
+  return `<div class="stt">Status</div>
+    <div class="stbns">${ss.map(([s,c])=>`<button class="sbn ${c} ${t.st===s?'act':''}" onclick="setSt('${k}','${s}')">${stL(s)}</button>`).join('')}</div>
+    <div class="stt">Completion %</div>
+    <div class="slr"><input type="range" min="0" max="100" value="${t.pct}" class="psl" oninput="slPct('${k}',this.value)">
+    <span class="pv" id="pv_${k.replace(/[\|]/g,'_')}">${t.pct}%</span></div>
+    <div class="ff"><label class="fl">Owner</label><input class="fi" type="text" value="${t.owner||''}" placeholder="Name" oninput="setF('${k}','owner',this.value)"></div>
+    <div class="ff"><label class="fl">Due Date</label><input class="fi" type="date" value="${t.due||''}" oninput="setF('${k}','due',this.value)"></div>
+    <div class="ff"><label class="fl">Notes</label><textarea class="fta" placeholder="Notes…" oninput="setF('${k}','notes',this.value)">${t.notes||''}</textarea></div>
+    <button class="btn btn-p btn-full" onclick="saveProg('${k}')">💾 Save Progress</button>`;
 }
-function trUp(id){document.getElementById(id)?.click();}
-async function fUp(inp,id){
-  const f=inp.files[0];if(!f) return;
-  try{const d=await rdXL(f);S.files[id]={name:f.name,data:d};toast(`✅ ${f.name} loaded`);render();}
-  catch(e){toast('❌ File could not be read');}
+
+/* TEMPLATE TAB */
+function renderTemplate(k){
+  const fk=k.replace(/[\|]/g,'_'); const tpl=CF[k]?.tpl;
+  return `<div class="txs txm" style="margin-bottom:14px">Upload your Best Practice / reference template for this task. Used as the comparison baseline in AI analysis.</div>
+    <div class="stt">Reference Template</div>
+    <div class="upz ${tpl?'ld':''}" onclick="trigU('tpl_${fk}')">
+      <div class="upz-ico">${tpl?'✅':'📋'}</div>
+      <div class="upz-name">${tpl?tpl.name:'Upload your reference template'}</div>
+      <div class="upz-sub">.xlsx / .xls / .csv</div>
+    </div>
+    <input type="file" id="tpl_${fk}" accept=".xlsx,.xls,.csv" class="hidden" onchange="upFile(this,'${k}','tpl')">
+    ${tpl?`<div style="background:var(--sf2);border:1px solid var(--bd);border-radius:var(--rs);padding:9px 11px;font-size:11px;color:var(--tx2)">
+      <strong>Loaded:</strong> ${tpl.name} &nbsp;·&nbsp; ${Object.keys(tpl.data).length} sheet(s)
+      <span style="float:right;cursor:pointer;color:var(--tx3)" onclick="clearF('${k}','tpl')">✕ Remove</span>
+    </div>`:''}
+    <div class="mt3" style="padding:10px;background:#FEF3C7;border-radius:var(--rs);font-size:11px;color:#92400E">
+      💡 Once loaded, go to <strong>AI Compare</strong> tab → upload customer file → run QA analysis.
+    </div>`;
 }
-function rdXL(f){return new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>{try{const wb=XLSX.read(e.target.result,{type:'binary'});const o={};wb.SheetNames.forEach(s=>{o[s]=XLSX.utils.sheet_to_json(wb.Sheets[s],{header:1,defval:''});});res(o);}catch(e){rej(e);}};r.onerror=rej;r.readAsBinaryString(f);});}
-function xl2txt(d){return Object.entries(d).map(([s,rows])=>`=== Sheet: ${s} ===\n${rows.slice(0,60).map(r=>r.join(' | ')).join('\n')}`).join('\n\n');}
-function bp2txt(id){
-  const b=BP[id];if(!b) return 'No Best Practice data found.';
-  let t='';
-  if(b.hasExcelBP){
-    const s=b.excelStructure;
-    t+='=== BEST PRACTICE TEMPLATE: '+b.excelBPName+' ===\n'+b.excelBPDesc+'\n\n';
-    t+='STEP 1 – CLOUD MINDSET ASSESSMENT ('+s.step1.questions.length+' questions)\n';
-    t+='Scale: '+s.step1.scale+'\n\n';
-    s.step1.questions.forEach(function(q,i){ t+='Q'+(i+1)+': '+q+'\n'; });
-    t+='\nScoring: '+s.step1.scoring+'\n\n';
-    t+='STEP 2 – OBSTACLES TO CHANGE\n';
-    s.step2.fields.forEach(function(f){ t+='• '+f+'\n'; });
-    t+='\nRisk assessment: '+s.step2.riskMatrix+'\n\n';
-    if(b.files) b.files.forEach(function(f){
-      t+='\n=== '+f.name+' ===\n'+(f.summary||'')+'\n';
-      if(f.sections) f.sections.forEach(function(s2){t+='\n## '+s2.title+'\n';s2.items.forEach(function(i){t+='• '+i+'\n';});});
-    });
-    return t;
+
+/* AI COMPARE TAB */
+function renderAI(k,l2,t){
+  const fk=k.replace(/[\|]/g,'_'); const tpl=CF[k]?.tpl; const cust=CF[k]?.cust;
+  const tplSec=tpl
+    ?`<div class="preloaded"><span class="pre-ico">📋</span><div><div class="pre-txt">Reference Template Loaded</div><div class="pre-sub">${tpl.name}</div></div>
+       <button class="btn btn-danger" style="margin-left:auto;font-size:10px" onclick="clearF('${k}','tpl')">✕</button></div>`
+    :`<div style="background:var(--sf2);border:1px solid var(--bd);border-radius:var(--rs);padding:9px 11px;margin-bottom:9px;font-size:11px;color:var(--tx3)">
+       ⚠ No reference template. Go to <strong>Template</strong> tab to upload your Best Practice file first.</div>`;
+  const custSec=`<div class="stt mt2">📨 Customer Submitted File</div>
+    <div class="upz ${cust?'ld':''}" onclick="trigU('cust_${fk}')">
+      <div class="upz-ico">${cust?'✅':'📁'}</div>
+      <div class="upz-name">${cust?cust.name:'Upload customer file'}</div>
+      <div class="upz-sub">.xlsx / .xls / .csv — the customer filled version</div>
+    </div>
+    <input type="file" id="cust_${fk}" accept=".xlsx,.xls,.csv" class="hidden" onchange="upFile(this,'${k}','cust')">
+    ${cust?`<div style="font-size:10px;color:var(--tx3);margin-bottom:4px;text-align:right;cursor:pointer" onclick="clearF('${k}','cust')">✕ Remove customer file</div>`:''}`;
+  const btn=tpl&&cust
+    ?`<button class="btn btn-g btn-full mt2" onclick="runAI('${k}','${esc(l2)}')">🤖 Run QA Analysis</button>`
+    :`<div style="text-align:center;font-size:11px;color:var(--tx3);padding:8px">${!tpl?'Load reference template first.':!cust?'Upload the customer file to run analysis.':''}</div>`;
+  let res='';
+  if(t.air){
+    const bn=t.ai==='ok'
+      ?`<div class="bn-g"><span class="bn-ico">🟢</span><div><div class="bn-txt">Approved — marked green on dashboard</div></div></div>`
+      :`<div class="bn-y"><span class="bn-ico">🟡</span><div class="bn-txt" style="color:#92400E">Differences found — marked yellow on dashboard<div class="bn-sub">Review below, approve when satisfied.</div></div>
+         <button class="btn btn-ok" style="margin-left:auto;white-space:nowrap" onclick="approveT('${k}')">✅ Approve</button></div>`;
+    res=`<div class="mt3">${bn}<div class="row" style="margin-bottom:10px">
+      <div class="stt" style="margin:0">🤖 QA Analysis Report</div>
+      <button class="btn btn-d" style="margin-left:auto" onclick="dlRep('${k}','${esc(l2)}')">⬇ Download</button>
+    </div>${t.air}</div>`;
   }
-  return (b.files||[]).map(function(f){
-    let out='--- '+f.name+' ---\n'+(f.summary||'')+'\n';
-    if(f.sections) f.sections.forEach(function(s){out+='\n## '+s.title+'\n';s.items.forEach(function(i){out+='• '+i+'\n';});});
-    if(f.tableHeaders) out+='\nTemplate columns: '+f.tableHeaders.join(' | ')+'\n';
-    return out;
-  }).join('\n\n');
+  return `${tplSec}${custSec}${btn}${res}`;
 }
 
-async function runAI(id){
-  const con=S.files[id];if(!con) return;const d=fD(id);
-  load2(true,'Running AI analysis… (~20 sec)');
+/* ══════════════ TASK ACTIONS ══════════════ */
+function ensure(k){
+  if(!proj())return null;
+  if(!proj().tasks) proj().tasks={};
+  if(!proj().tasks[k]) proj().tasks[k]={st:'ns',pct:0,notes:'',owner:'',due:'',chk:{},del:{},extra:[],ai:null,air:null};
+  return proj().tasks[k];
+}
+function toggleChk(k,i){
+  const t=ensure(k);if(!t)return;
+  if(!t.chk)t.chk={};
+  t.chk[i]=!t.chk[i];
+  const {ws,ph,l2}=DS;
+  const all=[...getl3(ws,ph,l2),...(t.extra||[])];
+  const del=t.del||{};
+  const active=all.filter((_,j)=>!del[j]);
+  const done=active.filter((_,j)=>{const ri=all.indexOf(active[j]);return t.chk[ri];}).length;
+  if(active.length) t.pct=Math.round(done/active.length*100);
+  t.st=t.pct===100?'dn':t.pct>0?'ip':'ns';
+  save();renderDrwBody();
+}
+function removeT(k,i){const t=ensure(k);if(!t)return;if(!t.del)t.del={};t.del[i]=true;save();renderDrwBody();}
+function restoreT(k,i){const t=ensure(k);if(!t)return;if(t.del)delete t.del[i];save();renderDrwBody();}
+function addT(k){
+  const fk=k.replace(/[\|]/g,'_');
+  const inp=document.getElementById('nt_'+fk);
+  const txt=inp?.value?.trim();
+  if(!txt){toast('⚠ Enter task description');return;}
+  const t=ensure(k);if(!t)return;
+  if(!t.extra)t.extra=[];
+  t.extra.push(txt);
+  save();inp.value='';renderDrwBody();toast('✅ Task added');
+}
+function setSt(k,s){const t=ensure(k);if(!t)return;t.st=s;save();renderDrw();}
+function slPct(k,v){
+  const t=ensure(k);if(!t)return;t.pct=+v;
+  const el=document.getElementById('pv_'+k.replace(/[\|]/g,'_'));
+  if(el)el.textContent=v+'%';
+}
+function setF(k,f,v){const t=ensure(k);if(!t)return;t[f]=v;}
+function saveProg(k){save();toast('✅ Saved');renderDrw();}
+function approveT(k){const t=ensure(k);if(!t)return;t.ai='ok';t.st='dn';t.pct=100;save();toast('🟢 Approved!');renderDrw();}
+
+/* ══════════════ FILE UPLOAD ══════════════ */
+function trigU(id){document.getElementById(id)?.click();}
+async function upFile(inp,k,type){
+  const f=inp.files[0];if(!f)return;
   try{
-    const prompt=`You are a senior SAP S/4HANA implementation quality assurance expert specializing in SAP Activate methodology.
+    const d=await readXL(f);
+    if(!CF[k])CF[k]={};
+    CF[k][type]={name:f.name,data:d};
+    toast('✅ '+f.name+' loaded');
+    renderDrwBody();
+  }catch(e){toast('❌ Could not read file');}
+}
+function clearF(k,type){if(CF[k])delete CF[k][type];renderDrwBody();}
+function readXL(f){
+  return new Promise((res,rej)=>{
+    const r=new FileReader();
+    r.onload=e=>{try{
+      const wb=XLSX.read(e.target.result,{type:'binary'});
+      const o={};wb.SheetNames.forEach(s=>{o[s]=XLSX.utils.sheet_to_json(wb.Sheets[s],{header:1,defval:'',raw:false});});
+      res(o);
+    }catch(err){rej(err);}};
+    r.onerror=rej;r.readAsBinaryString(f);
+  });
+}
+function x2txt(d){
+  return Object.entries(d).map(([s,rows])=>
+    '=== Sheet: '+s+' ===\n'+rows.slice(0,80).map(r=>r.join(' | ')).join('\n')
+  ).join('\n\n');
+}
 
-DELIVERABLE: ${d.name}
-PROJECT: SAP Activate – S/4HANA Cloud Private Edition
-
-BEST PRACTICE REFERENCE (official SAP materials):
-${bp2txt(id)}
-
-CUSTOMER / CONSULTANT FILE SUBMITTED:
-${xl2txt(con.data)}
-
-Compare the customer file against the SAP Best Practice above. Identify:
-1. Methodological gaps (missing steps, wrong approach, skipped mandatory activities)
-2. Content differences and risks (incomplete sections, inconsistencies, red flags)
-3. Positive additions the customer made beyond the standard template
-4. Specific recommendations for the consulting team
-
-Respond ONLY with valid JSON — no markdown, no extra text:
-{"summary":"2-3 sentence executive summary","overall_score":72,"critical_gaps":["critical gap 1","gap 2"],"warnings":["content risk 1","risk 2"],"additions":["positive addition if any"],"recommendations":["recommendation 1","recommendation 2"]}`;
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1200,messages:[{role:'user',content:prompt}]})});
+/* ══════════════ AI QA ══════════════ */
+async function runAI(k,l2Name){
+  const f=CF[k];if(!f?.tpl||!f?.cust){toast('⚠ Both files required');return;}
+  const {ws,ph}=DS;
+  const l3list=(L3M[ws+'__'+ph+'__'+l2Name]||[]).join('\n• ');
+  loading(true,'Running QA analysis… (~20 sec)');
+  try{
+    const p='You are an SAP S/4HANA implementation QA expert.\n\n'+
+      'Task/Deliverable: "'+l2Name+'"\nPhase: '+ph+' | Workstream: '+ws+'\n'+
+      'Expected sub-tasks:\n• '+l3list+'\n\n'+
+      '=== REFERENCE / BEST PRACTICE TEMPLATE ===\n'+x2txt(f.tpl.data)+'\n\n'+
+      '=== CUSTOMER SUBMITTED FILE ===\n'+x2txt(f.cust.data)+'\n\n'+
+      'Perform thorough QA. Respond ONLY with this JSON:\n'+
+      '{"summary":"2-3 sentence assessment","overall_score":72,'+
+      '"critical_gaps":["critical gap 1"],"overdue_risks":["overdue/at-risk item 1"],'+
+      '"missing_items":["forgotten item 1"],"differences":["content diff 1"],'+
+      '"positives":["what was done well"],"recommendations":["recommendation 1"]}';
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1500,messages:[{role:'user',content:p}]})
+    });
     const data=await resp.json();
     const txt=data.content?.find(b=>b.type==='text')?.text||'';
-    let parsed;try{parsed=JSON.parse(txt.replace(/```json|```/g,'').trim());}catch(e){parsed={summary:txt,overall_score:0,critical_gaps:[],warnings:[],additions:[],recommendations:[]};}
-    if(!S.prog[id]) S.prog[id]={st:'ns',pct:0,notes:'',who:'',due:'',chk:{},ai:null,air:null};
-    S.prog[id].air=bldRes(parsed);
-    S.prog[id].ai='diff';
-    save();load2(false);S.tab='ai';render();
-  }catch(e){load2(false);toast('❌ AI error: '+e.message);}
-}
-function bldRes(r){
-  const sc=r.overall_score||0;const sc2=sc>=80?'#16A34A':sc>=60?'#D97706':'#DC2626';
-  const sec=(items,hc,bc,em,ttl)=>{if(!items?.length) return '';return`<div class="gps"><div class="gph ${hc}">${em} ${ttl} (${items.length})</div>${items.map(i=>`<div class="gpi" style="border-left-color:${bc}">${i}</div>`).join('')}</div>`;};
-  return `<div class="aisr"><div class="aisn" style="color:${sc2}">${sc}%</div><div><div class="aisl">Best Practice Alignment</div><div class="aist">${r.summary}</div></div></div>
-    ${sec(r.critical_gaps,'gc','#DC2626','🔴','Methodological / Critical Gaps')}
-    ${sec(r.warnings,'gw','#D97706','⚠️','Content Differences & Risks')}
-    ${sec(r.additions,'gi','#1D4ED8','ℹ️','Customer Additions')}
-    ${sec(r.recommendations,'gk','#16A34A','✅','Recommendations')}`;
-}
-function dlRep(id){
-  const d=fD(id),p=gP(id);if(!p.air) return;
-  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>SAP QA – ${d.name}</title>
-  <style>body{font-family:Arial,sans-serif;max-width:820px;margin:40px auto;color:#1a1a1a}h1{color:#1D4ED8}.gh{padding:6px 10px;border-radius:5px;font-size:13px;font-weight:700;margin-bottom:8px}.gc{background:#FEE2E2;color:#DC2626}.gw{background:#FEF3C7;color:#D97706}.gi{background:#DBEAFE;color:#1D4ED8}.gk{background:#DCFCE7;color:#16A34A}.gpi{padding:7px 10px;border-left:3px solid;background:#F8F9FC;margin:3px 0;font-size:12px}</style></head>
-  <body><h1>SAP Activate QA Report</h1><p><b>Deliverable:</b> ${d.name} | <b>Date:</b> ${new Date().toLocaleDateString('tr-TR')}</p>
-  ${p.air.replace(/class="gph gc"/g,'class="gh gc"').replace(/class="gph gw"/g,'class="gh gw"').replace(/class="gph gi"/g,'class="gh gi"').replace(/class="gph gk"/g,'class="gh gk"')}</body></html>`;
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([html],{type:'text/html'}));a.download=`QA_${d.id}.html`;a.click();toast('📥 Report downloaded');
-}
-function xSel(id){
-  if(!id){document.getElementById('xc').innerHTML='';return;}
-  const d=fD(id);if(!d) return;const p=gP(id);
-  document.getElementById('xc').innerHTML=`<div style="background:var(--surface);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden"><div style="padding:14px 18px;background:var(--sf2);border-bottom:1px solid var(--bd);font-size:13px;font-weight:700">${d.name}</div><div style="padding:18px">${rAI(d,p)}</div></div>`;
+    let parsed;
+    try{parsed=JSON.parse(txt.replace(/```json|```/g,'').trim());}
+    catch(e){parsed={summary:txt,overall_score:0,critical_gaps:[],overdue_risks:[],missing_items:[],differences:[],positives:[],recommendations:[]};}
+    const t=ensure(k);if(!t)return;
+    t.air=buildReport(parsed);t.ai='diff';
+    save();loading(false);renderDrw();
+  }catch(e){loading(false);toast('❌ AI error: '+e.message);}
 }
 
-S.view='dash';render();
+function buildReport(r){
+  const sc=r.overall_score||0;
+  const sc2=sc>=80?'#16A34A':sc>=60?'#D97706':'#DC2626';
+  function sec(items,hc,bc,em,ttl){
+    if(!items?.length)return '';
+    return '<div class="qa-sec"><div class="qa-hdr '+hc+'">'+em+' '+ttl+' ('+items.length+')</div>'+
+      items.map(i=>'<div class="qa-it" style="border-left-color:'+bc+'">'+i+'</div>').join('')+'</div>';
+  }
+  return '<div class="score-row"><div class="score-num" style="color:'+sc2+'">'+sc+'%</div>'+
+    '<div><div class="score-lbl">QA Compliance Score</div><div class="score-txt">'+r.summary+'</div></div></div>'+
+    sec(r.critical_gaps,'qa-cr','#DC2626','🔴','Critical Gaps')+
+    sec(r.overdue_risks,'qa-od','#D97706','⏰','Overdue / At-Risk Items')+
+    sec(r.missing_items,'qa-ms','#1D4ED8','📋','Missing / Forgotten Items')+
+    sec(r.differences,'qa-df','#92400E','⚠️','Content Differences')+
+    sec(r.positives,'qa-ok','#16A34A','✅','Positives')+
+    sec(r.recommendations,'qa-ok','#16A34A','💡','Recommendations');
+}
+
+function dlRep(k,l2Name){
+  const t=td(k);if(!t.air)return;
+  const {ws,ph}=DS; const pn=proj()?.name||'Project';
+  const html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>QA Report</title>'+
+    '<style>body{font-family:Arial,sans-serif;max-width:840px;margin:36px auto;color:#1a1a1a}'+
+    'h1{color:#1D4ED8}p.m{color:#666;font-size:12px;margin-bottom:20px}'+
+    '.hdr{padding:6px 10px;border-radius:5px;font-size:13px;font-weight:700;margin-bottom:8px}'+
+    '.qa-cr{background:#FEE2E2;color:#DC2626}.qa-od{background:#FEF3C7;color:#D97706}'+
+    '.qa-ms{background:#DBEAFE;color:#1D4ED8}.qa-df{background:#FEF9C3;color:#92400E}'+
+    '.qa-ok{background:#DCFCE7;color:#16A34A}'+
+    '.it{padding:7px 10px;border-left:3px solid;background:#F8F9FC;margin:3px 0;font-size:12px}'+
+    '.sr{display:flex;gap:14px;background:#F8F9FC;padding:14px;border-radius:8px;margin-bottom:20px}'+
+    '.sn{font-size:34px;font-weight:800}</style></head>'+
+    '<body><h1>SAP Activate QA Report</h1><p class="m"><b>Project:</b> '+pn+' &nbsp;|&nbsp; <b>Phase:</b> '+ph+' &nbsp;|&nbsp; <b>WS:</b> '+ws+'<br>'+
+    '<b>Task:</b> '+l2Name+' &nbsp;|&nbsp; <b>Date:</b> '+new Date().toLocaleDateString('en-GB')+'</p>'+
+    t.air.replace(/class="score-row"/g,'class="sr"').replace(/class="score-num"/g,'class="sn"')
+      .replace(/class="qa-sec"/g,'').replace(/class="qa-hdr /g,'class="hdr ')
+      .replace(/class="qa-it"/g,'class="it"')+'</body></html>';
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([html],{type:'text/html'}));
+  a.download='QA_'+l2Name.replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_]/g,'').slice(0,40)+'.html';
+  a.click();toast('📥 Downloaded');
+}
+
+/* ══════════════ EXPORT ══════════════ */
+function exportCSV(){
+  if(!proj())return;
+  const rows=[['Phase','Workstream','L2 Task','Status','%','Owner','Due','AI Status','Notes']];
+  WS.forEach(ws=>PHASES.forEach(ph=>(L2M[ws+'__'+ph]||[]).forEach(l2=>{
+    const t=td(key(ws,ph,l2));
+    rows.push([ph,ws,l2,stL(t.st),t.pct+'%',t.owner||'',t.due||'',
+      t.ai==='ok'?'Approved':t.ai==='diff'?'Diff Found':'—',t.notes||'']);
+  })));
+  const csv=rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));
+  a.download='SAP_Report_'+proj().name.replace(/\s+/g,'_')+'.csv';
+  a.click();toast('📥 Exported');
+}
+
+/* ══════════════ INIT ══════════════ */
+render();
 </script>
 </body>
 </html>
