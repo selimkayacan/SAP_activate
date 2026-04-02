@@ -331,7 +331,7 @@ const BP = {
           'Validate all Add-On compatibility before committing to a go-live timeline.',
           'Use the Simplification Items report to identify mandatory vs. optional activities and sequence them in the project plan.',
           'Use Planned Downtime Calculator output to align with business on acceptable cutover window.',
-          'Share the Readiness Check output with the customer's IT team and discuss findings in a technical workshop.',
+          'Share the Readiness Check output with the customer IT team and discuss findings in a technical workshop.',
         ]},
       ]
     },
@@ -351,12 +351,12 @@ const BP = {
           'My organization has a clearly communicated and understood digital transformation strategy',
           'My organization follows the agile methodology and embraces the agile way of working',
           'All digital initiatives in my organization are well connected',
-          "My organization's employees understand the value of digital transformation",
-          "My organization's employees demonstrate the right cloud mindset for a digital transformation",
-          "My organization's employees have the right skill and roles set to keep the pace of digital transformation",
-          "My organization's employees work across silos",
+          "My organization employees understand the value of digital transformation",
+          "My organization employees demonstrate the right cloud mindset for a digital transformation",
+          "My organization employees have the right skill and roles set to keep the pace of digital transformation",
+          "My organization employees work across silos",
           'It is clear to me of the importance for my organization to fit to standard SAP',
-          "My organization's existing IT landscape is capable to cope with rapid changes within the digital transformation",
+          "My organization existing IT landscape is capable to cope with rapid changes within the digital transformation",
         ],
         scoring: 'Score 10–30: Low as-is maturity | Score 31–49: Medium as-is maturity | Score 50–60: High as-is maturity',
       },
@@ -969,58 +969,29 @@ function rdXL(f){return new Promise((res,rej)=>{const r=new FileReader();r.onloa
 function xl2txt(d){return Object.entries(d).map(([s,rows])=>`=== Sheet: ${s} ===\n${rows.slice(0,60).map(r=>r.join(' | ')).join('\n')}`).join('\n\n');}
 function bp2txt(id){
   const b=BP[id];if(!b) return 'No Best Practice data found.';
+  let t='';
   if(b.hasExcelBP){
     const s=b.excelStructure;
-    let t=`=== BEST PRACTICE TEMPLATE: ${b.excelBPName} ===
-${b.excelBPDesc}
-
-`;
-    t+=`STEP 1 – CLOUD MINDSET ASSESSMENT (${s.step1.questions.length} questions)
-`;
-    t+=`Scale: ${s.step1.scale}
-
-`;
-    s.step1.questions.forEach((q,i)=>{ t+=`Q${i+1}: ${q}
-`; });
-    t+=`
-Scoring: ${s.step1.scoring}
-
-`;
-    t+=`STEP 2 – OBSTACLES TO CHANGE
-`;
-    s.step2.fields.forEach(f=>{ t+=`• ${f}
-`; });
-    t+=`
-Risk assessment: ${s.step2.riskMatrix}
-
-`;
-    if(b.files) b.files.forEach(f=>{
-      t+=`
-=== ${f.name} ===
-${f.summary||''}
-`;
-      if(f.sections) f.sections.forEach(s2=>{t+=`
-## ${s2.title}
-`;s2.items.forEach(i=>t+=`• ${i}
-`);});
+    t+='=== BEST PRACTICE TEMPLATE: '+b.excelBPName+' ===\n'+b.excelBPDesc+'\n\n';
+    t+='STEP 1 – CLOUD MINDSET ASSESSMENT ('+s.step1.questions.length+' questions)\n';
+    t+='Scale: '+s.step1.scale+'\n\n';
+    s.step1.questions.forEach(function(q,i){ t+='Q'+(i+1)+': '+q+'\n'; });
+    t+='\nScoring: '+s.step1.scoring+'\n\n';
+    t+='STEP 2 – OBSTACLES TO CHANGE\n';
+    s.step2.fields.forEach(function(f){ t+='• '+f+'\n'; });
+    t+='\nRisk assessment: '+s.step2.riskMatrix+'\n\n';
+    if(b.files) b.files.forEach(function(f){
+      t+='\n=== '+f.name+' ===\n'+(f.summary||'')+'\n';
+      if(f.sections) f.sections.forEach(function(s2){t+='\n## '+s2.title+'\n';s2.items.forEach(function(i){t+='• '+i+'\n';});});
     });
     return t;
   }
-  return b.files.map(f=>{
-    let t=`--- ${f.name} ---
-${f.summary||''}
-`;
-    if(f.sections) f.sections.forEach(s=>{t+=`
-## ${s.title}
-`;s.items.forEach(i=>t+=`• ${i}
-`);});
-    if(f.tableHeaders) t+=`
-Template columns: ${f.tableHeaders.join(' | ')}
-`;
-    return t;
-  }).join('
-
-');
+  return (b.files||[]).map(function(f){
+    let out='--- '+f.name+' ---\n'+(f.summary||'')+'\n';
+    if(f.sections) f.sections.forEach(function(s){out+='\n## '+s.title+'\n';s.items.forEach(function(i){out+='• '+i+'\n';});});
+    if(f.tableHeaders) out+='\nTemplate columns: '+f.tableHeaders.join(' | ')+'\n';
+    return out;
+  }).join('\n\n');
 }
 
 async function runAI(id){
