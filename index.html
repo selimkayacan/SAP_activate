@@ -141,12 +141,46 @@ body{font-family:var(--fn);background:var(--bg);color:var(--tx);font-size:13px;l
 
 /* L3 tasks inside phase detail */
 .l3-progress-list{list-style:none;}
-.l3-row{display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid var(--bd);}
+.l3-row{display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid var(--bd);flex-wrap:wrap;}
 .l3-row:last-child{border-bottom:none;}
-.l3-chk{width:15px;height:15px;border:1.5px solid var(--bd);border-radius:3px;cursor:pointer;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;font-size:9px;transition:all .15s;}
+.l3-chk{width:15px;height:15px;border:1.5px solid var(--bd);border-radius:3px;cursor:pointer;flex-shrink:0;margin-top:3px;display:flex;align-items:center;justify-content:center;font-size:9px;transition:all .15s;}
 .l3-chk.done{background:#22C55E;border-color:#22C55E;color:#fff;}
-.l3-text{flex:1;font-size:11px;line-height:1.5;color:var(--tx2);}
+/* tooltip wrapper */
+.l3-tip-wrap{position:relative;flex:1;min-width:0;}
+.l3-text{font-size:11px;line-height:1.5;color:var(--tx2);cursor:default;}
 .l3-text.done{text-decoration:line-through;color:var(--tx3);}
+.l3-tip-popup{display:none;position:absolute;left:0;top:calc(100% + 4px);z-index:999;
+  background:#1E293B;color:#E2E8F0;border-radius:var(--rs);padding:9px 12px;
+  font-size:11px;line-height:1.6;max-width:320px;min-width:180px;
+  box-shadow:0 6px 24px rgba(0,0,0,.3);pointer-events:none;}
+.l3-tip-popup strong{color:#F0AB00;}
+.l3-tip-popup::before{content:'';position:absolute;top:-5px;left:12px;
+  width:0;height:0;border:5px solid transparent;border-bottom-color:#1E293B;border-top:none;}
+.l3-tip-wrap:hover .l3-tip-popup{display:block;}
+/* progress expand button */
+.l3-prog-btn{flex-shrink:0;font-size:10px;color:var(--tx3);cursor:pointer;padding:1px 5px;border-radius:3px;border:1px solid var(--bd);background:var(--sf2);line-height:1.4;}
+.l3-prog-btn:hover{background:#EFF6FF;color:#1D4ED8;border-color:#1D4ED8;}
+.l3-prog-btn.active{background:#EFF6FF;color:#1D4ED8;border-color:#1D4ED8;}
+/* L3 progress panel */
+.l3-prog-panel{display:none;width:100%;margin-left:23px;margin-top:4px;margin-bottom:4px;
+  padding:10px 12px;background:#F0F6FF;border:1px solid #BFDBFE;border-radius:var(--rs);}
+.l3-prog-panel.open{display:block;}
+.l3-prog-row{display:flex;align-items:center;gap:8px;margin-bottom:7px;flex-wrap:wrap;}
+.l3-prog-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:#64748B;width:46px;flex-shrink:0;}
+.l3-mini-sl{flex:1;min-width:60px;-webkit-appearance:none;height:4px;border-radius:2px;background:var(--bd);outline:none;}
+.l3-mini-sl::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:#1D4ED8;cursor:pointer;}
+.l3-mini-pv{font-family:var(--mo);font-size:10px;font-weight:700;width:28px;text-align:right;}
+.l3-st-row{display:flex;gap:3px;flex-wrap:wrap;}
+.l3-stb{padding:1px 8px;border-radius:8px;font-size:9px;font-weight:700;cursor:pointer;border:1.5px solid transparent;font-family:var(--fn);}
+.l3-stb.ns{background:#F1F5F9;color:#64748B;border-color:#CBD5E1;}
+.l3-stb.ip{background:#FEF3C7;color:#D97706;border-color:#F59E0B;}
+.l3-stb.dn{background:#DCFCE7;color:#16A34A;border-color:#22C55E;}
+.l3-stb.bl{background:#FEE2E2;color:#DC2626;border-color:#EF4444;}
+.l3-stb.act{box-shadow:0 0 0 2px currentColor;}
+.l3-inp{font-size:10px;font-family:var(--fn);border:1px solid var(--bd);border-radius:3px;padding:2px 7px;background:var(--srf);color:var(--tx);flex:1;min-width:80px;}
+.l3-inp:focus{outline:none;border-color:#1D4ED8;}
+.l3-save{padding:2px 9px;font-size:10px;background:#1D4ED8;color:#fff;border:none;border-radius:3px;cursor:pointer;font-family:var(--fn);font-weight:600;}
+.l3-save:hover{background:#1e40af;}
 .l3-owner-inp{font-size:10px;font-family:var(--fn);border:1px solid var(--bd);border-radius:3px;padding:1px 5px;width:90px;color:var(--tx2);background:var(--sf2);}
 .l3-owner-inp:focus{outline:none;border-color:#1D4ED8;}
 
@@ -746,15 +780,22 @@ function renderPhaseDetail(ph){
       const l2Id='l2_'+k.replace(/[^a-zA-Z0-9]/g,'_');
       const tip=L2_TIP[l2]||'';
 
-      // L3 task rows
+      // L3 task rows — unified state (l3chk), tooltip, progress panel
       const l3rows=l3list.map((task,i)=>{
         const isDone=t.l3chk&&t.l3chk[i];
-        const owner=t.l3owner&&t.l3owner[i]||'';
+        const l3tip=L3_TIP[task]||'';
+        const pnlId='l3p_ph_'+l2Id+'_'+i;
+        const l3d=t.l3data&&t.l3data[i]||{};
         return`<li class="l3-row">
           <div class="l3-chk ${isDone?'done':''}" onclick="toggleL3('${esc(k)}',${i})">${isDone?'✓':''}</div>
-          <span class="l3-text ${isDone?'done':''}">${task}</span>
-          <input class="l3-owner-inp" type="text" placeholder="Owner" value="${esc(owner)}"
-            onchange="setL3Owner('${esc(k)}',${i},this.value)" title="Task owner">
+          <div class="l3-tip-wrap">
+            <span class="l3-text ${isDone?'done':''}">${task}</span>
+            ${l3tip?`<div class="l3-tip-popup"><strong>💡 Ne yapılmalı?</strong><br>${l3tip}</div>`:''}
+          </div>
+          <button class="l3-prog-btn ${l3d.open?'active':''}" onclick="toggleL3Panel('${pnlId}',this)" title="Progress">📊</button>
+          <div class="l3-prog-panel ${l3d.open?'open':''}" id="${pnlId}">
+            ${renderL3Panel(k,i,l3d,'ph')}
+          </div>
         </li>`;
       }).join('');
 
@@ -852,7 +893,12 @@ function toggleL3(k,i){
   const t=ensure(k);
   if(!t.l3chk)t.l3chk={};
   t.l3chk[i]=!t.l3chk[i];
-  // auto-compute pct from l3 checks
+  // sync l3data status
+  if(!t.l3data)t.l3data={};
+  if(!t.l3data[i])t.l3data[i]={};
+  t.l3data[i].st=t.l3chk[i]?'dn':'ns';
+  if(t.l3chk[i])t.l3data[i].pct=100;
+  // recompute L2 pct from l3 checks
   const {ws,ph,l2}=parseKey(k);
   const all=getl3(ws,ph,l2);
   if(all.length){
@@ -862,13 +908,6 @@ function toggleL3(k,i){
   }
   save();
   renderPhaseDetail(ACTIVE_PH);
-}
-
-function setL3Owner(k,i,v){
-  const t=ensure(k);if(!t)return;
-  if(!t.l3owner)t.l3owner={};
-  t.l3owner[i]=v;
-  save();
 }
 
 function updateL2Pct(k,pctId,v){
@@ -902,6 +941,156 @@ function saveL2(k,l2Id){
 function parseKey(k){
   const parts=k.split('||');
   return{ws:parts[0],ph:parts[1],l2:parts[2]};
+}
+
+/* ══════════════ L3 TOOLTIP DATA ══════════════ */
+const L3_TIP={
+  // Project Management - Discover
+  "Create an Innovation Strategy and a High-Level Road Map":"Ürün ve süreç yeniliklerini kapsayan çok yıllı SAP yol haritasını oluştur. Liderlik onayı için özet bir sunum hazırla.",
+  "Run an Innovation Discovery and Design Workshop":"İş birimlerini ve IT'yi bir araya getirerek yeni SAP yeteneklerinin nasıl kullanılacağını keşfeden yapılandırılmış bir atölye yürüt.",
+  "Create a 360-Degree View on Security":"Sistem erişimi, veri gizliliği, BTP güvenliği ve uyumluluk gereksinimlerini kapsayan kapsamlı bir güvenlik değerlendirmesi hazırla.",
+  "Define the Analytics Architecture":"SAP Analytics Cloud ve embedded analytics için hedef mimariyi belirle; hangi raporların standart, hangilerinin özel geliştirme gerektirdiğini tanımla.",
+  "Establish a Clean Process Framework":"Standart SAP süreçlerinin benimsenmesi için yönetişim ilkelerini oluştur; özelleştirme yerine standart kullanımı teşvik eden bir çerçeve kur.",
+  "Executing a Digital Discovery Assessment":"SAP dijital keşif araçlarını kullanarak mevcut ERP ortamının kapsamlı teknik ve fonksiyonel analizini gerçekleştir.",
+  "Generate Digital Discovery Report":"Dijital keşif bulgularını yöneticilere sunacak profesyonel bir rapor olarak derle; önerileri ve riskleri açıkça belgele.",
+  "Select the Right Cloud Partner":"Teknik yetkinlik, SAP sertifikasyonu ve sektör deneyimine göre uygulama partnerini değerlendir ve seç.",
+  "Execute the Cloud Mindset":"Ekip üyelerinin bulut düşünce yapısını benimsemesi için farkındalık seansları ve değişim yönetimi aktiviteleri düzenle.",
+  // Project Management - Prepare
+  "Join Embedded Launch Activities in SAP S/4HANA Cloud Private Edition Onboarding Journey":"SAP'ın onboarding portalından zorunlu lansman aktivitelerine katıl; sisteme erişimi ve başlangıç kurulumu tamamla.",
+  "Confirm Receipt of Pre-Sales Handover Deliverables":"Satış sürecinden gelen tüm çıktıları (teknik değerlendirme, kapsam belgesi, lisans bilgileri) teslim al ve eksiklikleri işaretle.",
+  "Create Project Schedule and Budget":"Tüm fazları, milestone'ları ve teslimatları içeren detaylı proje takvimini ve bütçeyi SAP Cloud ALM'de oluştur.",
+  "Assign Resources and Refine Project Tasks in SAP Cloud ALM":"Görevleri SAP Cloud ALM'de proje ekip üyelerine ata; iş yükü dengesini kontrol et ve kritik yolu belirle.",
+  "Align Project Schedules":"Müşteri, partner ve SAP tarafı takvimlerini hizala; çakışmaları ve bağımlılıkları çöz.",
+  "Conduct Kickoff Workshop":"Tüm paydaşları bir araya getiren resmi proje başlangıç toplantısını düzenle; kapsam, metodoloji, iletişim ve beklentileri netleştir.",
+  "Onboard Project Team":"Proje ekip üyelerini sistemlere, araçlara ve proje standartlarına dahil et; gerekli erişim ve eğitimleri tamamla.",
+  // Prepare - Tech Arch
+  "Review Overview Documentation":"SAP uygulama kılavuzlarını ve genel bakış belgelerini incele; metodoloji ve teknik gereksinimleri anla.",
+  "Ensure Project Team Members Access to the SAP for Me and SAP Customer Communities":"Tüm ekip üyelerinin SAP for Me portalına ve SAP topluluk platformlarına erişimini doğrula ve sorunları gider.",
+  "Request SAP Cloud ALM Tenant":"SAP Cloud ALM kiracısını resmi olarak talep et; proje yönetim ve ALM araçları için başlangıç yapılandırmasını tamamla.",
+  "SAP Cloud ALM - Initial System Access for SAP Cloud ALM":"SAP Cloud ALM sistemine ilk erişimi gerçekleştir; kullanıcı hesaplarını oluştur ve temel yetkilendirmeleri ata.",
+  "SAP Cloud ALM - Setup the RISE with SAP Methodology Dashboard":"RISE with SAP metodoloji panosunu SAP Cloud ALM'de aktive et; proje görevlerini ve milestone'ları yapılandır.",
+  "SAP S/4HANA Cloud Private Edition - Receive and Access Starter System":"SAP'tan Starter sistemini teslim al; ilk erişim bilgilerini doğrula ve sistem sağlığını kontrol et.",
+  "SAP S/4HANA Cloud Private Edition - Set-up the Sandbox System and Prepare the Shell System":"Sandbox sistemini proje ihtiyaçlarına göre yapılandır; Fit-to-Standard atölyeleri için Shell sistemi hazırla.",
+  "SAP BTP - Access to SAP Business Technology Platform":"SAP Business Technology Platform'a erişim sağla; BTP cockpit'te temel gezinmeyi doğrula.",
+  "SAP BTP - Activate SAP Build Entitlements":"SAP Build Process Automation yetkilerini BTP'de aktive et; gerekli servislerin aboneliğini tamamla.",
+  "SAP Analytics Cloud - Initial System Access for SAP Analytics Cloud":"SAP Analytics Cloud sistemine ilk erişimi gerçekleştir; yönetici hesabı oluştur ve temel ayarları yapılandır.",
+  "Check Interoperability":"SAP S/4HANA ile mevcut sistemler arasındaki entegrasyon ve uyumluluk senaryolarını değerlendir; potansiyel sorunları belgele.",
+  "Define Clean Core Approach for Extensibility Scenarios":"Her özelleştirme gereksinimi için Clean Core uyumlu alternatif yaklaşımı belirle; standart API'ler ve BTP çözümleri önceliklendir.",
+  "Perform Data Volume Management":"Mevcut sistemdeki veri hacmini analiz et; arşivleme ve silme gereksinimleri için öneriler geliştir.",
+  "Cleanup Unused Code":"Kullanılmayan, deaktive edilmiş veya geçersiz custom kodu analiz et ve temizle; SAP Readiness Check bulgularını baz al.",
+  // Explore - FtS
+  "Conduct Fit-to-Standard Workshops":"İş süreçlerini standart SAP yetenekleriyle karşılaştıran yapılandırılmış atölyeler yürüt; her süreci demostr et, kararları belgele.",
+  "Document Requirement":"Fit-to-Standard atölyesinde tanımlanan gereksinimleri standart formatta belgele; delta gereksinimlerini ve sapmaları işaretle.",
+  "Document Business Process Target State":"Her iş süreci için hedef durumu tanımla; AS-IS ile TO-BE arasındaki farkları haritalandır.",
+  "Prioritize Delta Requirements":"Atölyelerde tespit edilen delta gereksinimleri iş değeri ve uygulama karmaşıklığına göre önceliklendir; yapılacak/yapılmayacak kararlarını al.",
+  "Validate Delta Requirements":"Önceliklendirilmiş delta gereksinimleri için kullanıcı hikayelerini doğrula; teknik fizibiliteyi ve SAP yol haritasıyla uyumu kontrol et.",
+  // Realize
+  "Plan the Sprint":"Sprint hedeflerini tanımla, backlog'dan görevleri seç ve ekip kapasitesine göre sprint planını oluştur.",
+  "Execute the Sprint":"Sprint boyunca konfigürasyon, geliştirme ve test görevlerini yürüt; günlük stand-up toplantıları düzenle.",
+  "Close the Sprint":"Sprint çıktılarını değerlendir, kabul kriterlerini kontrol et, tamamlanmamış işleri bir sonraki sprint'e taşı.",
+  "Create Cutover Plan and Documentation":"Cutover aktivitelerini, sıralamayı, sorumluları ve geri dönüş (rollback) kriterlerini içeren detaylı cutover planını oluştur.",
+  // Deploy
+  "Perform Dress Rehearsal":"Canlıya geçiş öncesi tam cutover simülasyonunu gerçekleştir; tüm adımları süre ve sorumluluk bazında test et.",
+  "Execute Cutover Tasks per the Cutover Plan":"Onaylanmış cutover planındaki tüm teknik ve fonksiyonel adımları sırasıyla uygula; her adımın tamamlandığını onaylayarak ilerle.",
+  "Set the Production System to Live":"Prodüksiyon sistemini resmi olarak canlıya al; son doğrulamaları tamamla ve tüm paydaşlara canlıya geçiş bildirimini yap.",
+  "Provide Hypercare Support":  "Canlıya geçiş sonrası yoğunlaştırılmış destek sürecini yönet; sorunları öncelik sırasına göre hızla çöz, ekip mevcudiyetini sağla.",
+  // Testing
+  "Create Test Strategy":"Kapsam, test türleri (unit, SIT, UAT, regresyon), giriş/çıkış kriterleri ve araçları içeren kapsamlı test stratejisi belgesi hazırla.",
+  "Determine Test Scope":"Hangi süreçlerin, modüllerin ve entegrasyonların test kapsamına dahil olduğunu belirle; kritik iş süreçlerini önceliklendir.",
+  "Execute the Test Cases":"Hazırlanan test senaryolarını sistematik olarak çalıştır; sonuçları belgele, hataları takip sisteme kaydet.",
+  "Defect Management and Re-testing":"Tespit edilen hataları sınıflandır, önceliklendir ve sorumlulara ata; düzeltmeler sonrası re-test gerçekleştir.",
+  // Data
+  "Develop the Data Migration Approach and Plan":"Kaynak sistemleri, migrasyon nesneleri, araçları, iş yükü takvimini ve veri kalitesi kriterlerini kapsayan migration master planını oluştur.",
+  "Conduct Data Migration Design":"Her migrasyon nesnesi için kaynak-hedef alan eşleştirmesini (mapping) oluştur; dönüşüm kurallarını ve validasyon kriterlerini belgele.",
+  "Execute Data Migration Cycle":"Migration programlarını çalıştır, migrasyon loglarını analiz et, hataları çöz ve sonuçları doğrula.",
+  "Conduct Final Data Quality Assessment":"Prodüksiyon öncesi son veri kalitesi değerlendirmesini gerçekleştir; kritik veri alanlarının doğruluğunu onaylat.",
+  // OCM
+  "Identify Stakeholders":"Proje kapsamından etkilenen tüm iç ve dış paydaşları tanımla; organizasyonel yapıyı ve karar alma mekanizmalarını haritalandır.",
+  "Assess Stakeholders":"Her paydaşın değişime hazırlık düzeyini, etkisini ve desteğini değerlendir; kritik paydaşları ve direniş risklerini belirle.",
+  "Develop First Version of the Change Plan":"OCM aktivitelerini, hedef kitleleri, zaman çizelgelerini ve başarı metriklerini içeren ilk değişim planını oluştur.",
+  "Prepare Communication Activities":"Hedef kitleye, zamana ve mesaja göre iletişim materyallerini (email, sunum, FAQ) hazırla.",
+  "Deliver Communication Activities":"Hazırlanan iletişim materyallerini planlanan kanallar üzerinden hedef kitlelere ilet; geri bildirimleri kaydet.",
+  "Prepare Change Impact Workshops":"Fonksiyonel alanlar bazında değişim etkisi atölyeleri için içerik, katılımcı listesi ve kolaylaştırma planını hazırla.",
+  "Conduct Change Impact Assessment":"Atölyeler aracılığıyla her iş alanındaki süreç, rol ve yetkinlik değişimlerini detaylı olarak analiz et ve belgele.",
+  // Analytics
+  "Develop the Analytics Approach and Plan":"SAP Analytics Cloud ve embedded analytics için strateji, kapsam, kaynak ihtiyaçları ve uygulama takvimini içeren analitik planını oluştur.",
+  "Design Analytics Architecture":"Veri akışı, SAC bağlantısı, veri modelleri ve raporlama katmanını kapsayan analitik mimarisi tasarımını belgele.",
+  "Setup and Enable Embedded Analytics":"SAP S/4HANA'da embedded analytics yeteneklerini aktive et; Fiori analitik uygulamalarını ve OData servislerini yapılandır.",
+  // Operations
+  "Clarify Operational Requirement":"Canlı operasyon için gerekli SLA'ları, destek modelini, monitoring gereksinimlerini ve ekip yapısını netleştir.",
+  "Evaluate Impact on Operations":"Yeni SAP çözümünün mevcut operasyon modeli üzerindeki etkisini değerlendir; süreç, yetkinlik ve araç değişikliklerini belirle.",
+  "Implement Operations Support Process and Tools":"Monitoring, incident yönetimi ve destek süreçlerini uygula; araçları ve yetkilendirmeleri yapılandır.",
+  "Establish Service Management Framework":"SLA yönetimi, eskalasyon prosedürleri ve SAP destek erişimini içeren servis yönetimi çerçevesini oluştur.",
+  // Run
+  "Establish Governance Model":"Canlı ortam değişiklik yönetimi, karar alma ve sürekli iyileştirme süreçlerini içeren yönetişim modelini uygula.",
+  "Periodically Update your SAP System":"SAP güncellemelerini ve yamaları planla ve uygula; etki analizi yap, test et ve yönetilen değişim süreciyle devreye al.",
+};
+
+/* ══════════════ L3 PANEL HELPERS ══════════════ */
+function renderL3Panel(k,i,l3d,ctx){
+  const pnlId=`l3p_${ctx}_`+('l2_'+k.replace(/[^a-zA-Z0-9]/g,'_'))+'_'+i;
+  const pct=l3d.pct||0;
+  const st=l3d.st||'ns';
+  const owner=l3d.owner||'';
+  const due=l3d.due||'';
+  const stLbl={ns:'Not Started',ip:'In Progress',dn:'Done',bl:'Blocked'};
+  return`<div class="l3-prog-row">
+    <span class="l3-prog-lbl">Status</span>
+    <div class="l3-st-row">
+      ${['ns','ip','dn','bl'].map(s=>`<button class="l3-stb ${s} ${st===s?'act':''}" onclick="setL3St('${esc(k)}',${i},'${s}','${pnlId}')">${{ns:'—',ip:'▶',dn:'✓',bl:'✕'}[s]} ${stLbl[s]}</button>`).join('')}
+    </div>
+  </div>
+  <div class="l3-prog-row">
+    <span class="l3-prog-lbl">Progress</span>
+    <input type="range" min="0" max="100" value="${pct}" class="l3-mini-sl" oninput="updL3Pct('${esc(k)}',${i},this.value,'${pnlId}')">
+    <span class="l3-mini-pv" id="l3pv_${pnlId}">${pct}%</span>
+  </div>
+  <div class="l3-prog-row">
+    <span class="l3-prog-lbl">Owner</span>
+    <input class="l3-inp" type="text" placeholder="Owner adı…" value="${esc(owner)}" id="l3own_${pnlId}">
+    <input class="l3-inp" type="date" value="${due}" id="l3due_${pnlId}" style="max-width:120px">
+    <button class="l3-save" onclick="saveL3('${esc(k)}',${i},'${pnlId}')">💾</button>
+  </div>`;
+}
+
+function toggleL3Panel(pnlId,btn){
+  const el=document.getElementById(pnlId);
+  if(!el)return;
+  el.classList.toggle('open');
+  btn.classList.toggle('active');
+}
+
+function setL3St(k,i,s,pnlId){
+  const t=ensure(k);if(!t)return;
+  if(!t.l3data)t.l3data={};
+  if(!t.l3data[i])t.l3data[i]={};
+  t.l3data[i].st=s;
+  if(s==='dn'){t.l3data[i].pct=100;if(!t.l3chk)t.l3chk={};t.l3chk[i]=true;}
+  save();
+  // re-render only the panel content
+  const el=document.getElementById(pnlId);
+  if(el)el.innerHTML=renderL3Panel(k,i,t.l3data[i],'upd');
+}
+
+function updL3Pct(k,i,v,pnlId){
+  const t=ensure(k);if(!t)return;
+  if(!t.l3data)t.l3data={};
+  if(!t.l3data[i])t.l3data[i]={};
+  t.l3data[i].pct=+v;
+  const el=document.getElementById('l3pv_'+pnlId);
+  if(el)el.textContent=v+'%';
+  save();
+}
+
+function saveL3(k,i,pnlId){
+  const t=ensure(k);if(!t)return;
+  if(!t.l3data)t.l3data={};
+  if(!t.l3data[i])t.l3data[i]={};
+  const ownEl=document.getElementById('l3own_'+pnlId);
+  const dueEl=document.getElementById('l3due_'+pnlId);
+  if(ownEl)t.l3data[i].owner=ownEl.value;
+  if(dueEl)t.l3data[i].due=dueEl.value;
+  save();toast('✅ Sub-task saved');
 }
 
 /* ══════════════ DRAWER (from matrix) ══════════════ */
@@ -948,19 +1137,31 @@ function renderDrwBody(){
 
 function renderTasks(ws,ph,l2,k,t){
   const base=getl3(ws,ph,l2);const extra=t.extra||[];const all=[...base,...extra];
-  const del=t.del||{};const chk=t.chk||{};
+  const del=t.del||{};
+  // unified: use l3chk (same field as phase detail)
+  const chk=t.l3chk||{};
   const active=all.filter((_,i)=>!del[i]);
   const doneCnt=active.filter((_,i)=>{const ri=all.indexOf(active[i]);return chk[ri];}).length;
   const tip=L2_TIP[l2]||'';
   const items=all.map((tx,i)=>{
     const isDel=del[i];const isDone=chk[i];
+    const l3tip=L3_TIP[tx]||'';
+    const pnlId='l3p_drw_'+k.replace(/[^a-zA-Z0-9]/g,'_')+'_'+i;
+    const l3d=t.l3data&&t.l3data[i]||{};
     if(isDel)return`<li class="l3-item">
       <span class="rm-btn" onclick="restoreT('${esc(k)}',${i})" title="Restore">↩</span>
       <span class="task-txt del">${tx}</span></li>`;
-    return`<li class="l3-item">
+    return`<li class="l3-item" style="flex-wrap:wrap">
       <div class="chk ${isDone?'dn':''}" onclick="toggleChk('${esc(k)}',${i})">${isDone?'✓':''}</div>
-      <span class="task-txt ${isDone?'done':''}">${tx}</span>
+      <div class="l3-tip-wrap" style="flex:1;min-width:0">
+        <span class="task-txt ${isDone?'done':''}">${tx}</span>
+        ${l3tip?`<div class="l3-tip-popup"><strong>💡 Ne yapılmalı?</strong><br>${l3tip}</div>`:''}
+      </div>
+      <button class="l3-prog-btn ${l3d.open?'active':''}" onclick="toggleL3Panel('${pnlId}',this)" title="Progress">📊</button>
       <span class="rm-btn" onclick="removeT('${esc(k)}',${i})" title="Remove">✕</span>
+      <div class="l3-prog-panel ${l3d.open?'open':''}" id="${pnlId}" style="width:100%;margin-left:0;margin-top:4px">
+        ${renderL3Panel(k,i,l3d,'drw')}
+      </div>
     </li>`;
   }).join('');
   const delCount=Object.keys(del).length;
@@ -1043,20 +1244,24 @@ function renderAI(k,l2,t){
 function ensure(k){
   if(!proj())return null;
   if(!proj().tasks)proj().tasks={};
-  if(!proj().tasks[k])proj().tasks[k]={st:'ns',pct:0,notes:'',owner:'',due:'',chk:{},del:{},extra:[],l3chk:{},l3owner:{},ai:null,air:null};
-  return proj().tasks[k];
+  if(!proj().tasks[k])proj().tasks[k]={st:'ns',pct:0,notes:'',owner:'',due:'',chk:{},del:{},extra:[],l3chk:{},l3owner:{},l3data:{},ai:null,air:null};
+  // migrate old chk → l3chk
+  const t=proj().tasks[k];
+  if(t.chk&&Object.keys(t.chk).length&&(!t.l3chk||!Object.keys(t.l3chk).length)){t.l3chk=t.chk;}
+  return t;
 }
 function toggleChk(k,i){
+  // Unified: uses l3chk (same as phase detail) — fixes sync between views
   const t=ensure(k);if(!t)return;
-  if(!t.chk)t.chk={};
-  t.chk[i]=!t.chk[i];
-  const {ws,ph,l2}=DS;
-  const all=[...getl3(ws,ph,l2),...(t.extra||[])];
-  const del=t.del||{};
-  const active=all.filter((_,j)=>!del[j]);
-  const done=active.filter((_,j)=>{const ri=all.indexOf(active[j]);return t.chk[ri];}).length;
-  if(active.length)t.pct=Math.round(done/active.length*100);
-  t.st=t.pct===100?'dn':t.pct>0?'ip':'ns';
+  if(!t.l3chk)t.l3chk={};
+  t.l3chk[i]=!t.l3chk[i];
+  const {ws,ph,l2}=parseKey(k);
+  const all=getl3(ws,ph,l2);
+  if(all.length){
+    const done=all.filter((_,j)=>t.l3chk[j]).length;
+    t.pct=Math.round(done/all.length*100);
+    t.st=t.pct===100?'dn':t.pct>0?'ip':'ns';
+  }
   save();renderDrwBody();
 }
 function removeT(k,i){const t=ensure(k);if(!t)return;if(!t.del)t.del={};t.del[i]=true;save();renderDrwBody();}
@@ -1076,6 +1281,7 @@ function slPct(k,v){
   const t=ensure(k);if(!t)return;t.pct=+v;
   const el=document.getElementById('pv_'+k.replace(/[\|]/g,'_'));
   if(el)el.textContent=v+'%';
+  save();
 }
 function setF(k,f,v){const t=ensure(k);if(!t)return;t[f]=v;}
 function saveProg(k){save();toast('✅ Saved');renderDrw();}
