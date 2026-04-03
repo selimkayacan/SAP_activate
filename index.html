@@ -630,7 +630,35 @@ function stL(s){return {ns:'Not Started',ip:'In Progress',dn:'Completed',bl:'Blo
 function stK(s){return {ns:'s-ns',ip:'s-ip',dn:'s-dn',bl:'s-bl',rv:'s-rv'}[s]||'s-ns';}
 function key(ws,ph,l2){return ws+'||'+ph+'||'+l2;}
 function getl3(ws,ph,l2){return L3M[ws+'__'+ph+'__'+l2]||[];}
-function l2pct(ws,ph,l2){const t=td(key(ws,ph,l2));return{pct:t.pct||0,st:t.st||'ns',ai:t.ai||null};}
+function calcL2Pct(k){
+  // L2 progress = average of all L3 task progress values
+  const {ws,ph,l2}=parseKey(k);
+  const tasks=getl3(ws,ph,l2);
+  if(!tasks.length)return 0;
+  const t=td(k);
+  const total=tasks.reduce((sum,_,i)=>{
+    const d=t.l3data&&t.l3data[i];
+    return sum+(d&&d.pct!=null?d.pct:(t.l3chk&&t.l3chk[i]?100:0));
+  },0);
+  return Math.round(total/tasks.length);
+}
+function calcL2St(k){
+  const pct=calcL2Pct(k);
+  const t=td(k);
+  const {ws,ph,l2}=parseKey(k);
+  const tasks=getl3(ws,ph,l2);
+  const anyBl=tasks.some((_,i)=>(t.l3data&&t.l3data[i]&&t.l3data[i].st)==='bl');
+  if(anyBl)return'bl';
+  if(pct===100)return'dn';
+  if(pct>0)return'ip';
+  return'ns';
+}
+function l2pct(ws,ph,l2){
+  const k=key(ws,ph,l2);
+  const pct=calcL2Pct(k);
+  const t=td(k);
+  return{pct,st:calcL2St(k),ai:t.ai||null};
+}
 function phPct(ph){let s=0,c=0;WS.forEach(ws=>(L2M[ws+'__'+ph]||[]).forEach(l2=>{s+=l2pct(ws,ph,l2).pct;c++;}));return c?Math.round(s/c):0;}
 function toast(m){const e=document.getElementById('toast');e.textContent=m;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),2200);}
 function loading(on,t){document.getElementById('ovl').classList.toggle('show',on);if(t)document.getElementById('spTx').textContent=t;}
@@ -794,14 +822,15 @@ function renderPhaseDetail(ph){
           </div>
           <button class="l3-prog-btn ${l3d.open?'active':''}" onclick="toggleL3Panel('${pnlId}',this)" title="Progress">📊</button>
           <div class="l3-prog-panel ${l3d.open?'open':''}" id="${pnlId}">
-            ${renderL3Panel(k,i,l3d,'ph')}
+            ${renderL3Panel(k,i,l3d,pnlId)}
           </div>
         </li>`;
       }).join('');
 
-      // L2 status dot
-      const dotColor=stC(t.st);
-      const pctVal=t.pct||0;
+      // L2 status dot — computed from L3 average
+      const pctVal=calcL2Pct(k);
+      const stVal=calcL2St(k);
+      const dotColor=stC(stVal);
       const pctId='mpct_'+l2Id;
 
       return`<div class="l2-block">
@@ -817,12 +846,13 @@ function renderPhaseDetail(ph){
           ${l3rows?`<div class="stt">L3 Sub-Tasks (${l3list.length})</div>
           <ul class="l3-progress-list">${l3rows}</ul>`:'<div style="font-size:11px;color:var(--tx3);padding:4px 0">No sub-tasks defined.</div>'}
           <div class="l2-controls">
-            <span class="l2-ctrl-label">Progress</span>
-            <input type="range" min="0" max="100" value="${pctVal}" class="mini-psl"
-              oninput="updateL2Pct('${esc(k)}','${pctId}',this.value)">
+            <span class="l2-ctrl-label">Progress (auto)</span>
+            <div style="flex:1;height:5px;background:var(--bd);border-radius:3px;overflow:hidden">
+              <div style="height:100%;width:${pctVal}%;background:${dotColor};border-radius:3px;transition:width .3s"></div>
+            </div>
             <span class="mini-pv" id="pvd_${l2Id}">${pctVal}%</span>
             <div class="mini-st-btns">
-              ${['ns','ip','dn','bl'].map(s=>`<button class="mini-st ${s} ${t.st===s?'act':''}" onclick="setL2St('${esc(k)}','${l2Id}','${s}')">${{ns:'—',ip:'▶',dn:'✓',bl:'✕'}[s]}</button>`).join('')}
+              ${['ns','ip','dn','bl'].map(s=>`<button class="mini-st ${s} ${t.st===s?'act':''}" disabled style="opacity:${t.st===s?'1':'0.45'};cursor:default">${{ns:'—',ip:'▶',dn:'✓',bl:'✕'}[s]}</button>`).join('')}
             </div>
           </div>
           <div class="l2-owner-row">
@@ -1027,9 +1057,8 @@ const L3_TIP={
 };
 
 /* ══════════════ L3 PANEL HELPERS ══════════════ */
-function renderL3Panel(k,i,l3d,ctx){
-  const pnlId=`l3p_${ctx}_`+('l2_'+k.replace(/[^a-zA-Z0-9]/g,'_'))+'_'+i;
-  const pct=l3d.pct||0;
+function renderL3Panel(k,i,l3d,pnlId){
+  const pct=l3d.pct!=null?l3d.pct:0;
   const st=l3d.st||'ns';
   const owner=l3d.owner||'';
   const due=l3d.due||'';
@@ -1049,7 +1078,7 @@ function renderL3Panel(k,i,l3d,ctx){
     <span class="l3-prog-lbl">Owner</span>
     <input class="l3-inp" type="text" placeholder="Owner adı…" value="${esc(owner)}" id="l3own_${pnlId}">
     <input class="l3-inp" type="date" value="${due}" id="l3due_${pnlId}" style="max-width:120px">
-    <button class="l3-save" onclick="saveL3('${esc(k)}',${i},'${pnlId}')">💾</button>
+    <button class="l3-save" onclick="saveL3('${esc(k)}',${i},'${pnlId}')">💾 Save</button>
   </div>`;
 }
 
@@ -1065,11 +1094,14 @@ function setL3St(k,i,s,pnlId){
   if(!t.l3data)t.l3data={};
   if(!t.l3data[i])t.l3data[i]={};
   t.l3data[i].st=s;
+  t.l3data[i].manuallySet=true;  // flag: user has manually set this
   if(s==='dn'){t.l3data[i].pct=100;if(!t.l3chk)t.l3chk={};t.l3chk[i]=true;}
+  else if(s==='ns'){t.l3data[i].pct=0;if(t.l3chk)t.l3chk[i]=false;}
+  _syncL2(k);
   save();
-  // re-render only the panel content
   const el=document.getElementById(pnlId);
-  if(el)el.innerHTML=renderL3Panel(k,i,t.l3data[i],'upd');
+  if(el)el.innerHTML=renderL3Panel(k,i,t.l3data[i],pnlId);
+  _updateL2Badge(k);
 }
 
 function updL3Pct(k,i,v,pnlId){
@@ -1077,9 +1109,15 @@ function updL3Pct(k,i,v,pnlId){
   if(!t.l3data)t.l3data={};
   if(!t.l3data[i])t.l3data[i]={};
   t.l3data[i].pct=+v;
-  const el=document.getElementById('l3pv_'+pnlId);
-  if(el)el.textContent=v+'%';
+  t.l3data[i].manuallySet=true;  // flag: user has manually set this
+  if(+v===100){t.l3data[i].st='dn';if(!t.l3chk)t.l3chk={};t.l3chk[i]=true;}
+  else if(+v===0){t.l3data[i].st='ns';if(t.l3chk)t.l3chk[i]=false;}
+  else{t.l3data[i].st='ip';}
+  _syncL2(k);
   save();
+  const pvEl=document.getElementById('l3pv_'+pnlId);
+  if(pvEl)pvEl.textContent=v+'%';
+  _updateL2Badge(k);
 }
 
 function saveL3(k,i,pnlId){
@@ -1091,6 +1129,26 @@ function saveL3(k,i,pnlId){
   if(ownEl)t.l3data[i].owner=ownEl.value;
   if(dueEl)t.l3data[i].due=dueEl.value;
   save();toast('✅ Sub-task saved');
+}
+
+// Sync L2 pct/st from L3 average — writes into task store
+function _syncL2(k){
+  const t=ensure(k);if(!t)return;
+  t.pct=calcL2Pct(k);
+  t.st=calcL2St(k);
+}
+
+// Update L2 badge elements in-place (badge + drawer header) without re-render
+function _updateL2Badge(k){
+  const pct=calcL2Pct(k);
+  const st=calcL2St(k);
+  const l2Id='l2_'+k.replace(/[^a-zA-Z0-9]/g,'_');
+  // phase detail badge
+  const bdg=document.getElementById('mpct_'+l2Id);
+  if(bdg)bdg.textContent=pct+'%';
+  // drawer header % if open
+  const drwPctEl=document.querySelector('.drw.open .drw-meta [data-pct]');
+  if(drwPctEl)drwPctEl.textContent=pct+'%';
 }
 
 /* ══════════════ DRAWER (from matrix) ══════════════ */
@@ -1138,35 +1196,42 @@ function renderDrwBody(){
 function renderTasks(ws,ph,l2,k,t){
   const base=getl3(ws,ph,l2);const extra=t.extra||[];const all=[...base,...extra];
   const del=t.del||{};
-  // unified: use l3chk (same field as phase detail)
   const chk=t.l3chk||{};
   const active=all.filter((_,i)=>!del[i]);
   const doneCnt=active.filter((_,i)=>{const ri=all.indexOf(active[i]);return chk[ri];}).length;
   const tip=L2_TIP[l2]||'';
+  const safeK=k.replace(/[^a-zA-Z0-9]/g,'_');
+  const pct=calcL2Pct(k);
+  const st=calcL2St(k);
   const items=all.map((tx,i)=>{
     const isDel=del[i];const isDone=chk[i];
     const l3tip=L3_TIP[tx]||'';
-    const pnlId='l3p_drw_'+k.replace(/[^a-zA-Z0-9]/g,'_')+'_'+i;
+    const pnlId='l3p_drw_'+safeK+'_'+i;
     const l3d=t.l3data&&t.l3data[i]||{};
     if(isDel)return`<li class="l3-item">
       <span class="rm-btn" onclick="restoreT('${esc(k)}',${i})" title="Restore">↩</span>
       <span class="task-txt del">${tx}</span></li>`;
     return`<li class="l3-item" style="flex-wrap:wrap">
-      <div class="chk ${isDone?'dn':''}" onclick="toggleChk('${esc(k)}',${i})">${isDone?'✓':''}</div>
+      <div class="chk ${isDone?'dn':''}" id="chk_${safeK}_${i}" onclick="toggleChk('${esc(k)}',${i})">${isDone?'✓':''}</div>
       <div class="l3-tip-wrap" style="flex:1;min-width:0">
-        <span class="task-txt ${isDone?'done':''}">${tx}</span>
+        <span class="task-txt ${isDone?'done':''}" id="txt_${safeK}_${i}">${tx}</span>
         ${l3tip?`<div class="l3-tip-popup"><strong>💡 Ne yapılmalı?</strong><br>${l3tip}</div>`:''}
       </div>
       <button class="l3-prog-btn ${l3d.open?'active':''}" onclick="toggleL3Panel('${pnlId}',this)" title="Progress">📊</button>
       <span class="rm-btn" onclick="removeT('${esc(k)}',${i})" title="Remove">✕</span>
       <div class="l3-prog-panel ${l3d.open?'open':''}" id="${pnlId}" style="width:100%;margin-left:0;margin-top:4px">
-        ${renderL3Panel(k,i,l3d,'drw')}
+        ${renderL3Panel(k,i,l3d,pnlId)}
       </div>
     </li>`;
   }).join('');
   const delCount=Object.keys(del).length;
   return`${tip?`<div class="l2-tooltip" style="margin-bottom:12px"><span class="l2-tooltip-icon">💡</span>${tip}</div>`:''}
-    <div class="stt">L3 Sub-Tasks (${doneCnt}/${active.length} completed)</div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+      <div class="stt" style="margin:0">L3 Sub-Tasks (${doneCnt}/${active.length} checked)</div>
+      <span style="margin-left:auto;font-size:11px;font-family:var(--mo);font-weight:700;color:${PH_COLOR[ph]||'#1D4ED8'}"
+        id="drw_pct_${safeK}">${pct}%</span>
+      <span class="sb ${stK(st)}" id="drw_st_${safeK}">${stL(st)}</span>
+    </div>
     <ul class="l3-list">${items||'<li style="color:var(--tx3);font-size:12px;padding:8px 0">No sub-tasks defined.</li>'}</ul>
     ${delCount?`<div style="margin-top:8px;font-size:10px;color:var(--tx3);border-top:1px solid var(--bd);padding-top:8px">${delCount} removed task(s) — click ↩ to restore.</div>`:''}
     <div class="add-row mt3">
@@ -1177,59 +1242,185 @@ function renderTasks(ws,ph,l2,k,t){
 }
 
 function renderProgress(k,t){
+  const pct=calcL2Pct(k);
+  const st=calcL2St(k);
   const ss=[['ns','sbn-ns'],['ip','sbn-ip'],['dn','sbn-dn'],['bl','sbn-bl'],['rv','sbn-rv']];
-  return`<div class="stt">Status</div>
-    <div class="stbns">${ss.map(([s,c])=>`<button class="sbn ${c} ${t.st===s?'act':''}" onclick="setSt('${esc(k)}','${s}')">${stL(s)}</button>`).join('')}</div>
-    <div class="stt">Completion %</div>
-    <div class="slr"><input type="range" min="0" max="100" value="${t.pct}" class="psl" oninput="slPct('${esc(k)}',this.value)">
-    <span class="pv" id="pv_${k.replace(/[\|]/g,'_')}">${t.pct}%</span></div>
+  // progress bar visual
+  const barColor=st==='dn'?'#22C55E':st==='ip'?'#F59E0B':st==='bl'?'#EF4444':'#CBD5E1';
+  return`
+    <div style="background:var(--sf2);border:1px solid var(--bd);border-radius:var(--rs);padding:12px 14px;margin-bottom:14px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <span class="stt" style="margin:0">Overall L2 Progress</span>
+        <span style="font-size:18px;font-weight:800;font-family:var(--mo);color:${barColor}">${pct}%</span>
+      </div>
+      <div style="height:7px;background:var(--bd);border-radius:4px;overflow:hidden">
+        <div style="height:100%;width:${pct}%;background:${barColor};border-radius:4px;transition:width .3s"></div>
+      </div>
+      <div style="margin-top:6px;font-size:10px;color:var(--tx3)">Computed automatically from L3 sub-task progress averages</div>
+    </div>
+    <div class="stt">L2 Status</div>
+    <div class="stbns">${ss.map(([s,c])=>`<button class="sbn ${c} ${st===s?'act':''}" disabled style="opacity:${st===s?'1':'0.4'};cursor:default">${stL(s)}</button>`).join('')}</div>
+    <div style="font-size:10px;color:var(--tx3);margin-bottom:14px">Status auto-computed from L3 tasks — set status per sub-task in the Tasks tab</div>
     <div class="ff"><label class="fl">Owner</label><input class="fi" type="text" value="${t.owner||''}" placeholder="Name" oninput="setF('${esc(k)}','owner',this.value)"></div>
     <div class="ff"><label class="fl">Due Date</label><input class="fi" type="date" value="${t.due||''}" oninput="setF('${esc(k)}','due',this.value)"></div>
     <div class="ff"><label class="fl">Notes</label><textarea class="fta" placeholder="Notes…" oninput="setF('${esc(k)}','notes',this.value)">${t.notes||''}</textarea></div>
-    <button class="btn btn-p btn-full" onclick="saveProg('${esc(k)}')">💾 Save Progress</button>`;
+    <button class="btn btn-p btn-full" onclick="saveProg('${esc(k)}')">💾 Save</button>`;
 }
 
 function renderTemplate(k){
-  const fk=k.replace(/[\|]/g,'_');const tpl=CF[k]?.tpl;
-  return`<div class="txs txm" style="margin-bottom:14px">Upload your Best Practice / reference template for this task.</div>
-    <div class="stt">Reference Template</div>
-    <div class="upz ${tpl?'ld':''}" onclick="trigU('tpl_${fk}')">
-      <div class="upz-ico">${tpl?'✅':'📋'}</div>
-      <div class="upz-name">${tpl?tpl.name:'Upload your reference template'}</div>
-      <div class="upz-sub">.xlsx / .xls / .csv</div>
-    </div>
-    <input type="file" id="tpl_${fk}" accept=".xlsx,.xls,.csv" class="hidden" onchange="upFile(this,'${k}','tpl')">
-    ${tpl?`<div style="background:var(--sf2);border:1px solid var(--bd);border-radius:var(--rs);padding:9px 11px;font-size:11px;color:var(--tx2)">
-      <strong>Loaded:</strong> ${tpl.name}
-      <span style="float:right;cursor:pointer;color:var(--tx3)" onclick="clearF('${k}','tpl')">✕ Remove</span>
-    </div>`:''}
-    <div class="mt3" style="padding:10px;background:#FEF3C7;border-radius:var(--rs);font-size:11px;color:#92400E">
-      💡 Once loaded, go to <strong>AI Compare</strong> tab → upload customer file → run QA analysis.
+  // L3-level templates: each sub-task can have its own reference template
+  const {ws,ph,l2}=parseKey(k);
+  const l3tasks=getl3(ws,ph,l2);
+  const t=td(k);
+
+  if(!l3tasks.length){
+    return`<div style="color:var(--tx3);font-size:12px;padding:16px 0">No sub-tasks defined for this L2 task.</div>`;
+  }
+
+  const rows=l3tasks.map((task,i)=>{
+    const tplKey=k+'||'+i;
+    const tpl=CF[tplKey]?.tpl;
+    const l3d=t.l3data&&t.l3data[i]||{};
+    const st=l3d.st||'ns';
+    const safeKey=(k+'__'+i).replace(/[^a-zA-Z0-9]/g,'_');
+    const stDot={ns:'#94A3B8',ip:'#F59E0B',dn:'#22C55E',bl:'#EF4444'}[st]||'#94A3B8';
+
+    return`<div style="border:1px solid var(--bd);border-radius:var(--rs);margin-bottom:8px;overflow:hidden">
+      <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--sf2);border-bottom:${tpl?'1px solid var(--bd)':'none'}">
+        <div style="width:7px;height:7px;border-radius:50%;background:${stDot};flex-shrink:0"></div>
+        <span style="font-size:11px;font-weight:600;flex:1;color:var(--tx)">${task}</span>
+        ${tpl
+          ?`<span style="font-size:10px;color:#16A34A;font-weight:600">📎 Template loaded</span>`
+          :`<span style="font-size:10px;color:var(--tx3)">No template</span>`
+        }
+      </div>
+      ${tpl
+        ?`<div style="padding:8px 12px;display:flex;align-items:center;gap:8px">
+            <div style="font-size:11px;color:var(--tx2);flex:1">
+              <strong>${tpl.name}</strong>
+              <span style="color:var(--tx3);font-size:10px;margin-left:6px">${Object.keys(tpl.data).length} sheet(s)</span>
+            </div>
+            <button class="btn btn-d" style="font-size:10px;padding:3px 8px" onclick="previewL3Tpl('${esc(k)}',${i})">👁 Preview</button>
+            <button class="btn btn-danger" style="font-size:10px;padding:3px 8px" onclick="clearL3Tpl('${esc(k)}',${i})">✕ Remove</button>
+          </div>`
+        :`<div style="padding:8px 12px">
+            <div class="upz" style="padding:12px;margin:0" onclick="trigU('l3tpl_${safeKey}')">
+              <div class="upz-ico" style="font-size:18px">📋</div>
+              <div class="upz-name">Upload reference template for this sub-task</div>
+              <div class="upz-sub">.xlsx / .xls / .csv / .pdf / .docx</div>
+            </div>
+            <input type="file" id="l3tpl_${safeKey}" accept=".xlsx,.xls,.csv,.pdf,.doc,.docx" class="hidden"
+              onchange="upL3Tpl(this,'${esc(k)}',${i})">
+          </div>`
+      }
     </div>`;
+  }).join('');
+
+  const loadedCount=l3tasks.filter((_,i)=>CF[k+'||'+i]?.tpl).length;
+
+  return`
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+      <div>
+        <div style="font-size:12px;font-weight:700;color:var(--tx)">Sub-Task Templates</div>
+        <div style="font-size:10px;color:var(--tx3);margin-top:1px">Upload a reference template for each L3 sub-task. Used as baseline for AI QA comparison.</div>
+      </div>
+      <span style="margin-left:auto;font-size:11px;font-family:var(--mo);font-weight:700;color:${loadedCount>0?'#16A34A':'var(--tx3)'}">
+        ${loadedCount}/${l3tasks.length} loaded
+      </span>
+    </div>
+    ${rows}
+    ${loadedCount>0?`
+    <div style="margin-top:12px;padding:10px 12px;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:var(--rs);font-size:11px;color:#14532D">
+      ✅ ${loadedCount} template(s) loaded. Go to <strong>AI Compare</strong> tab to run QA analysis against a submitted deliverable.
+    </div>`:`
+    <div style="margin-top:12px;padding:10px 12px;background:#FEF3C7;border:1px solid #FDE68A;border-radius:var(--rs);font-size:11px;color:#92400E">
+      💡 Upload reference templates above. Once loaded, use <strong>AI Compare</strong> to compare against customer deliverables.
+    </div>`}`;
+}
+
+/* L3 template actions */
+async function upL3Tpl(inp,k,i){
+  const f=inp.files[0];if(!f)return;
+  const tplKey=k+'||'+i;
+  try{
+    // Store file info (name + size) — for non-spreadsheet files we store metadata only
+    const isSheet=/\.(xlsx|xls|csv)$/i.test(f.name);
+    let data=null;
+    if(isSheet) data=await readXL(f);
+    if(!CF[tplKey])CF[tplKey]={};
+    CF[tplKey].tpl={name:f.name,size:f.size,type:f.type,data,isSheet};
+    toast('✅ '+f.name+' loaded');
+    renderDrwBody();
+  }catch(e){toast('❌ Could not load file: '+e.message);}
+}
+
+function clearL3Tpl(k,i){
+  const tplKey=k+'||'+i;
+  if(CF[tplKey])delete CF[tplKey].tpl;
+  renderDrwBody();
+}
+
+function previewL3Tpl(k,i){
+  const tplKey=k+'||'+i;
+  const tpl=CF[tplKey]?.tpl;
+  if(!tpl)return;
+  if(!tpl.isSheet||!tpl.data){
+    toast('ℹ Preview not available for this file type');return;
+  }
+  // Show first sheet in a simple modal
+  const firstSheet=Object.keys(tpl.data)[0];
+  const rows=tpl.data[firstSheet].slice(0,20);
+  const html=rows.map(r=>`<tr>${r.map(c=>`<td style="padding:4px 8px;border:1px solid #e2e8f0;font-size:10px;white-space:nowrap;max-width:180px;overflow:hidden;text-overflow:ellipsis">${c}</td>`).join('')}</tr>`).join('');
+  const modal=document.createElement('div');
+  modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:800;display:flex;align-items:center;justify-content:center;padding:20px';
+  modal.innerHTML=`<div style="background:#fff;border-radius:10px;box-shadow:0 8px 40px rgba(0,0,0,.3);max-width:90vw;max-height:80vh;overflow:auto;padding:20px">
+    <div style="display:flex;align-items:center;margin-bottom:12px">
+      <strong style="font-size:13px">${tpl.name}</strong>
+      <span style="font-size:10px;color:#94a3b8;margin-left:8px">Sheet: ${firstSheet} (first 20 rows)</span>
+      <button onclick="this.closest('div[style*=fixed]').remove()" style="margin-left:auto;border:none;background:#f1f5f9;border-radius:4px;padding:4px 10px;cursor:pointer;font-size:12px">✕ Close</button>
+    </div>
+    <div style="overflow:auto"><table style="border-collapse:collapse">${html}</table></div>
+  </div>`;
+  modal.onclick=e=>{if(e.target===modal)modal.remove();};
+  document.body.appendChild(modal);
 }
 
 function renderAI(k,l2,t){
-  const fk=k.replace(/[\|]/g,'_');const tpl=CF[k]?.tpl;const cust=CF[k]?.cust;
-  const tplSec=tpl
-    ?`<div class="preloaded"><span class="pre-ico">📋</span><div><div class="pre-txt">Reference Template Loaded</div><div class="pre-sub">${tpl.name}</div></div>
-       <button class="btn btn-danger" style="margin-left:auto;font-size:10px" onclick="clearF('${k}','tpl')">✕</button></div>`
+  const {ws,ph}=DS;
+  const l3tasks=getl3(ws,ph,l2);
+  const fk=k.replace(/[\|]/g,'_');
+
+  // Check which L3s have templates loaded
+  const l3WithTpl=l3tasks.map((_,i)=>({i,task:l3tasks[i],tpl:CF[k+'||'+i]?.tpl})).filter(x=>x.tpl);
+  const cust=CF[k]?.cust;
+
+  const tplSummary=l3WithTpl.length>0
+    ?`<div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:var(--rs);padding:10px 12px;margin-bottom:10px">
+        <div style="font-size:11px;font-weight:700;color:#14532D;margin-bottom:6px">📎 ${l3WithTpl.length} Sub-task template(s) loaded:</div>
+        ${l3WithTpl.map(x=>`<div style="font-size:10px;color:#15803D;padding:2px 0">• <strong>L3 ${x.i+1}:</strong> ${x.task.slice(0,50)}${x.task.length>50?'…':''} → ${x.tpl.name}</div>`).join('')}
+        <div style="font-size:10px;color:#16A34A;margin-top:5px">Go to <strong>Template</strong> tab to manage templates.</div>
+      </div>`
     :`<div style="background:var(--sf2);border:1px solid var(--bd);border-radius:var(--rs);padding:9px 11px;margin-bottom:9px;font-size:11px;color:var(--tx3)">
-       ⚠ No reference template. Go to <strong>Template</strong> tab first.</div>`;
-  const custSec=`<div class="stt mt2">📨 Customer Submitted File</div>
+       ⚠ No sub-task templates loaded. Go to <strong>Template</strong> tab to upload reference templates for each sub-task first.</div>`;
+
+  const custSec=`<div class="stt mt2">📨 Customer Submitted Deliverable</div>
     <div class="upz ${cust?'ld':''}" onclick="trigU('cust_${fk}')">
       <div class="upz-ico">${cust?'✅':'📁'}</div>
-      <div class="upz-name">${cust?cust.name:'Upload customer file'}</div>
-      <div class="upz-sub">.xlsx / .xls / .csv</div>
+      <div class="upz-name">${cust?cust.name:'Upload customer deliverable'}</div>
+      <div class="upz-sub">.xlsx / .xls / .csv — the customer filled version</div>
     </div>
     <input type="file" id="cust_${fk}" accept=".xlsx,.xls,.csv" class="hidden" onchange="upFile(this,'${k}','cust')">
     ${cust?`<div style="font-size:10px;color:var(--tx3);margin-bottom:4px;text-align:right;cursor:pointer" onclick="clearF('${k}','cust')">✕ Remove</div>`:''}`;
-  const btn=tpl&&cust
-    ?`<button class="btn btn-g btn-full mt2" onclick="runAI('${esc(k)}','${esc(l2)}')">🤖 Run QA Analysis</button>`
-    :`<div style="text-align:center;font-size:11px;color:var(--tx3);padding:8px">${!tpl?'Load reference template first.':'Upload the customer file to run analysis.'}</div>`;
+
+  const canRun=l3WithTpl.length>0&&cust;
+  const btn=canRun
+    ?`<button class="btn btn-g btn-full mt2" onclick="runAI('${esc(k)}','${esc(l2)}')">🤖 Run QA Analysis (${l3WithTpl.length} templates)</button>`
+    :`<div style="text-align:center;font-size:11px;color:var(--tx3);padding:8px">${l3WithTpl.length===0?'Load sub-task templates first (Template tab).':!cust?'Upload the customer deliverable to run analysis.':''}</div>`;
+
   let res='';
   if(t.air){
     const bn=t.ai==='ok'
-      ?`<div class="bn-g"><span class="bn-ico">🟢</span><div><div class="bn-txt">Approved</div></div></div>`
+      ?`<div class="bn-g"><span class="bn-ico">🟢</span><div><div class="bn-txt">Approved — marked green on dashboard</div></div></div>`
       :`<div class="bn-y"><span class="bn-ico">🟡</span><div class="bn-txt" style="color:#92400E">Differences found<div class="bn-sub">Review below, approve when satisfied.</div></div>
          <button class="btn btn-ok" style="margin-left:auto" onclick="approveT('${esc(k)}')">✅ Approve</button></div>`;
     res=`<div class="mt3">${bn}<div class="row" style="margin-bottom:10px">
@@ -1237,7 +1428,7 @@ function renderAI(k,l2,t){
       <button class="btn btn-d" style="margin-left:auto" onclick="dlRep('${esc(k)}','${esc(l2)}')">⬇ Download</button>
     </div>${t.air}</div>`;
   }
-  return`${tplSec}${custSec}${btn}${res}`;
+  return`${tplSummary}${custSec}${btn}${res}`;
 }
 
 /* ══════════════ TASK ACTIONS ══════════════ */
@@ -1251,18 +1442,41 @@ function ensure(k){
   return t;
 }
 function toggleChk(k,i){
-  // Unified: uses l3chk (same as phase detail) — fixes sync between views
   const t=ensure(k);if(!t)return;
   if(!t.l3chk)t.l3chk={};
   t.l3chk[i]=!t.l3chk[i];
-  const {ws,ph,l2}=parseKey(k);
-  const all=getl3(ws,ph,l2);
-  if(all.length){
-    const done=all.filter((_,j)=>t.l3chk[j]).length;
-    t.pct=Math.round(done/all.length*100);
-    t.st=t.pct===100?'dn':t.pct>0?'ip':'ns';
+  const done=t.l3chk[i];
+  // Only sync pct/st in l3data if panel hasn't been touched — don't override manual progress entries
+  if(!t.l3data)t.l3data={};
+  if(!t.l3data[i])t.l3data[i]={};
+  // Only auto-set if user hasn't manually entered a progress value
+  const hasManualProgress = t.l3data[i].manuallySet;
+  if(!hasManualProgress){
+    t.l3data[i].pct = done ? 100 : 0;
+    t.l3data[i].st  = done ? 'dn' : 'ns';
   }
-  save();renderDrwBody();
+  _syncL2(k);
+  save();
+  // In-place DOM update — no page reload, no scroll jump
+  const safeK=k.replace(/[^a-zA-Z0-9]/g,'_');
+  const chkEl=document.getElementById('chk_'+safeK+'_'+i);
+  const txtEl=document.getElementById('txt_'+safeK+'_'+i);
+  if(chkEl){chkEl.className='chk'+(done?' dn':'');chkEl.textContent=done?'✓':'';}
+  if(txtEl){txtEl.className='task-txt'+(done?' done':'');}
+  _updateL2Badge(k);
+  const pct=calcL2Pct(k);const st=calcL2St(k);
+  const hPctEl=document.getElementById('drw_pct_'+safeK);
+  if(hPctEl)hPctEl.textContent=pct+'%';
+  const hStEl=document.getElementById('drw_st_'+safeK);
+  if(hStEl){hStEl.className='sb '+stK(st);hStEl.textContent=stL(st);}
+}
+
+function closeDrawer(){
+  document.getElementById('drwBg').classList.remove('show');
+  document.getElementById('drw').classList.remove('open');
+  // Refresh matrix/phase in background without scroll jump
+  if(VIEW==='matrix') renderMatrix();
+  else renderPhaseDetail(ACTIVE_PH);
 }
 function removeT(k,i){const t=ensure(k);if(!t)return;if(!t.del)t.del={};t.del[i]=true;save();renderDrwBody();}
 function restoreT(k,i){const t=ensure(k);if(!t)return;if(t.del)delete t.del[i];save();renderDrwBody();}
@@ -1316,12 +1530,18 @@ function x2txt(d){
 
 /* AI QA */
 async function runAI(k,l2Name){
-  const f=CF[k];if(!f?.tpl||!f?.cust){toast('⚠ Both files required');return;}
+  const cust=CF[k]?.cust;
+  if(!cust){toast('⚠ Upload customer deliverable first');return;}
   const {ws,ph}=DS;
-  const l3list=(L3M[ws+'__'+ph+'__'+l2Name]||[]).join('\n• ');
+  const l3tasks=getl3(ws,ph,l2Name);
+  const l3WithTpl=l3tasks.map((task,i)=>({task,tpl:CF[k+'||'+i]?.tpl})).filter(x=>x.tpl&&x.tpl.isSheet&&x.tpl.data);
+  if(!l3WithTpl.length){toast('⚠ No spreadsheet templates loaded (Template tab)');return;}
+
   loading(true,'Running QA analysis… (~20 sec)');
   try{
-    const p='You are an SAP S/4HANA implementation QA expert.\n\nTask/Deliverable: "'+l2Name+'"\nPhase: '+ph+' | Workstream: '+ws+'\nExpected sub-tasks:\n• '+l3list+'\n\n=== REFERENCE / BEST PRACTICE TEMPLATE ===\n'+x2txt(f.tpl.data)+'\n\n=== CUSTOMER SUBMITTED FILE ===\n'+x2txt(f.cust.data)+'\n\nPerform thorough QA. Respond ONLY with this JSON:\n{"summary":"2-3 sentence assessment","overall_score":72,"critical_gaps":["gap"],"overdue_risks":["risk"],"missing_items":["item"],"differences":["diff"],"positives":["positive"],"recommendations":["rec"]}';
+    const tplContext=l3WithTpl.map(x=>`--- Sub-task: ${x.task} ---\n${x2txt(x.tpl.data)}`).join('\n\n');
+    const l3list=l3tasks.join('\n• ');
+    const p=`You are an SAP S/4HANA implementation QA expert.\n\nL2 Task: "${l2Name}"\nPhase: ${ph} | Workstream: ${ws}\n\nL3 Sub-tasks:\n• ${l3list}\n\n=== REFERENCE TEMPLATES (per sub-task) ===\n${tplContext}\n\n=== CUSTOMER SUBMITTED DELIVERABLE ===\n${x2txt(cust.data)}\n\nCompare the customer deliverable against the reference templates. Respond ONLY with JSON:\n{"summary":"2-3 sentence assessment","overall_score":72,"critical_gaps":["gap"],"overdue_risks":["risk"],"missing_items":["item"],"differences":["diff"],"positives":["done well"],"recommendations":["rec"]}`;
     const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1500,messages:[{role:'user',content:p}]})});
     const data=await resp.json();
     const txt=data.content?.find(b=>b.type==='text')?.text||'';
