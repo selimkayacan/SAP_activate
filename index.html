@@ -18,7 +18,6 @@
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:var(--fn);background:var(--bg);color:var(--tx);font-size:13px;line-height:1.5;min-height:100vh;}
 
-/* HEADER */
 .hdr{background:var(--navy);color:#fff;height:50px;display:flex;align-items:center;padding:0 16px;gap:10px;position:sticky;top:0;z-index:300;box-shadow:0 2px 10px rgba(0,0,0,.3);}
 .logo{font-size:14px;font-weight:800;display:flex;align-items:center;gap:6px;flex-shrink:0;}
 .logo-sap{color:#F0AB00;}
@@ -35,6 +34,7 @@ body{font-family:var(--fn);background:var(--bg);color:var(--tx);font-size:13px;l
 .btn-ok{background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0;}
 .btn-danger{background:#FEE2E2;color:#DC2626;border:1px solid #FCA5A5;}
 .btn-full{width:100%;justify-content:center;}
+.btn-back{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);padding:4px 10px;font-size:11px;}.btn-back:hover{background:rgba(255,255,255,.25);}
 
 .main{padding:14px 16px;}
 
@@ -57,7 +57,7 @@ body{font-family:var(--fn);background:var(--bg);color:var(--tx);font-size:13px;l
 .pi-del{font-size:11px;color:var(--tx3);padding:2px 6px;border-radius:3px;cursor:pointer;}.pi-del:hover{background:#FEE2E2;color:#DC2626;}
 .empty-msg{text-align:center;color:var(--tx3);font-size:12px;padding:22px;}
 
-/* LEGEND BAR */
+/* LEGEND */
 .lgnd{background:var(--srf);border-bottom:1px solid var(--bd);padding:6px 16px;display:flex;align-items:center;gap:14px;font-size:11px;flex-wrap:wrap;}
 .leg{display:flex;align-items:center;gap:4px;color:var(--tx2);}
 .ldot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
@@ -65,25 +65,17 @@ body{font-family:var(--fn);background:var(--bg);color:var(--tx);font-size:13px;l
 /* MATRIX */
 .mx-outer{background:var(--srf);border-radius:var(--r);box-shadow:var(--sh);overflow:auto;}
 .mx-table{width:100%;border-collapse:collapse;min-width:920px;}
-
-/* WS header col */
 .mxh-ws{background:var(--sf2);padding:8px 12px;font-size:11px;font-weight:700;color:var(--tx2);text-transform:uppercase;letter-spacing:.4px;border-right:2px solid var(--bd);border-bottom:2px solid var(--bd);position:sticky;left:0;z-index:2;min-width:155px;}
-
-/* Phase header cols */
-.mxh-ph{padding:9px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.2);border-bottom:2px solid var(--bd);vertical-align:middle;}
+.mxh-ph{padding:9px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.2);border-bottom:2px solid var(--bd);vertical-align:middle;cursor:pointer;transition:opacity .15s;}
+.mxh-ph:hover{opacity:.85;}
 .mxh-ph:last-child{border-right:none;}
 .ph-name-big{font-size:14px;font-weight:800;color:#fff;letter-spacing:-.3px;}
-
-/* WS label cells (sticky) */
+.ph-click-hint{font-size:9px;color:rgba(255,255,255,.6);margin-top:2px;}
 .mx-ws{background:var(--sf2);padding:7px 12px;border-right:2px solid var(--bd);border-bottom:1px solid var(--bd);font-size:11px;font-weight:500;vertical-align:top;position:sticky;left:0;z-index:1;min-width:155px;}
-
-/* Task cells */
 .mx-td{padding:5px 6px;border-right:1px solid var(--bd);border-bottom:1px solid var(--bd);vertical-align:top;min-height:54px;}
 .mx-td:last-child{border-right:none;}
 .mx-td.clickable:hover{background:#F1F5FF;cursor:pointer;}
 .mx-td.empty{cursor:default;background:repeating-linear-gradient(45deg,transparent,transparent 4px,rgba(0,0,0,.013) 4px,rgba(0,0,0,.013) 8px);}
-
-/* L2 chips */
 .chip{display:flex;align-items:center;gap:4px;padding:3px 5px;margin-bottom:2px;border-radius:4px;font-size:10px;cursor:pointer;transition:background .1s;line-height:1.3;}
 .chip:hover{background:rgba(0,0,0,.05);}
 .cdot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
@@ -91,8 +83,6 @@ body{font-family:var(--fn);background:var(--bg);color:var(--tx);font-size:13px;l
 .cname.cy{color:#92400E;font-weight:600;}
 .cname.cg{color:#14532D;font-weight:600;}
 .cpct{font-size:9px;font-family:var(--mo);color:var(--tx3);}
-
-/* Footer row */
 .mx-foot{border-top:2px solid var(--bd);}
 .mxf-ws{background:var(--sf2);padding:6px 12px;font-size:10px;font-weight:600;color:var(--tx3);border-right:2px solid var(--bd);position:sticky;left:0;z-index:1;}
 .mxf-ph{padding:8px 10px;text-align:center;border-right:1px solid var(--bd);}
@@ -100,6 +90,84 @@ body{font-family:var(--fn);background:var(--bg);color:var(--tx);font-size:13px;l
 .ph-pct{font-size:15px;font-weight:800;font-family:var(--mo);}
 .ph-desc{font-size:10px;margin-top:2px;}
 .ph-qg{display:inline-flex;align-items:center;gap:2px;padding:1px 7px;border-radius:10px;font-size:9px;font-weight:700;margin-top:3px;background:rgba(0,0,0,.06);}
+
+/* ══════════════════════════════════
+   PHASE DETAIL PAGE
+══════════════════════════════════ */
+.ph-detail{display:none;}
+.ph-detail.show{display:block;}
+
+.ph-hero{padding:18px 20px;color:#fff;border-radius:var(--r) var(--r) 0 0;display:flex;align-items:center;gap:14px;}
+.ph-hero-left{flex:1;}
+.ph-hero-name{font-size:22px;font-weight:800;letter-spacing:-.5px;}
+.ph-hero-desc{font-size:12px;opacity:.75;margin-top:2px;}
+.ph-hero-stats{display:flex;gap:16px;margin-top:10px;}
+.ph-stat{text-align:center;}
+.ph-stat-n{font-size:20px;font-weight:800;font-family:var(--mo);}
+.ph-stat-l{font-size:10px;opacity:.7;margin-top:1px;}
+.ph-hero-pct{font-size:42px;font-weight:800;font-family:var(--mo);opacity:.9;}
+
+.ph-content{background:var(--srf);border-radius:0 0 var(--r) var(--r);box-shadow:var(--sh);}
+
+/* Workstream sections */
+.ws-section{border-bottom:1px solid var(--bd);}
+.ws-section:last-child{border-bottom:none;}
+.ws-header{padding:10px 16px;background:var(--sf2);display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;}
+.ws-header:hover{background:#EFF6FF;}
+.ws-header-name{font-size:12px;font-weight:700;color:var(--tx);flex:1;}
+.ws-header-stats{font-size:10px;color:var(--tx3);font-family:var(--mo);}
+.ws-toggle{font-size:11px;color:var(--tx3);transition:transform .2s;}
+.ws-toggle.open{transform:rotate(90deg);}
+.ws-body{display:none;padding:0 0 8px 0;}
+.ws-body.open{display:block;}
+
+/* L2 task blocks */
+.l2-block{margin:8px 14px 0 14px;border:1px solid var(--bd);border-radius:var(--rs);overflow:hidden;}
+.l2-header{padding:8px 12px;display:flex;align-items:center;gap:8px;cursor:pointer;background:var(--sf2);}
+.l2-header:hover{background:#EFF6FF;}
+.l2-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.l2-name{font-size:11px;font-weight:700;color:var(--tx);flex:1;}
+.l2-pctbadge{font-size:10px;font-family:var(--mo);color:var(--tx3);background:var(--bg);padding:1px 6px;border-radius:10px;}
+.l2-statusbadge{font-size:9px;font-weight:600;padding:1px 7px;border-radius:10px;}
+.l2-toggle{font-size:10px;color:var(--tx3);transition:transform .2s;}
+.l2-toggle.open{transform:rotate(90deg);}
+
+.l2-detail{display:none;padding:10px 12px;border-top:1px solid var(--bd);background:#fff;}
+.l2-detail.open{display:block;}
+
+/* Tooltip */
+.l2-tooltip{background:#FFFBEB;border:1px solid #FDE68A;border-radius:var(--rs);padding:8px 11px;margin-bottom:10px;font-size:11px;color:#78350F;line-height:1.5;}
+.l2-tooltip-icon{font-size:13px;margin-right:4px;}
+
+/* L3 tasks inside phase detail */
+.l3-progress-list{list-style:none;}
+.l3-row{display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid var(--bd);}
+.l3-row:last-child{border-bottom:none;}
+.l3-chk{width:15px;height:15px;border:1.5px solid var(--bd);border-radius:3px;cursor:pointer;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;font-size:9px;transition:all .15s;}
+.l3-chk.done{background:#22C55E;border-color:#22C55E;color:#fff;}
+.l3-text{flex:1;font-size:11px;line-height:1.5;color:var(--tx2);}
+.l3-text.done{text-decoration:line-through;color:var(--tx3);}
+.l3-owner-inp{font-size:10px;font-family:var(--fn);border:1px solid var(--bd);border-radius:3px;padding:1px 5px;width:90px;color:var(--tx2);background:var(--sf2);}
+.l3-owner-inp:focus{outline:none;border-color:#1D4ED8;}
+
+/* L2 progress controls inside phase detail */
+.l2-controls{display:flex;align-items:center;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--bd);flex-wrap:wrap;}
+.l2-ctrl-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--tx3);}
+.mini-psl{flex:1;min-width:80px;-webkit-appearance:none;height:4px;border-radius:2px;background:var(--bg);outline:none;}
+.mini-psl::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:#1D4ED8;cursor:pointer;}
+.mini-pv{font-family:var(--mo);font-size:11px;font-weight:600;width:30px;}
+.mini-st-btns{display:flex;gap:4px;}
+.mini-st{padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;cursor:pointer;border:1px solid transparent;font-family:var(--fn);}
+.mini-st.ns{background:#F1F5F9;color:#64748B;border-color:#CBD5E1;}
+.mini-st.ip{background:#FEF3C7;color:#D97706;border-color:#F59E0B;}
+.mini-st.dn{background:#DCFCE7;color:#16A34A;border-color:#22C55E;}
+.mini-st.bl{background:#FEE2E2;color:#DC2626;border-color:#EF4444;}
+.mini-st.act{box-shadow:0 0 0 2px currentColor;}
+.l2-owner-row{display:flex;gap:7px;align-items:center;margin-top:6px;}
+.l2-owner-inp{font-size:11px;font-family:var(--fn);border:1px solid var(--bd);border-radius:var(--rs);padding:3px 8px;flex:1;color:var(--tx);background:var(--sf2);}
+.l2-owner-inp:focus{outline:none;border-color:#1D4ED8;}
+.save-mini{padding:3px 10px;font-size:10px;background:#1D4ED8;color:#fff;border:none;border-radius:var(--rs);cursor:pointer;font-family:var(--fn);font-weight:600;}
+.save-mini:hover{background:#1e40af;}
 
 /* DRAWER */
 .drw-bg{position:fixed;inset:0;background:rgba(0,0,0,.28);z-index:400;display:none;}
@@ -123,7 +191,6 @@ body{font-family:var(--fn);background:var(--bg);color:var(--tx);font-size:13px;l
 .s-df{background:#FEF3C7;color:#92400E;border:1px solid #FDE68A;}
 .s-ap{background:#DCFCE7;color:#14532D;border:1px solid #BBF7D0;}
 
-/* TASKS */
 .stt{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--tx3);margin-bottom:8px;}
 .l3-list{list-style:none;}
 .l3-item{display:flex;align-items:flex-start;gap:7px;padding:6px 0;border-bottom:1px solid var(--bd);font-size:12px;}
@@ -135,8 +202,6 @@ body{font-family:var(--fn);background:var(--bg);color:var(--tx);font-size:13px;l
 .task-txt.del{text-decoration:line-through;color:#FCA5A5;}
 .rm-btn{font-size:11px;color:var(--tx3);cursor:pointer;padding:1px 4px;border-radius:3px;flex-shrink:0;line-height:1;}.rm-btn:hover{background:#FEE2E2;color:#DC2626;}
 .add-row{display:flex;gap:7px;margin-top:10px;}
-
-/* PROGRESS */
 .stbns{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:11px;}
 .sbn{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid transparent;font-family:var(--fn);}
 .sbn-ns{background:#F1F5F9;color:var(--tx2);border-color:var(--bd);}
@@ -153,8 +218,6 @@ body{font-family:var(--fn);background:var(--bg);color:var(--tx);font-size:13px;l
 .fl{font-size:11px;font-weight:600;color:var(--tx2);margin-bottom:3px;display:block;}
 .fta{width:100%;padding:7px 10px;border:1px solid var(--bd);border-radius:var(--rs);font-family:var(--fn);font-size:12px;background:var(--srf);color:var(--tx);outline:none;resize:vertical;min-height:64px;}
 .fta:focus{border-color:#1D4ED8;}
-
-/* TEMPLATE / AI */
 .upz{border:2px dashed var(--bd);border-radius:var(--r);padding:18px;text-align:center;cursor:pointer;transition:all .2s;background:var(--sf2);margin-bottom:10px;}
 .upz:hover{border-color:#1D4ED8;background:#EFF6FF;}
 .upz.ld{border-color:#22C55E;background:#F0FDF4;}
@@ -162,18 +225,10 @@ body{font-family:var(--fn);background:var(--bg);color:var(--tx);font-size:13px;l
 .upz-name{font-size:11px;font-weight:500;color:var(--tx2);}
 .upz-sub{font-size:10px;color:var(--tx3);margin-top:2px;}
 .preloaded{background:linear-gradient(135deg,#EFF6FF,#DBEAFE);border:1px solid #BFDBFE;border-radius:var(--r);padding:10px;margin-bottom:10px;display:flex;align-items:center;gap:9px;}
-.pre-ico{font-size:17px;}
-.pre-txt{font-size:11px;font-weight:600;color:#1D4ED8;}
-.pre-sub{font-size:10px;color:#2563EB;margin-top:2px;}
-
-/* QA REPORT */
+.pre-ico{font-size:17px;}.pre-txt{font-size:11px;font-weight:600;color:#1D4ED8;}.pre-sub{font-size:10px;color:#2563EB;margin-top:2px;}
 .qa-sec{margin-bottom:13px;}
 .qa-hdr{font-size:11px;font-weight:700;padding:5px 9px;border-radius:var(--rs);margin-bottom:6px;display:flex;align-items:center;gap:5px;}
-.qa-cr{background:#FEE2E2;color:#DC2626;}
-.qa-od{background:#FEF3C7;color:#D97706;}
-.qa-ms{background:#DBEAFE;color:#1D4ED8;}
-.qa-df{background:#FEF9C3;color:#92400E;}
-.qa-ok{background:#DCFCE7;color:#16A34A;}
+.qa-cr{background:#FEE2E2;color:#DC2626;}.qa-od{background:#FEF3C7;color:#D97706;}.qa-ms{background:#DBEAFE;color:#1D4ED8;}.qa-df{background:#FEF9C3;color:#92400E;}.qa-ok{background:#DCFCE7;color:#16A34A;}
 .qa-it{padding:7px 10px;border-left:3px solid;background:var(--sf2);margin-bottom:3px;border-radius:0 var(--rs) var(--rs) 0;font-size:11px;line-height:1.5;}
 .score-row{display:flex;align-items:center;gap:12px;background:var(--sf2);border-radius:var(--rs);padding:11px;margin-bottom:12px;}
 .score-num{font-size:28px;font-weight:800;font-family:var(--mo);}
@@ -182,8 +237,6 @@ body{font-family:var(--fn);background:var(--bg);color:var(--tx);font-size:13px;l
 .bn-y{background:#FFFBEB;border:1px solid #FDE68A;border-radius:var(--rs);padding:10px 12px;margin-bottom:10px;display:flex;align-items:center;gap:9px;}
 .bn-g{background:#F0FDF4;border:1px solid #BBF7D0;border-radius:var(--rs);padding:10px 12px;margin-bottom:10px;display:flex;align-items:center;gap:9px;}
 .bn-ico{font-size:16px;}.bn-txt{font-size:11px;font-weight:600;flex:1;}.bn-sub{font-size:10px;margin-top:2px;font-weight:400;}
-
-/* OVERLAY / TOAST */
 .ovl{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;z-index:600;}
 .ovl.show{display:flex;}
 .sc{background:var(--srf);border-radius:var(--r);padding:24px 30px;text-align:center;box-shadow:var(--sh2);}
@@ -201,7 +254,7 @@ body{font-family:var(--fn);background:var(--bg);color:var(--tx);font-size:13px;l
 </style>
 </head>
 <body>
-<div class="ovl" id="ovl"><div class="sc"><div class="spn"></div><div class="sptx" id="spTx">Running QA analysis…</div></div></div>
+<div class="ovl" id="ovl"><div class="sc"><div class="spn"></div><div class="sptx" id="spTx">Running…</div></div></div>
 <div class="toast" id="toast"></div>
 <div class="drw-bg" id="drwBg" onclick="closeDrawer()"></div>
 <div class="drw" id="drw">
@@ -222,8 +275,6 @@ body{font-family:var(--fn);background:var(--bg);color:var(--tx);font-size:13px;l
   <div class="leg"><div class="ldot" style="background:#F59E0B"></div>In Progress</div>
   <div class="leg"><div class="ldot" style="background:#22C55E"></div>Completed</div>
   <div class="leg"><div class="ldot" style="background:#EF4444"></div>Blocked</div>
-  <div class="leg" style="border-left:1px solid var(--bd);padding-left:12px"><div class="ldot" style="background:#F59E0B"></div><span style="color:#92400E;font-weight:600">🟡 AI: Differences</span></div>
-  <div class="leg"><div class="ldot" style="background:#16A34A"></div><span style="color:#14532D;font-weight:600">🟢 AI: Approved</span></div>
 </div>
 
 <div class="main" id="main"></div>
@@ -235,21 +286,311 @@ const PH_DESC={"DISCOVER":"Solution Discovery & Value","PREPARE":"Setup & Mobili
 const PH_COLOR={"DISCOVER":"#7C3AED","PREPARE":"#1D4ED8","EXPLORE":"#0891B2","REALIZE":"#D97706","DEPLOY":"#DC2626","RUN":"#16A34A"};
 const PH_QG={"PREPARE":"QG1","EXPLORE":"QG2","REALIZE":"QG3","DEPLOY":"QG4"};
 const WS=["Project Management","Tech. Architecture & Infrastructure","App. Design & Configuration","Extensibility & Clean Core Strategy","Integration","Data Management","Testing","Analytics","Org. Change Management","Customer Team Enablement","Operations"];
-const L2M={"Project Management__DISCOVER":["Strategic Planning","Discovery Assessment","Application Value and Scoping"],"Project Management__PREPARE":["Project Initiation and Governance","Project Plans, Schedule and Budget","Project Standards, Infrastructure, and Solution","Project Kick-Off and Onboarding","Value Determination","Prepare Phase Closure and Sign-Off"],"Project Management__EXPLORE":["Execution and Monitoring of Project","Value Realization","Release and Sprint Plan","Explore Phase Closure and Sign-Off"],"Project Management__REALIZE":["Sprint Planning and Execution","Sprint Closing","Value Realization","Cutover Preparation","Realize Phase Closure and Sign-Off"],"Project Management__DEPLOY":["Execution and Monitoring of Project","Deploy Phase Closure and Sign-Off"],"Project Management__RUN":["Governance Model","Value Management"],"Tech. Architecture & Infrastructure__DISCOVER":["Conversion Readiness Assessment"],"Tech. Architecture & Infrastructure__PREPARE":["Getting Started with your SAP Implementation","Supporting Tools for Implementation","Request Initial System Access","Initial System Access for SAP Cloud ALM","Initial System Access for SAP S/4HANA Cloud Private Edition","Technical Project Preparation","Pre-Conversion Projects Execution","Transition Planning","System Conversion Planning","Transition Preparation"],"Tech. Architecture & Infrastructure__EXPLORE":["System Conversion Execution of the Sandbox/Shell System","Additional Activities in the Converted Sandbox/Shell System","User Access and Security Planning and Design","Sizing Validation"],"Tech. Architecture & Infrastructure__REALIZE":["Quality System Initial Access","Initial Quality System Setup","Production System Request","System Conversion Execution of the Development System","System Conversion Execution of the Quality System","Production System Initial Access","User Access and Security Implementation"],"Tech. Architecture & Infrastructure__DEPLOY":["System Conversion Execution of the Dress Rehearsal System","System Conversion Execution of the Production System (Cutover)","System Go-Live"],"App. Design & Configuration__PREPARE":["Business Driven Configuration Assessment","Solution Scope","Fit-to-Standard Preparation For Specific Features","Fit-to-Standard Workshop Preparation"],"App. Design & Configuration__EXPLORE":["Fit-to-Standard Workshops for Specific Features","Fit-to-Standard Workshop Execution","Fit-to-Standard Workshop Documentation","Fit-to-Standard Workshop Validation","User Experience Design","SAP Build Planning and Design","SAP Build Setup"],"App. Design & Configuration__REALIZE":["Solution Configuration","Product Enhancements","Set up SAP Build in the Quality System","Set up SAP Build in Production System"],"Extensibility & Clean Core Strategy__DISCOVER":["Introduction to RISE with SAP","Clean Core Quality Gate 0"],"Extensibility & Clean Core Strategy__PREPARE":["Clean Core Quality Gate 1"],"Extensibility & Clean Core Strategy__EXPLORE":["Custom Code Deep Dive Analysis","Extension Planning and Design","Clean Core Quality Gate 2"],"Extensibility & Clean Core Strategy__REALIZE":["Extension Development in the Development and Quality Systems","Deploy Extensions to the Production System","Clean Core Quality Gate 3"],"Extensibility & Clean Core Strategy__RUN":["Clean Core Quality Gate 5"],"Integration__PREPARE":["Prepare Integration Setup"],"Integration__EXPLORE":["Integration Planning and Design","Integration Review and Redesign"],"Integration__REALIZE":["Integration Setup in Development and Quality Landscape","Integration Validation","Set up Integration in the Production System"],"Data Management__PREPARE":["Data Migration Approach and Plan"],"Data Management__EXPLORE":["Data Migration Planning and Design","Data Load Preparation"],"Data Management__REALIZE":["Data Migration Execution","Data Migration in the Development Tenant","Data Migration in the Test Tenant"],"Data Management__DEPLOY":["Production Cutover"],"Testing__EXPLORE":["Test Planning"],"Testing__REALIZE":["Test Preparation","Test Execution"],"Testing__DEPLOY":["Dress Rehearsal"],"Analytics__PREPARE":["Analytics Approach and Plan"],"Analytics__EXPLORE":["Analytics Planning and Design"],"Analytics__REALIZE":["Analytics Configuration in the Quality System","Analytics Configuration in the Production System"],"Org. Change Management__DISCOVER":["Organizational Change Management Overview"],"Org. Change Management__PREPARE":["Change Concept","Change Plan","Stakeholder Analysis","Communication Analysis and Plan"],"Org. Change Management__EXPLORE":["Communication Plan Execution"],"Org. Change Management__REALIZE":["Detailed Change Impact Analysis"],"Customer Team Enablement__DISCOVER":["Cloud Trial"],"Customer Team Enablement__PREPARE":["Customer Team Self-Enablement","Enablement Strategy","Learning Needs Analysis for Project Team","Content Development Tool Deployment"],"Customer Team Enablement__EXPLORE":["Learning Needs Analysis for Users"],"Customer Team Enablement__REALIZE":["Enablement Content Development","Enablement Delivery"],"Customer Team Enablement__RUN":["Identify Innovation and Growth Opportunities"],"Operations__DISCOVER":["Operation and Support Assessment"],"Operations__PREPARE":["Operations Planning"],"Operations__EXPLORE":["Operations Impact Evaluation and Design"],"Operations__REALIZE":["Operations Implementation"],"Operations__DEPLOY":["Operations Readiness","Production Hypercare Support","Handover to Support Organization"],"Operations__RUN":["Service Management","Ongoing System Operations","Incident and Problem Management"]};
-const L3M={"Project Management__DISCOVER__Strategic Planning":["Create an Innovation Strategy and a High-Level Road Map","Run an Innovation Discovery and Design Workshop","Create a 360-Degree View on Security","Define the Analytics Architecture","Establish a Clean Process Framework"],"Project Management__DISCOVER__Discovery Assessment":["Executing a Digital Discovery Assessment","Generate Digital Discovery Report","Select the Right Cloud Partner","Execute the Cloud Mindset"],"Project Management__DISCOVER__Application Value and Scoping":["Discover the Value of SAP S/4HANA Cloud for Your Company","Identify the value of SAP S/4HANA on Existing Business Processes","Run a Usage and Data Profiling Analysis","Run the Establish the Business Value of User Experience Workshop","Define the Implementation Strategy","Create a Strategic Road Map and Value Case"],"Project Management__PREPARE__Project Initiation and Governance":["Join Embedded Launch Activities in SAP S/4HANA Cloud Private Edition Onboarding Journey","Confirm Receipt of Pre-Sales Handover Deliverables"],"Project Management__PREPARE__Project Plans, Schedule and Budget":["Create Project Schedule and Budget","Assign Resources and Refine Project Tasks in SAP Cloud ALM","Align Project Schedules"],"Project Management__PREPARE__Project Standards, Infrastructure, and Solution":["Define Project Standards","Set Up Project Team Logistics and Infrastructure","Define Standards on Certifications"],"Project Management__PREPARE__Project Kick-Off and Onboarding":["Onboard Project Team","Conduct Kickoff Workshop"],"Project Management__PREPARE__Value Determination":["Validate and Complete Value Map","Prepare Value Map","Obtain copy of Value Case or Business Case document from the presales team"],"Project Management__PREPARE__Prepare Phase Closure and Sign-Off":["Conduct Project Quality Gate for Prepare Phase"],"Project Management__EXPLORE__Execution and Monitoring of Project":["Monitor Project Progress and Issues","Communicate Project Status","Manage Project Scope"],"Project Management__EXPLORE__Release and Sprint Plan":["Plan Releases and Sprints","Define Sprint Backlog"],"Project Management__EXPLORE__Explore Phase Closure and Sign-Off":["Conduct Project Quality Gate for Explore Phase"],"Project Management__REALIZE__Sprint Planning and Execution":["Plan Sprint","Execute Sprint","Conduct Sprint Review and Retrospective"],"Project Management__REALIZE__Sprint Closing":["Close Sprint","Update Backlog"],"Project Management__REALIZE__Cutover Preparation":["Develop Cutover Plan","Conduct Cutover Rehearsal"],"Project Management__REALIZE__Realize Phase Closure and Sign-Off":["Conduct Project Quality Gate for Realize Phase"],"Project Management__DEPLOY__Execution and Monitoring of Project":["Monitor Go-Live Readiness","Execute Cutover Activities"],"Project Management__DEPLOY__Deploy Phase Closure and Sign-Off":["Conduct Project Quality Gate for Deploy Phase","Execute Go-Live Sign-Off"],"Project Management__RUN__Governance Model":["Establish Governance Model","Define Continuous Improvement Process"],"Tech. Architecture & Infrastructure__DISCOVER__Conversion Readiness Assessment":["Run SAP Readiness Check","Analyze Custom Code","Assess Add-on Compatibility","Review Simplification Items"],"Tech. Architecture & Infrastructure__PREPARE__Getting Started with your SAP Implementation":["Access SAP Cloud ALM","Review Implementation Guides","Set Up Project Environment"],"Tech. Architecture & Infrastructure__EXPLORE__System Conversion Execution of the Sandbox/Shell System":["Execute System Conversion on Sandbox","Validate Conversion Results","Document Issues and Resolutions"],"Tech. Architecture & Infrastructure__REALIZE__Quality System Initial Access":["Request Quality System Access","Configure Quality System","Validate Quality System Setup"],"Tech. Architecture & Infrastructure__DEPLOY__System Go-Live":["Execute Production Cutover","Validate Production System","Confirm Go-Live Readiness"],"App. Design & Configuration__PREPARE__Business Driven Configuration Assessment":["Assess Current Business Processes","Identify Configuration Requirements","Define Scope"],"App. Design & Configuration__EXPLORE__Fit-to-Standard Workshop Execution":["Conduct Fit-to-Standard Workshops","Document Configuration Decisions","Identify Gaps and Extensions"],"App. Design & Configuration__REALIZE__Solution Configuration":["Configure Solution","Validate Configuration","Document Final Configuration"],"Extensibility & Clean Core Strategy__DISCOVER__Introduction to RISE with SAP":["Review RISE with SAP Offering","Assess Clean Core Readiness","Plan Clean Core Strategy"],"Extensibility & Clean Core Strategy__EXPLORE__Custom Code Deep Dive Analysis":["Analyze Custom Code Volume","Classify Custom Code","Develop Remediation Plan"],"Extensibility & Clean Core Strategy__REALIZE__Extension Development in the Development and Quality Systems":["Develop Extensions","Unit Test Extensions","Deploy to Quality System"],"Integration__PREPARE__Prepare Integration Setup":["Identify Integration Scenarios","Plan Integration Architecture","Select Integration Tools"],"Integration__EXPLORE__Integration Planning and Design":["Design Integration Architecture","Create Integration Specifications","Review and Approve Design"],"Integration__REALIZE__Integration Setup in Development and Quality Landscape":["Implement Integration Flows","Test Integration Scenarios","Validate End-to-End Processes"],"Data Management__PREPARE__Data Migration Approach and Plan":["Define Migration Strategy","Identify Source Systems","Create Migration Plan"],"Data Management__EXPLORE__Data Migration Planning and Design":["Design Migration Objects","Create Mapping Documents","Plan Data Cleansing"],"Data Management__REALIZE__Data Migration Execution":["Execute Migration Programs","Validate Migrated Data","Resolve Data Quality Issues"],"Data Management__DEPLOY__Production Cutover":["Execute Production Data Load","Validate Production Data","Sign Off on Data Migration"],"Testing__EXPLORE__Test Planning":["Define Test Strategy","Create Test Plan","Set Up Test Environment"],"Testing__REALIZE__Test Preparation":["Create Test Cases","Prepare Test Data","Configure Test Tools"],"Testing__REALIZE__Test Execution":["Execute Unit Tests","Execute Integration Tests","Execute UAT","Document Test Results"],"Testing__DEPLOY__Dress Rehearsal":["Execute Dress Rehearsal","Validate Cutover Procedures","Document Lessons Learned"],"Analytics__PREPARE__Analytics Approach and Plan":["Define Analytics Strategy","Identify Analytics Requirements","Plan Analytics Implementation"],"Analytics__EXPLORE__Analytics Planning and Design":["Design Analytics Architecture","Create Analytics Specifications","Review and Approve Design"],"Analytics__REALIZE__Analytics Configuration in the Quality System":["Configure Analytics in QA","Validate Analytics Scenarios","Document Configuration"],"Org. Change Management__DISCOVER__Organizational Change Management Overview":["Assess Organizational Readiness","Identify Change Impacts","Define OCM Strategy"],"Org. Change Management__PREPARE__Change Concept":["Develop Change Management Concept","Define Change Vision","Align with Stakeholders"],"Org. Change Management__PREPARE__Change Plan":["Create Detailed Change Plan","Define OCM Activities","Assign OCM Resources"],"Org. Change Management__PREPARE__Stakeholder Analysis":["Identify Key Stakeholders","Assess Stakeholder Impact","Define Engagement Strategy"],"Org. Change Management__PREPARE__Communication Analysis and Plan":["Develop Communication Strategy","Create Communication Plan","Define Communication Channels"],"Org. Change Management__EXPLORE__Communication Plan Execution":["Execute Communication Activities","Monitor Communication Effectiveness","Adjust Plan as Needed"],"Org. Change Management__REALIZE__Detailed Change Impact Analysis":["Conduct Detailed Impact Assessment","Update Change Plan","Execute Change Activities"],"Customer Team Enablement__DISCOVER__Cloud Trial":["Access Trial System","Explore SAP S/4HANA Cloud Features","Document Findings"],"Customer Team Enablement__PREPARE__Customer Team Self-Enablement":["Identify Training Needs","Select Training Content","Execute Training"],"Customer Team Enablement__REALIZE__Enablement Content Development":["Develop Training Materials","Create e-Learning Content","Validate Training Content"],"Customer Team Enablement__REALIZE__Enablement Delivery":["Deliver End-User Training","Conduct Super User Training","Evaluate Training Effectiveness"],"Operations__DISCOVER__Operation and Support Assessment":["Assess Current Operations","Identify Support Requirements","Plan Operations Transition"],"Operations__PREPARE__Operations Planning":["Define Operations Model","Plan Monitoring and Support","Identify Operations Tools"],"Operations__REALIZE__Operations Implementation":["Implement Operations Procedures","Set Up Monitoring","Configure Support Tools"],"Operations__DEPLOY__Operations Readiness":["Validate Operations Readiness","Execute Go-Live Support Plan","Hand Over to Operations"],"Operations__RUN__Service Management":["Manage Service Levels","Monitor System Performance","Optimize Operations"]};
+
+/* L2 tooltips — what this activity means in plain language */
+const L2_TIP={
+  "Strategic Planning":"Define the overall innovation strategy, roadmap, and business direction for the SAP S/4HANA implementation. Covers high-level road map, security strategy, analytics architecture and clean process framework.",
+  "Discovery Assessment":"Conduct a structured digital discovery to evaluate the current landscape, select the right cloud partner, and establish a cloud mindset across the organization.",
+  "Application Value and Scoping":"Quantify the business value of SAP S/4HANA for the organization: business case, usage analysis, UX value workshops, and define the final implementation strategy and roadmap.",
+  "Conversion Readiness Assessment":"Run SAP Readiness Check to assess technical readiness for conversion: custom code volume, add-on compatibility, simplification items, and functional/technical review workshops.",
+  "Operation and Support Assessment":"Assess the current operations and support model and identify what needs to change to support the new SAP cloud solution.",
+  "Organizational Change Management Overview":"Introduce OCM fundamentals to the project team and stakeholders; define the OCM approach and transfer knowledge needed to manage the human side of change.",
+  "Introduction to RISE with SAP":"Understand the RISE with SAP framework, entitlements, and Clean Core principles. Define the Clean Core success plan for the project.",
+  "Clean Core Quality Gate 0":"Formal checkpoint at end of Discover: validate Clean Core baseline, confirm readiness before investing in full implementation.",
+  "Cloud Trial":"Access a trial SAP S/4HANA Cloud system to explore capabilities and validate the solution fit before full commitment.",
+  "Project Initiation, Standards and Governance":"Establish project charter, governance framework, project standards, team logistics, certifications baseline, and onboard the team with a formal kickoff workshop.",
+  "Project Plans, Schedule and Budget":"Create and baseline the project schedule and budget. Assign resources, refine tasks in SAP Cloud ALM, and align all stakeholder schedules.",
+  "Project Kick-Off and Onboarding":"Formally launch the project: onboard all team members, conduct the kickoff workshop, and align on scope and ways of working.",
+  "Value Determination":"Validate and complete the value map. Confirm the business case and value case from the presales team as the baseline for ongoing value tracking.",
+  "Prepare Phase Closure and Sign-Off":"Conduct the project quality gate review for the Prepare phase and obtain formal sign-off before moving to Explore.",
+  "Getting Started with your SAP Implementation":"Review all SAP implementation overview and onboarding documentation. Ensure the team understands the implementation approach.",
+  "Supporting Tools for Implementation":"Set up access to all SAP implementation support tools: SAP for Me, SAP Customer Communities, SAP Learning Hub, SAP Activate Community.",
+  "Initial System Access":"Provision and configure initial access to all required systems: SAP Cloud ALM, SAP S/4HANA Cloud Private Edition (sandbox/shell), SAP Business Technology Platform, and SAP Analytics Cloud.",
+  "Technical Project Preparation":"Assess technical interoperability, review BTP services, define Clean Core extensibility approach, define data validation tools, and clarify the technical team's role. Includes Business Driven Configuration Assessment and Content Development Tool Deployment.",
+  "Transition & Conversion Planning":"Plan the technical transition approach: define system conversion strategy, selective data transition approach, landscape architecture, cutover strategy, interface register, and dual maintenance needs.",
+  "Transition Preparation":"Finalize all technical preparation activities before conversion execution begins.",
+  "Pre-Conversion Projects Execution":"Execute pre-conversion cleanup: data volume management, business partner synchronization, financial data reconciliation, add-on compatibility checks, unused code cleanup, and closing open business documents.",
+  "Clean Core Quality Gate 1":"Formal checkpoint at end of Prepare: validate Clean Core runbook in SAP Cloud ALM, confirm assessments are reviewed and the project is ready to enter Explore.",
+  "Business Driven Configuration Assessment":"Perform an initial business process assessment to determine the configuration scope for SAP S/4HANA Cloud.",
+  "Solution Scope":"Define and confirm the process scope for the implementation based on Fit-to-Standard analysis preparation.",
+  "Fit-to-Standard Preparation For Specific Features":"Prepare the system and materials for Fit-to-Standard workshops covering specific SAP features (Fiori activation, workshop system setup, data protection review).",
+  "Fit-to-Standard Workshop Preparation":"Prepare the environment, content and participants for the main Fit-to-Standard workshops.",
+  "Data Migration Approach and Plan":"Define the overall data migration strategy, identify source systems, and create the detailed migration plan.",
+  "Prepare Integration Setup":"Identify integration scenarios, plan the integration architecture, select tools, and set up integrations for use during Fit-to-Standard workshops.",
+  "Analytics Approach and Plan":"Define the analytics strategy and plan for the implementation, covering embedded analytics and SAP Analytics Cloud.",
+  "Enablement Strategy":"Research and document the enablement and training strategy for the project.",
+  "Learning Needs Analysis for Project Team":"Identify learning needs for the project team and create a curriculum based on SAP standard learning content.",
+  "Customer Team Self-Enablement":"Project team self-enables on key topics: SAP Cloud ALM, extensibility, Fiori, BTP, SAP Business Network, Signavio, LeanIX, and more.",
+  "Operations Planning":"Define the operations model, plan monitoring and support processes, and identify the operational tools needed for go-live.",
+  "Change Concept":"Define the OCM setup: roles, resources, and organizational change management framework for the project.",
+  "Change Plan":"Develop the detailed change management plan: activities, timelines, action areas, and updating procedures.",
+  "Stakeholder Analysis":"Identify and assess all key stakeholders. Derive engagement activities to manage stakeholder expectations and commitment.",
+  "Communication Analysis and Plan":"Analyze communication channels and needs. Create the communication plan to keep all stakeholders informed throughout the project.",
+  "Execution and Monitoring of Project":"Track and manage project execution: monitor progress, manage issues/risks/changes, communicate status, and keep project documentation current.",
+  "Value Realization":"Track value against the business case. Prepare and validate value dashboards and perform value audits.",
+  "Release and Sprint Plan":"Plan and prioritize releases and sprints. Define the sprint backlog and validate the plan against the Statement of Work.",
+  "Explore Phase Closure and Sign-Off":"Conduct the QG2 project quality gate review. Assess project performance and obtain formal sign-off to proceed to Realize.",
+  "System Conversion Execution of the Sandbox/Shell System":"Execute the technical system conversion on the sandbox/shell system. Validate results, document issues and resolutions.",
+  "Additional Activities in the Converted Sandbox/Shell System":"Post-conversion activities on sandbox: enable Fiori, set up data migration tools, configure dual maintenance, run initial testing.",
+  "User Access and Security Planning and Design":"Design authorization roles, user access concepts, and security model for the new SAP S/4HANA system.",
+  "Sizing Validation":"Validate system sizing to ensure infrastructure is correctly dimensioned for production load.",
+  "Fit-to-Standard Workshops for Specific Features":"Conduct Fit-to-Standard workshops for specific SAP features. Document analysis, validate requirements, and obtain customer sign-off.",
+  "Fit-to-Standard Workshop Execution":"Execute the core Fit-to-Standard workshops with business users to walk through standard SAP processes.",
+  "Fit-to-Standard Workshop Documentation":"Document all outcomes from workshops: requirements, configuration values, master data needs, analytics/extensibility/SAP Build requirements.",
+  "Fit-to-Standard Workshop Validation":"Prioritize and validate delta requirements identified in workshops. Execute solution validation survey.",
+  "User Experience Design":"Design the SAP Fiori launchpad layout and overall user experience/interface design.",
+  "SAP Build Planning and Design":"Plan and design SAP Build Process Automation scenarios identified during Fit-to-Standard.",
+  "SAP Build Setup":"Set up and configure SAP Build Process Automation components in the system.",
+  "Custom Code Deep Dive Analysis":"Analyze custom code volume, classify by impact, and develop a remediation plan aligned to Clean Core principles.",
+  "Extension Planning and Design":"Design extensions: key-user extensibility, side-by-side extensions, classic extensibility. Obtain sign-off on extension design.",
+  "Clean Core Quality Gate 2":"Formal checkpoint at end of Explore: validate Clean Core assessment covering integration, extension, and data areas.",
+  "Integration Planning and Design":"Design integration architecture, create integration specifications, align the integration list, and obtain customer sign-off.",
+  "Integration Review and Redesign":"Analyze impact of S/4HANA on existing integrations, define target integration architecture, apply Clean Core principles.",
+  "Data Migration Planning and Design":"Design migration objects, create data mapping documents, and plan data cleansing activities.",
+  "Data Load Preparation":"Determine required master data, define migration cockpit field structures, extract and transform legacy data, perform data cleansing.",
+  "Analytics Planning and Design":"Design the analytics architecture, review embedded analytics scope items, define customer-driven analytics extensions.",
+  "Learning Needs Analysis for Users":"Identify end-user learning needs and create a learning curriculum based on role and process changes.",
+  "Test Planning":"Define test strategy, determine test scope, create and schedule the overall test plan.",
+  "Operations Impact Evaluation and Design":"Evaluate the operational impact of the new solution. Define the Customer COE capabilities and specify the support/operations model.",
+  "Sprint Planning and Execution":"Plan, execute, and close development sprints. Conduct sprint reviews and retrospectives.",
+  "Sprint Closing":"Formally close sprints: conduct sprint review meetings, obtain sign-off on sprint results, run retrospective.",
+  "Value Realization (Realize)":"Perform value audit to track progress against the business case.",
+  "Cutover Preparation":"Develop the cutover plan and documentation. Create the system conversion cutover plan.",
+  "Realize Phase Closure and Sign-Off":"Conduct QG3 project quality gate. Assess performance and obtain formal sign-off to proceed to Deploy.",
+  "Quality System Initial Access":"Access the quality system, reset passwords, create users and configure the quality system environment.",
+  "Initial Quality System Setup":"Set up the quality system for the implementation approach (new implementation, system conversion, or selective data transition).",
+  "Production System Request":"Formally request the SAP S/4HANA Cloud production system.",
+  "System Conversion Execution of the Development System":"Execute the technical system conversion of the development system.",
+  "Additional Activities in the Converted Development System":"Post-conversion development system activities: enable analytics/Fiori, execute custom code remediation, configure additional features.",
+  "System Conversion Execution of the Quality System":"Execute the technical system conversion of the quality system.",
+  "Additional Activities in the Converted Quality System":"Enable Fiori and execute additional activities in the converted quality system.",
+  "Production System Initial Access":"Access the production system, transport Fiori rapid activation, and complete initial production system setup.",
+  "User Access and Security Implementation":"Implement the designed user access and security model. Verify user authorizations and classifications in production.",
+  "Solution Configuration":"Configure the SAP S/4HANA solution: master data, core finance, business roles, integrations, data protection. Run unit and string tests.",
+  "Product Enhancements":"Develop Clean Core compliant extensions, enhance user interface, and complete custom development.",
+  "Set up SAP Build in the Quality System":"Prepare the quality system for SAP Build Process Automation.",
+  "Extension Development in the Development and Quality Systems":"Develop and set up key-user extensions, classic extensions, and side-by-side extensions across dev and quality landscapes.",
+  "Data Migration Execution":"Execute the full data migration cycle in the development tenant. Run initial testing and resolve inconsistencies.",
+  "Data Migration in the Development Tenant":"Execute data migration using staging tables or direct migration from existing SAP system in the development tenant.",
+  "Data Migration in the Test Tenant":"Execute and validate data migration in the test tenant. Conduct final data quality assessment.",
+  "Analytics Configuration in the Quality System":"Set up and enable embedded analytics. Configure analytics scenarios in the quality system.",
+  "Integration Setup in Development and Quality Landscape":"Implement integration flows across dev and quality landscapes. Set up SAP Business Network integration.",
+  "Test Preparation":"Create test cases, prepare test data, configure test tools, and establish UAT readiness.",
+  "Test Execution":"Execute unit tests, integration tests, and UAT. Manage defects and document results.",
+  "Deploy Extensions to the Production System":"Deploy key-user, side-by-side, and classic extensions to the production landscape.",
+  "Analytics Configuration in the Production System":"Verify and finalize analytics configuration in the production system.",
+  "Set up SAP Build in Production System":"Deploy SAP Build Process Automation scripts to the production tenant.",
+  "Set up Integration in the Production System":"Set up all integrations in the productive landscape using Cloud Integration Automation Service.",
+  "Integration Validation":"Perform end-to-end integration validation across the solution landscape.",
+  "Enablement Content Development":"Create a content development plan, manage design and development of all training materials and e-learning content.",
+  "Enablement Delivery":"Plan training logistics, set up training systems and data, deliver end-user and super-user training, evaluate effectiveness.",
+  "Operations Implementation":"Implement operations support processes and tools. Plan the operations transition and handover.",
+  "Clean Core Quality Gate 3":"Formal checkpoint at end of Realize: validate Clean Core compliance across extensions, integrations, and configuration before deploy.",
+  "Execution and Monitoring of Project (Deploy)":"Monitor go-live readiness, manage project execution and issues during Deploy phase.",
+  "Operations Readiness":"Validate that operations processes, monitoring, and support are ready for go-live.",
+  "Dress Rehearsal":"Execute a full dress rehearsal of the cutover. Validate procedures and document lessons learned.",
+  "System Conversion Execution of the Dress Rehearsal System":"Execute the technical system conversion for the dress rehearsal system.",
+  "Production Cutover":"Execute all cutover tasks per the approved cutover plan.",
+  "System Conversion Execution of the Production System (Cutover)":"Execute the technical system conversion of the production system as part of the go-live cutover.",
+  "System Go-Live":"Set the production system to live. Validate the production system and confirm go-live readiness.",
+  "Production Hypercare Support":"Provide intensive hypercare support to the business immediately after go-live.",
+  "Handover to Support Organization":"Resolve and close open issues. Formally hand over operations responsibility to the support organization.",
+  "Deploy Phase Closure and Sign-Off":"Conduct the QG4 project quality gate. Assess performance and complete the deploy phase closure.",
+  "Governance Model":"Establish ongoing governance model and continuous improvement process for the live solution.",
+  "Value Management":"Perform benchmarking assessment, establish value audit and benchmarking strategies, and assess solution performance.",
+  "Service Management":"Establish the service management framework and ensure the team knows how to access SAP support services.",
+  "Ongoing System Operations":"Operate the new solution: monitor system health, review regulatory changes, optimize IT operations, manage BTP and SAP Build jobs.",
+  "Incident and Problem Management":"Manage incidents and problems in the live system according to the defined support model.",
+  "Identify Innovation and Growth Opportunities":"Periodically update the SAP system, revise Fiori apps, and initiate new improvement and innovation projects.",
+  "Clean Core Quality Gate 5":"Ongoing Clean Core quality gate in Run phase: validate Clean Core compliance and review the assessment.",
+  "Detailed Change Impact Analysis":"Conduct detailed change impact workshops and assessment. Manage change impacts and update the change plan.",
+  "Communication Plan Execution":"Execute communication activities per the plan. Monitor effectiveness and update the plan as needed.",
+  "Communication Plan Execution (Realize)":"Execute communication activities in the Realize phase.",
+  "Organizational Change Management Overview":"Introduce OCM fundamentals, comprehend the OCM approach, and provide OCM information to project stakeholders.",
+};
+
+const L2M={
+"Project Management__DISCOVER":["Strategic Planning","Discovery Assessment","Application Value and Scoping"],
+"Project Management__PREPARE":["Project Initiation, Standards and Governance","Project Plans, Schedule and Budget","Project Kick-Off and Onboarding","Value Determination","Prepare Phase Closure and Sign-Off"],
+"Project Management__EXPLORE":["Execution and Monitoring of Project","Value Realization","Release and Sprint Plan","Explore Phase Closure and Sign-Off"],
+"Project Management__REALIZE":["Sprint Planning and Execution","Sprint Closing","Value Realization (Realize)","Cutover Preparation","Realize Phase Closure and Sign-Off"],
+"Project Management__DEPLOY":["Execution and Monitoring of Project (Deploy)","Deploy Phase Closure and Sign-Off"],
+"Project Management__RUN":["Governance Model","Value Management"],
+"Tech. Architecture & Infrastructure__DISCOVER":["Conversion Readiness Assessment"],
+"Tech. Architecture & Infrastructure__PREPARE":["Getting Started with your SAP Implementation","Supporting Tools for Implementation","Initial System Access","Technical Project Preparation","Transition & Conversion Planning","Transition Preparation","Pre-Conversion Projects Execution"],
+"Tech. Architecture & Infrastructure__EXPLORE":["System Conversion Execution of the Sandbox/Shell System","Additional Activities in the Converted Sandbox/Shell System","User Access and Security Planning and Design","Sizing Validation"],
+"Tech. Architecture & Infrastructure__REALIZE":["Quality System Initial Access","Initial Quality System Setup","Production System Request","System Conversion Execution of the Development System","Additional Activities in the Converted Development System","System Conversion Execution of the Quality System","Additional Activities in the Converted Quality System","Production System Initial Access","User Access and Security Implementation"],
+"Tech. Architecture & Infrastructure__DEPLOY":["System Conversion Execution of the Dress Rehearsal System","System Conversion Execution of the Production System (Cutover)","System Go-Live"],
+"App. Design & Configuration__PREPARE":["Solution Scope","Fit-to-Standard Preparation For Specific Features","Fit-to-Standard Workshop Preparation"],
+"App. Design & Configuration__EXPLORE":["Fit-to-Standard Workshops for Specific Features","Fit-to-Standard Workshop Execution","Fit-to-Standard Workshop Documentation","Fit-to-Standard Workshop Validation","User Experience Design","SAP Build Planning and Design","SAP Build Setup"],
+"App. Design & Configuration__REALIZE":["Solution Configuration","Product Enhancements","Set up SAP Build in the Quality System","Set up SAP Build in Production System"],
+"Extensibility & Clean Core Strategy__DISCOVER":["Introduction to RISE with SAP","Clean Core Quality Gate 0"],
+"Extensibility & Clean Core Strategy__PREPARE":["Clean Core Quality Gate 1"],
+"Extensibility & Clean Core Strategy__EXPLORE":["Custom Code Deep Dive Analysis","Extension Planning and Design","Clean Core Quality Gate 2"],
+"Extensibility & Clean Core Strategy__REALIZE":["Extension Development in the Development and Quality Systems","Deploy Extensions to the Production System","Clean Core Quality Gate 3"],
+"Extensibility & Clean Core Strategy__RUN":["Clean Core Quality Gate 5"],
+"Integration__PREPARE":["Prepare Integration Setup"],
+"Integration__EXPLORE":["Integration Planning and Design","Integration Review and Redesign"],
+"Integration__REALIZE":["Integration Setup in Development and Quality Landscape","Integration Validation","Set up Integration in the Production System"],
+"Data Management__PREPARE":["Data Migration Approach and Plan"],
+"Data Management__EXPLORE":["Data Migration Planning and Design","Data Load Preparation"],
+"Data Management__REALIZE":["Data Migration Execution","Data Migration in the Development Tenant","Data Migration in the Test Tenant"],
+"Data Management__DEPLOY":["Production Cutover"],
+"Testing__EXPLORE":["Test Planning"],
+"Testing__REALIZE":["Test Preparation","Test Execution"],
+"Testing__DEPLOY":["Dress Rehearsal"],
+"Analytics__PREPARE":["Analytics Approach and Plan"],
+"Analytics__EXPLORE":["Analytics Planning and Design"],
+"Analytics__REALIZE":["Analytics Configuration in the Quality System","Analytics Configuration in the Production System"],
+"Org. Change Management__DISCOVER":["Organizational Change Management Overview"],
+"Org. Change Management__PREPARE":["Change Concept","Change Plan","Stakeholder Analysis","Communication Analysis and Plan"],
+"Org. Change Management__EXPLORE":["Communication Plan Execution"],
+"Org. Change Management__REALIZE":["Detailed Change Impact Analysis"],
+"Customer Team Enablement__DISCOVER":["Cloud Trial"],
+"Customer Team Enablement__PREPARE":["Customer Team Self-Enablement","Enablement Strategy","Learning Needs Analysis for Project Team"],
+"Customer Team Enablement__EXPLORE":["Learning Needs Analysis for Users"],
+"Customer Team Enablement__REALIZE":["Enablement Content Development","Enablement Delivery"],
+"Customer Team Enablement__RUN":["Identify Innovation and Growth Opportunities"],
+"Operations__DISCOVER":["Operation and Support Assessment"],
+"Operations__PREPARE":["Operations Planning"],
+"Operations__EXPLORE":["Operations Impact Evaluation and Design"],
+"Operations__REALIZE":["Operations Implementation"],
+"Operations__DEPLOY":["Operations Readiness","Production Hypercare Support","Handover to Support Organization"],
+"Operations__RUN":["Service Management","Ongoing System Operations","Incident and Problem Management"]
+};
+
+const L3M={
+"Project Management__DISCOVER__Strategic Planning":["Create an Innovation Strategy and a High-Level Road Map","Run an Innovation Discovery and Design Workshop","Create a 360-Degree View on Security","Define the Analytics Architecture","Establish a Clean Process Framework"],
+"Project Management__DISCOVER__Discovery Assessment":["Executing a Digital Discovery Assessment","Generate Digital Discovery Report","Select the Right Cloud Partner","Execute the Cloud Mindset"],
+"Project Management__DISCOVER__Application Value and Scoping":["Discover the Value of SAP S/4HANA Cloud for Your Company","Identify the value of SAP S/4HANA on Existing Business Processes","Run a Usage and Data Profiling Analysis","Run the Establish the Business Value of User Experience Workshop","Define the Implementation Strategy","Create a Strategic Road Map and Value Case"],
+"Project Management__PREPARE__Project Initiation, Standards and Governance":["Join Embedded Launch Activities in SAP S/4HANA Cloud Private Edition Onboarding Journey","Confirm Receipt of Pre-Sales Handover Deliverables","Conduct Handover Meeting with Sales Account Team","Create Project Charter and Scope Statement","Establish Project Governance","Establish Solution Standardization Board","Create Clean Core Runbook in SAP Cloud ALM","Define Project Communications and Reporting","Define Project Standards","Set Up Project Team Logistics and Infrastructure","Define Standards on Certifications"],
+"Project Management__PREPARE__Project Plans, Schedule and Budget":["Create Project Schedule and Budget","Assign Resources and Refine Project Tasks in SAP Cloud ALM","Align Project Schedules"],
+"Project Management__PREPARE__Project Kick-Off and Onboarding":["Onboard Project Team","Conduct Kickoff Workshop"],
+"Project Management__PREPARE__Value Determination":["Validate and Complete Value Map","Prepare Value Map","Obtain copy of Value Case or Business Case document from the presales team"],
+"Project Management__PREPARE__Prepare Phase Closure and Sign-Off":["Conduct Project Quality Gate for Prepare Phase","Assess Project Performance","Obtain Customer Sign-Off for Phase Completion"],
+"Project Management__EXPLORE__Execution and Monitoring of Project":["Review the SAP S/4HANA Cloud Onboarding Journey","Direct and Manage Project Execution","Update Project Management Documents","Manage Project Issues, Risks, and Changes","Communicate Project Status and Progress","Deliver Program Goal Alignment Survey"],
+"Project Management__EXPLORE__Value Realization":["Prepare and validate Value Dashboard"],
+"Project Management__EXPLORE__Release and Sprint Plan":["Update and Prioritize Backlog","Estimate Backlog Items Effort","Conduct Release and Sprint Planning Meeting","Validate Release and Sprint Plan Against SoW"],
+"Project Management__EXPLORE__Explore Phase Closure and Sign-Off":["Conduct Project Quality Gate for Explore Phase","Assess Project Performance","Obtain Customer Sign-Off for Phase Completion"],
+"Project Management__REALIZE__Sprint Planning and Execution":["Plan the Sprint","Execute the Sprint","Close the Sprint"],
+"Project Management__REALIZE__Sprint Closing":["Conduct Sprint Review Meeting","Signoff Sprint Results","Conduct Sprint Retrospective"],
+"Project Management__REALIZE__Value Realization (Realize)":["Perform Value Audit"],
+"Project Management__REALIZE__Cutover Preparation":["Create Cutover Plan and Documentation","Create the Cutover Plan for System Conversion"],
+"Project Management__REALIZE__Realize Phase Closure and Sign-Off":["Conduct Project Quality Gate for Realize Phase","Assess Project Performance","Obtain Customer Sign-Off for Phase Completion"],
+"Project Management__DEPLOY__Execution and Monitoring of Project (Deploy)":["Review the SAP S/4HANA Cloud Onboarding Journey","Direct and Manage Project Execution","Manage Project Issues, Risks, and Changes","Update Project Management Documents","Communicate Project Status and Progress"],
+"Project Management__DEPLOY__Deploy Phase Closure and Sign-Off":["Conduct Project Quality Gate for Deploy Phase","Assess Project Performance","Obtain Customer Sign-Off for Phase Completion"],
+"Project Management__RUN__Governance Model":["Establish Governance Model","Manage Change Request","Define Continuous Improvement Process"],
+"Project Management__RUN__Value Management":["Perform Benchmarking Assessment for Value Realization Comparison","Establish and implement a value audit strategy","Establish and implement a benchmarking strategy","Run the User Experience Business Benefits Workshop","Assess Solution Performance"],
+"Tech. Architecture & Infrastructure__DISCOVER__Conversion Readiness Assessment":["Perform SAP Readiness Check for SAP S/4HANA","Conduct SAP Readiness Check - Functional Review Workshop","Conduct SAP Readiness Check - Technical Review Workshop"],
+"Tech. Architecture & Infrastructure__PREPARE__Getting Started with your SAP Implementation":["Review Overview Documentation","Review Onboarding Documentation"],
+"Tech. Architecture & Infrastructure__PREPARE__Supporting Tools for Implementation":["Ensure Project Team Members Access to the SAP for Me and SAP Customer Communities","Grant Access to Partner for Creating and Managing Cases","Ensure Project Team Members Access to the SAP Learning Hub","Ensure Project Team Members Access to the SAP Activate Community"],
+"Tech. Architecture & Infrastructure__PREPARE__Initial System Access":["SAP Cloud ALM - Initial System Access for SAP Cloud ALM","SAP Cloud ALM - Setup the RISE with SAP Methodology Dashboard","SAP S/4HANA Cloud Private Edition - Receive and Access Starter System","SAP S/4HANA Cloud Private Edition - Receive System Handover Notification","SAP S/4HANA Cloud Private Edition - Set-up the Sandbox System and Prepare the Shell System","SAP S/4HANA Cloud Private Edition - Set up Users And Assign Authorizations","SAP BTP - Access to SAP Business Technology Platform","SAP BTP - Create Users in the SAP Business Technology Platform Cockpit","SAP BTP - Activate SAP Build Entitlements","SAP BTP - Subscribe to Cloud Integration Automation Service within SAP BTP","SAP BTP - Set Up SAP Start and SAP Mobile Start","SAP Analytics Cloud - Initial System Access for SAP Analytics Cloud"],
+"Tech. Architecture & Infrastructure__PREPARE__Technical Project Preparation":["Check Interoperability","Review BTP Services","Define Clean Core Approach for Extensibility Scenarios","Define the Objects and Tools for Business Data Validation","Role of the Technical Team in a SAP S/4HANA Cloud Private Edition Project","Perform Initial Business Process Assessment for SAP S/4HANA Cloud","Determine Process Scope","Prepare and Install a Content Development Tool"],
+"Tech. Architecture & Infrastructure__PREPARE__Transition & Conversion Planning":["Define Project Scope and Objectives","Define Cutover Strategy","Define Technical Architecture","Prepare Interface Register","Run a Legacy Impact Analysis on Interface Inventory and Data Integration","Run a first Assessment on Training Requirements","Determine Business Process Performance Baseline","Model As-Is Business Processes","Run a Technical Security Self Check","Define Technical System Conversion Approach","Define Conversion Cycles","Define the Need of Dual Maintenance","Define Technical Selective Data Transition Approach","Define the Landscape Architecture Framework","Conduct Data Scoping Analysis","Define Migration Cycle"],
+"Tech. Architecture & Infrastructure__PREPARE__Transition Preparation":["Verify Access to Systems for Integration","Select Key Integrations for Fit-to-Standard","Set up Integrations for Fit-to-Standard Workshops"],
+"Tech. Architecture & Infrastructure__PREPARE__Pre-Conversion Projects Execution":["Perform Data Volume Management","Synchronization of Customers/Vendors into Business Partners (CVI)","Reconciliation of Financial Data","Add-On Compatibility Check","Cleanup Unused Code","Close Open Business Documents"],
+"Tech. Architecture & Infrastructure__EXPLORE__System Conversion Execution of the Sandbox/Shell System":["Document System Conversion Runbook","Technical Pre-Conversion Activities","Functional Pre-Conversion Activities","Functional Pre-Conversion Activities: Finance Specific","System Conversion Execution","Execute Shell System Conversion","Functional Post-Conversion Activities","Functional Post-Conversion Activities: Finance Specific"],
+"Tech. Architecture & Infrastructure__EXPLORE__Additional Activities in the Converted Sandbox/Shell System":["Enable SAP Fiori","Set up and Configure Data Migration Tools","Set Up Dual Maintenance","Run Initial Testing","Resolve Inconsistencies in the Productive Landscape"],
+"Tech. Architecture & Infrastructure__EXPLORE__User Access and Security Planning and Design":["Authorization Roles and Assignments"],
+"Tech. Architecture & Infrastructure__EXPLORE__Sizing Validation":["Validate Sizing"],
+"Tech. Architecture & Infrastructure__REALIZE__Quality System Initial Access":["Access Quality System and Reset Password","Create Users in the Quality System"],
+"Tech. Architecture & Infrastructure__REALIZE__Initial Quality System Setup":["Transport Fiori Rapid Activation","Setup Quality System for New Implementation","Setup Quality System for System Conversion","Setup Quality System for Selective Data Transition"],
+"Tech. Architecture & Infrastructure__REALIZE__Production System Request":["Request the SAP S/4HANA Cloud Production System"],
+"Tech. Architecture & Infrastructure__REALIZE__System Conversion Execution of the Development System":["Execute the System Conversion of the Development System"],
+"Tech. Architecture & Infrastructure__REALIZE__Additional Activities in the Converted Development System":["Setup and Enable Analytics","Enable SAP Fiori in the Development System","Execute Custom Code Remediation","Implementation of Adjustments and Redesign of Integrations","Configure Additional Features","Integrate Enhancements for Additional Features","Review and Testing of the Remediated Custom Code for Performance"],
+"Tech. Architecture & Infrastructure__REALIZE__System Conversion Execution of the Quality System":["Execute the System Conversion of the Quality System"],
+"Tech. Architecture & Infrastructure__REALIZE__Additional Activities in the Converted Quality System":["Enable SAP Fiori in the Quality System","Execute Additional Activities in the Converted Quality System"],
+"Tech. Architecture & Infrastructure__REALIZE__Production System Initial Access":["Access Production System and Reset Password","Transport Fiori Rapid Activation","Set up Production System"],
+"Tech. Architecture & Infrastructure__REALIZE__User Access and Security Implementation":["Implement User Access and Security","Verify User Authorizations / Classification in Production Systems"],
+"Tech. Architecture & Infrastructure__DEPLOY__System Conversion Execution of the Dress Rehearsal System":["Execute the System Conversion of the Dress Rehearsal System"],
+"Tech. Architecture & Infrastructure__DEPLOY__System Conversion Execution of the Production System (Cutover)":["Execute the System Conversion of the Production System (Cutover)"],
+"Tech. Architecture & Infrastructure__DEPLOY__System Go-Live":["Set the Production System to Live","Validate Production System","Confirm Go-Live Readiness"],
+"App. Design & Configuration__PREPARE__Solution Scope":["Determine Process Scope"],
+"App. Design & Configuration__PREPARE__Fit-to-Standard Preparation For Specific Features":["Prepare Fit-to-Standard Workshop","Define and Prepare System To Be Used","Activate SAP Fiori in the Initial System"],
+"App. Design & Configuration__PREPARE__Fit-to-Standard Workshop Preparation":["Prepare for Fit-to-Standard Workshops","Setup and Verify Fit-to-Standard System","Activate SAP Fiori in the Initial System","Review Data Protection Requirements and Functionality"],
+"App. Design & Configuration__EXPLORE__Fit-to-Standard Workshops for Specific Features":["Fit-to-Standard Workshops Execution","Execution of Standard Business Processes - Customer","Fit-to-Standard Analysis Documentation","Fit-to-Standard Workshop Validation","Design Workshops and Documentation","Review and Customer Sign-off"],
+"App. Design & Configuration__EXPLORE__Fit-to-Standard Workshop Execution":["Conduct Fit-to-Standard Workshops"],
+"App. Design & Configuration__EXPLORE__Fit-to-Standard Workshop Documentation":["Document Requirement","Document Preset Parameters","Document Business Process Target State","Document Configuration Values","Document Master Data Requirements","Document Analytics Requirements","Document Extensibility Requirements","Document SAP Build Requirements"],
+"App. Design & Configuration__EXPLORE__Fit-to-Standard Workshop Validation":["Prioritize Delta Requirements","Validate Delta Requirements","Execute Solution Validation Survey"],
+"App. Design & Configuration__EXPLORE__User Experience Design":["Design the Launchpad Layout Workshop Execution","User Experience / User Interface Design"],
+"App. Design & Configuration__EXPLORE__SAP Build Planning and Design":["Review SAP Build requirements from workshops","Define SAP Build process automation scenarios"],
+"App. Design & Configuration__EXPLORE__SAP Build Setup":["Setup SAP Build Process Automation Components"],
+"App. Design & Configuration__REALIZE__Solution Configuration":["Run Handover Session","Create the Custom Business Roles for SAP Fiori","Configure Master Data","Configure Core Finance","Perform Main Configuration","Setup Integration for SAP S/4HANA Cloud and SAP Business Network","Enable Data Protection and Privacy Features","Run Unit Test","Run String Test","Run Solution Walk-Through","Resolve Identified Issues","Document Configured Settings"],
+"App. Design & Configuration__REALIZE__Product Enhancements":["Development of Clean Core Compliant Extensions","Enhancement and Development of User Interface","Custom Development"],
+"App. Design & Configuration__REALIZE__Set up SAP Build in the Quality System":["Prepare System for SAP Build Process Automation"],
+"App. Design & Configuration__REALIZE__Set up SAP Build in Production System":["Deploy SAP Build Process Automation scripts in Production Tenant"],
+"Extensibility & Clean Core Strategy__DISCOVER__Introduction to RISE with SAP":["Review the SAP Cloud Framework","Review the RISE with SAP Entitlement","Learn The Clean Core Principles","Define Clean Core Success Plan"],
+"Extensibility & Clean Core Strategy__DISCOVER__Clean Core Quality Gate 0":["Conduct Clean Core Quality Gate 0"],
+"Extensibility & Clean Core Strategy__PREPARE__Clean Core Quality Gate 1":["Conduct New Implementation Clean Core Quality Gate 1","Review your Clean Core Assessment"],
+"Extensibility & Clean Core Strategy__EXPLORE__Custom Code Deep Dive Analysis":["Define Coding Guidelines for New Custom Development Requests","Analyze Custom Code Volume","Classify Custom Code","Develop Remediation Plan"],
+"Extensibility & Clean Core Strategy__EXPLORE__Extension Planning and Design":["Handover of Requirements for Extensions to Developer","Check for Sample Scenario in SAP Extensibility Explorer","Check for Available Products","Collect Details for Extensions","Detail Design on Key-User Extensibility","Detail Design of Side-by-Side Extensibility","Detail Design of Extension with Classic Extensibility Techniques","Review and Sign off Design of Extension"],
+"Extensibility & Clean Core Strategy__EXPLORE__Clean Core Quality Gate 2":["Conduct New Implementation Clean Core Quality Gate 2","Review your Clean Core Assessment"],
+"Extensibility & Clean Core Strategy__REALIZE__Extension Development in the Development and Quality Systems":["Setup and Develop Key-User Extensions","Setup and Develop Classic Extension in the DEV Landscape","Setup and Develop Side-by-Side Extensions"],
+"Extensibility & Clean Core Strategy__REALIZE__Deploy Extensions to the Production System":["Deploy Key-user Extensions to the PROD Landscape","Development and Setup of Side-by-Side Extension in the PROD Landscape","Deploy Classic Extension to the PROD Landscape"],
+"Extensibility & Clean Core Strategy__REALIZE__Clean Core Quality Gate 3":["Conduct New Implementation Clean Core Quality Gate 3","Review your Clean Core Assessment"],
+"Extensibility & Clean Core Strategy__RUN__Clean Core Quality Gate 5":["Conduct Clean Core Quality Gate 5","Review your Clean Core Assessment"],
+"Integration__PREPARE__Prepare Integration Setup":["Verify Access to Systems for Integration","Select Key Integrations for Fit-to-Standard","Set up Integrations for Fit-to-Standard Workshops"],
+"Integration__EXPLORE__Integration Planning and Design":["Handover of Requirements to Integration Expert","Optimize and Align Integration and Interface List","Review and Customer Sign-off List of Integrations"],
+"Integration__EXPLORE__Integration Review and Redesign":["Current Integrations Impact Analysis","Define Target Integration","Apply Clean Core Principles For Integration"],
+"Integration__REALIZE__Integration Setup in Development and Quality Landscape":["Setup Integrations in Development Landscape","Setup Integrations in Quality Assurance Landscape","Set Up Integration using Cloud Integration Automation Service","Setup Integration for SAP S/4HANA Cloud and SAP Business Network"],
+"Integration__REALIZE__Integration Validation":["Perform Integration Validation"],
+"Integration__REALIZE__Set up Integration in the Production System":["Setup integrations in the Productive Landscape","Set Up Integration in the P-Landscape using Cloud Integration Automation Service"],
+"Data Management__PREPARE__Data Migration Approach and Plan":["Develop the Data Migration Approach and Plan"],
+"Data Management__EXPLORE__Data Migration Planning and Design":["Conduct Data Migration Design"],
+"Data Management__EXPLORE__Data Load Preparation":["Determine the Required Master Data for SAP S/4HANA Cloud","Determine Migration Cockpit Field Structures for S/4HANA Cloud","Extract and Transform Legacy Data","Perform Data Cleansing Activities"],
+"Data Management__REALIZE__Data Migration Execution":["Execute Data Migration Cycle","Run Initial Testing","Resolve inconsistency in the Production System","Perform Functional Post-Migration Activities","Perform Functional Post-Migration Activities: Finance Specific"],
+"Data Management__REALIZE__Data Migration in the Development Tenant":["Execute Data Migration Using Staging Tables in SAP S/4HANA","Execute Migrate Data Directly from an Existing SAP System","Transport Data Migration Project to the Test Tenant"],
+"Data Management__REALIZE__Data Migration in the Test Tenant":["Execute Data Migration Using Staging Tables in SAP S/4HANA","Execute Migrate Data Directly from an Existing SAP System","Conduct Final Data Quality Assessment","Transport Data Migration Project to Production"],
+"Data Management__DEPLOY__Production Cutover":["Execute Cutover Tasks per the Cutover Plan"],
+"Testing__EXPLORE__Test Planning":["Create Test Strategy","Determine Test Scope","Create and Schedule an Overall Test Plan"],
+"Testing__REALIZE__Test Preparation":["Prepare Testing Prerequisites","Set Up Selected Third Party Automated Testing Tools","Defining Test Cases/Test Scripts","Create Test Plan","Establish Readiness for User Acceptance Test"],
+"Testing__REALIZE__Test Execution":["Execute the Test Cases","Defect Management and Re-testing","Test Execution Analysis and Reporting"],
+"Testing__DEPLOY__Dress Rehearsal":["Perform Dress Rehearsal","Validate Cutover Procedures","Document Lessons Learned"],
+"Analytics__PREPARE__Analytics Approach and Plan":["Develop the Analytics Approach and Plan"],
+"Analytics__EXPLORE__Analytics Planning and Design":["Handover of Requirements to Analytics Expert","Review My Fiori Apps Reference Library for Embedded Analytics","Review Scope Items and Requirements for Embedded Analytics","Design Analytics Architecture","Initial Analytics Settings","Determine Details for Customer-Driven Analytics and Extension of Reports","Review and Customer Sign off for Analytics"],
+"Analytics__REALIZE__Analytics Configuration in the Quality System":["Setup and Enable Embedded Analytics","Configure Analytics in the Quality System"],
+"Analytics__REALIZE__Analytics Configuration in the Production System":["Verify Analytics in the Production System"],
+"Org. Change Management__DISCOVER__Organizational Change Management Overview":["Understand the Fundamentals of Organizational Change Management","Comprehend the Approach to Organizational Change Management","Provide Information on Organizational Change Management to Project Stakeholders"],
+"Org. Change Management__PREPARE__Change Concept":["Define Organizational Change Management Roles","Staff Organizational Change Management Resources","Define Organizational Change Management Set-up"],
+"Org. Change Management__PREPARE__Change Plan":["Determine Action Areas for Organizational Change Management","Develop First Version of the Change Plan","Establish Updating Procedure for the Change Plan"],
+"Org. Change Management__PREPARE__Stakeholder Analysis":["Identify Stakeholders","Assess Stakeholders","Derive Stakeholder Engagement Activities"],
+"Org. Change Management__PREPARE__Communication Analysis and Plan":["Analyze Communication Channels","Analyze Communication Needs","Create Communication Plan"],
+"Org. Change Management__EXPLORE__Communication Plan Execution":["Prepare Communication Activities","Deliver Communication Activities","Update Communication Plan"],
+"Org. Change Management__REALIZE__Detailed Change Impact Analysis":["Prepare Change Impact Workshops","Conduct Change Impact Assessment","Manage Change Impacts"],
+"Customer Team Enablement__DISCOVER__Cloud Trial":["Access a Trial Solution"],
+"Customer Team Enablement__PREPARE__Customer Team Self-Enablement":["Request Knowledge Assessment","Create Self-Enablement Plan","Self-Enable on SAP Cloud ALM","Self-Enable on Experience Management","Self-Enable on SAP Signavio","Self-Enable on Selective Data Transition","Self-Enable on SAP Fiori for SAP S/4HANA","Self-Enable on SAP LeanIX","Review Self-enablement Materials","Self-Enable on Extensibility","Self-Enable on Identity and Access Management and Authorization Concept","Self-Enable on SAP Business Technology Platform","Self-Enable on SAP Business Network"],
+"Customer Team Enablement__PREPARE__Enablement Strategy":["Review Enablement Strategy Research and Interviews","Document Enablement Strategy"],
+"Customer Team Enablement__PREPARE__Learning Needs Analysis for Project Team":["Identify Learning Needs for Project Team","Create Learning Curriculum based on SAP Standard Learning","Conduct Business Review"],
+"Customer Team Enablement__EXPLORE__Learning Needs Analysis for Users":["Identify Learning Needs Identification Process","Create Learning Curriculum","Review Enablement Business Review"],
+"Customer Team Enablement__REALIZE__Enablement Content Development":["Create a Content Development Plan","Manage Content Design and Content Development"],
+"Customer Team Enablement__REALIZE__Enablement Delivery":["Plan Learning Logistics","Setup System Landscape and Data","Deliver Enablement","Assess Training Satisfaction"],
+"Customer Team Enablement__RUN__Identify Innovation and Growth Opportunities":["Periodically Update your SAP System","Revise SAP Fiori apps","Initiate a New Improvement and Innovation Project","Perform a Business Scenario and Solution Mapping"],
+"Operations__DISCOVER__Operation and Support Assessment":["Conduct Operation and Support Workshop"],
+"Operations__PREPARE__Operations Planning":["Clarify Operational Requirement","Ensure Operational Readiness"],
+"Operations__EXPLORE__Operations Impact Evaluation and Design":["Evaluate Impact on Operations","Define Customer COE Key Capability","Specify Support and Operation Model"],
+"Operations__REALIZE__Operations Implementation":["Implement Operations Support Process and Tools","Plan Transition and Handover"],
+"Operations__DEPLOY__Operations Readiness":["Operational Readiness","Tracking Goals"],
+"Operations__DEPLOY__Production Hypercare Support":["Provide Hypercare Support"],
+"Operations__DEPLOY__Handover to Support Organization":["Resolve and Close Open Issues","Handover Operations Responsibility"],
+"Operations__RUN__Service Management":["Establish Service Management Framework","Access SAP Support Service"],
+"Operations__RUN__Ongoing System Operations":["Operate the New Solution","Verify User Authorizations / Classification in Production Systems","Review Upcoming Regulatory Changes","Monitor the New System","Perform Technical Assessment of the SAP BTP Solution","Monitor SAP Build Process Automation Jobs","Continuously Optimize IT Operations"],
+"Operations__RUN__Incident and Problem Management":["Manage Incident","Manage Problem"]
+};
 
 /* ══════════════ STATE ══════════════ */
 let PROJS={}, CUR=null;
 let DS={ws:null,ph:null,l2:null,tab:'tasks'};
-let CF={};  // current files {key: {tpl,cust}}
+let CF={};
+let VIEW='matrix'; // 'matrix' | 'phase'
+let ACTIVE_PH=null;
 
-function save(){try{localStorage.setItem('sap_pm4',JSON.stringify(PROJS));}catch(e){}}
-function load(){try{PROJS=JSON.parse(localStorage.getItem('sap_pm4')||'{}');}catch(e){}}
+function save(){try{localStorage.setItem('sap_pm5',JSON.stringify(PROJS));}catch(e){}}
+function load(){try{PROJS=JSON.parse(localStorage.getItem('sap_pm5')||'{}');}catch(e){}}
 load();
 if(Object.keys(PROJS).length>0&&!CUR) CUR=Object.keys(PROJS)[0];
 
 function proj(){return PROJS[CUR];}
-function td(key){return (proj()?.tasks||{})[key]||{st:'ns',pct:0,notes:'',owner:'',due:'',chk:{},del:{},extra:[],ai:null,air:null};}
+function td(k){return (proj()?.tasks||{})[k]||{st:'ns',pct:0,notes:'',owner:'',due:'',chk:{},del:{},extra:[],l3chk:{},l3owner:{},ai:null,air:null};}
 function stC(s){return {ns:'#94A3B8',ip:'#F59E0B',dn:'#22C55E',bl:'#EF4444',rv:'#8B5CF6'}[s]||'#94A3B8';}
 function stL(s){return {ns:'Not Started',ip:'In Progress',dn:'Completed',bl:'Blocked',rv:'In Review'}[s]||s;}
 function stK(s){return {ns:'s-ns',ip:'s-ip',dn:'s-dn',bl:'s-bl',rv:'s-rv'}[s]||'s-ns';}
@@ -259,9 +600,9 @@ function l2pct(ws,ph,l2){const t=td(key(ws,ph,l2));return{pct:t.pct||0,st:t.st||
 function phPct(ph){let s=0,c=0;WS.forEach(ws=>(L2M[ws+'__'+ph]||[]).forEach(l2=>{s+=l2pct(ws,ph,l2).pct;c++;}));return c?Math.round(s/c):0;}
 function toast(m){const e=document.getElementById('toast');e.textContent=m;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),2200);}
 function loading(on,t){document.getElementById('ovl').classList.toggle('show',on);if(t)document.getElementById('spTx').textContent=t;}
-function esc(s){return s.replace(/\\/g,'\\\\').replace(/'/g,"\\'");}
+function esc(s){return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;');}
 
-/* ══════════════ RENDER ══════════════ */
+/* ══════════════ RENDER ROOT ══════════════ */
 function render(){
   if(!CUR||!PROJS[CUR]){
     document.getElementById('lgnd').style.display='none';
@@ -271,29 +612,39 @@ function render(){
   } else {
     document.getElementById('lgnd').style.display='flex';
     document.getElementById('projBadge').textContent='📁 '+PROJS[CUR].name;
-    document.getElementById('hdrR').innerHTML=`<button class="btn btn-s" onclick="showPicker()">⬡ Projects</button><button class="btn btn-g" onclick="exportCSV()">⬇ Export</button>`;
-    renderMatrix();
+    if(VIEW==='phase'&&ACTIVE_PH){
+      document.getElementById('hdrR').innerHTML=`
+        <button class="btn btn-back" onclick="backToMatrix()">← Matrix</button>
+        <button class="btn btn-g" onclick="exportCSV()">⬇ Export</button>`;
+    } else {
+      document.getElementById('hdrR').innerHTML=`
+        <button class="btn btn-s" onclick="showPicker()">⬡ Projects</button>
+        <button class="btn btn-g" onclick="exportCSV()">⬇ Export</button>`;
+    }
+    if(VIEW==='phase'&&ACTIVE_PH) renderPhaseDetail(ACTIVE_PH);
+    else renderMatrix();
   }
 }
 
+function backToMatrix(){VIEW='matrix';ACTIVE_PH=null;render();}
+
+/* ══════════════ PICKER ══════════════ */
 function renderPicker(){
   const ids=Object.keys(PROJS);
   const list=ids.length
-    ? ids.map(id=>`<div class="proj-item" onclick="selProj('${id}')">
-        <span class="pi-ico">📋</span>
-        <span class="pi-name">${PROJS[id].name}</span>
+    ?ids.map(id=>`<div class="proj-item" onclick="selProj('${id}')">
+        <span class="pi-ico">📋</span><span class="pi-name">${PROJS[id].name}</span>
         <span class="pi-date">${new Date(PROJS[id].created).toLocaleDateString('en-GB')}</span>
         <span class="pi-del" onclick="event.stopPropagation();delProj('${id}')">✕</span>
       </div>`).join('')
-    : '<div class="empty-msg">No projects yet. Create your first project above.</div>';
+    :'<div class="empty-msg">No projects yet. Create your first project above.</div>';
   document.getElementById('main').innerHTML=`<div class="picker-wrap fade">
     <div class="picker-hdr"><div class="picker-title">SAP Activate Projects</div>
     <div class="picker-sub">S/4HANA Cloud Private Edition — Governance &amp; Tracking</div></div>
     <div class="picker-body">
       <div class="sec-lbl">Create New Project</div>
       <div class="new-row">
-        <input class="fi" type="text" id="npn" placeholder="e.g. ABC Corp – S/4HANA Cloud" style="flex:1"
-          onkeydown="if(event.key===\'Enter\')newProj()">
+        <input class="fi" type="text" id="npn" placeholder="e.g. ABC Corp – S/4HANA Cloud" style="flex:1" onkeydown="if(event.key==='Enter')newProj()">
         <button class="btn btn-p" onclick="newProj()">+ Create</button>
       </div>
       ${ids.length?'<div class="sec-lbl">Existing Projects</div>':''}
@@ -301,61 +652,56 @@ function renderPicker(){
     </div></div>`;
   setTimeout(()=>document.getElementById('npn')?.focus(),100);
 }
-
 function newProj(){
   const n=document.getElementById('npn')?.value?.trim();
   if(!n){toast('⚠ Enter a project name');return;}
   const id='p'+Date.now();
   PROJS[id]={id,name:n,created:new Date().toISOString(),tasks:{},delL2:{}};
-  save(); CUR=id; toast('✅ Created: '+n); render();
+  save();CUR=id;toast('✅ Created: '+n);render();
 }
 function selProj(id){CUR=id;render();}
 function delProj(id){
   if(!confirm('Delete "'+PROJS[id]?.name+'"?'))return;
   delete PROJS[id];
-  if(CUR===id) CUR=Object.keys(PROJS)[0]||null;
-  save(); render();
+  if(CUR===id)CUR=Object.keys(PROJS)[0]||null;
+  save();render();
 }
 function showPicker(){CUR=null;render();}
 
 /* ══════════════ MATRIX ══════════════ */
 function renderMatrix(){
-  const phHdrs=PHASES.map(ph=>`<th class="mxh-ph" style="background:${PH_COLOR[ph]}">
+  const phHdrs=PHASES.map(ph=>`<th class="mxh-ph" style="background:${PH_COLOR[ph]}" onclick="openPhase('${ph}')" title="Click to open ${ph} phase detail">
     <div class="ph-name-big">${ph}</div>
+    <div class="ph-click-hint">▼ Open detail</div>
   </th>`).join('');
-
   const wsRows=WS.map(ws=>{
     const cells=PHASES.map(ph=>{
       const l2s=(L2M[ws+'__'+ph]||[]).filter(l2=>!proj()?.delL2?.[key(ws,ph,l2)]);
-      if(!l2s.length) return `<td class="mx-td empty"></td>`;
-      const chips=l2s.slice(0,5).map(l2=>{
+      if(!l2s.length)return`<td class="mx-td empty"></td>`;
+      const chips=l2s.map(l2=>{
         const p=l2pct(ws,ph,l2);
         let dc=stC(p.st),nc='';
         if(p.ai==='diff'){dc='#F59E0B';nc='cy';}
         if(p.ai==='ok'){dc='#16A34A';nc='cg';}
-        const fl=p.ai==='diff'?'🟡 ':p.ai==='ok'?'🟢 ':'';
         const nm=l2.length>36?l2.slice(0,36)+'…':l2;
         return `<div class="chip" onclick="openDrw('${esc(ws)}','${ph}','${esc(l2)}')">
           <div class="cdot" style="background:${dc}"></div>
-          <div class="cname ${nc}">${fl}${nm}</div>
+          <div class="cname ${nc}">${nm}</div>
           <div class="cpct">${p.pct}%</div>
         </div>`;
       }).join('');
-      const more=l2s.length>5?`<div style="font-size:9px;color:var(--tx3);padding:0 5px">+${l2s.length-5} more</div>`:'';
-      return `<td class="mx-td clickable">${chips}${more}</td>`;
+      return`<td class="mx-td clickable">${chips}</td>`;
     }).join('');
-    return `<tr><td class="mx-ws">${ws}</td>${cells}</tr>`;
+    return`<tr><td class="mx-ws">${ws}</td>${cells}</tr>`;
   }).join('');
-
   const phFoot=PHASES.map(ph=>{
-    const pct=phPct(ph); const c=PH_COLOR[ph]; const qg=PH_QG[ph];
-    return `<td class="mxf-ph">
+    const pct=phPct(ph);const c=PH_COLOR[ph];const qg=PH_QG[ph];
+    return`<td class="mxf-ph">
       <div class="ph-pct" style="color:${c}">${pct}%</div>
       <div class="ph-desc" style="color:${c}">${PH_DESC[ph]}</div>
       ${qg?`<div class="ph-qg" style="color:${c}">🏁 ${qg}</div>`:''}
     </td>`;
   }).join('');
-
   document.getElementById('main').innerHTML=`<div class="mx-outer fade">
     <table class="mx-table">
       <thead><tr><th class="mxh-ws">Workstream</th>${phHdrs}</tr></thead>
@@ -364,10 +710,204 @@ function renderMatrix(){
     </table></div>`;
 }
 
-/* ══════════════ DRAWER ══════════════ */
+/* ══════════════ PHASE DETAIL PAGE ══════════════ */
+function openPhase(ph){VIEW='phase';ACTIVE_PH=ph;render();}
+
+function renderPhaseDetail(ph){
+  const color=PH_COLOR[ph];
+  const pct=phPct(ph);
+  const qg=PH_QG[ph]||'';
+
+  // Count totals
+  let totalL2=0,totalL3=0,doneL2=0,doneL3=0;
+  WS.forEach(ws=>{
+    const l2s=L2M[ws+'__'+ph]||[];
+    l2s.forEach(l2=>{
+      totalL2++;
+      const t=td(key(ws,ph,l2));
+      if(t.st==='dn')doneL2++;
+      const tasks=getl3(ws,ph,l2);
+      tasks.forEach((_,i)=>{
+        totalL3++;
+        if(t.l3chk&&t.l3chk[i])doneL3++;
+      });
+    });
+  });
+
+  const wsSections=WS.map(ws=>{
+    const l2s=L2M[ws+'__'+ph]||[];
+    if(!l2s.length)return'';
+    const wsId='ws_'+ws.replace(/[^a-zA-Z0-9]/g,'_')+'_'+ph;
+
+    const l2blocks=l2s.map(l2=>{
+      const k=key(ws,ph,l2);
+      const t=td(k);
+      const l3list=getl3(ws,ph,l2);
+      const l2Id='l2_'+k.replace(/[^a-zA-Z0-9]/g,'_');
+      const tip=L2_TIP[l2]||'';
+
+      // L3 task rows
+      const l3rows=l3list.map((task,i)=>{
+        const isDone=t.l3chk&&t.l3chk[i];
+        const owner=t.l3owner&&t.l3owner[i]||'';
+        return`<li class="l3-row">
+          <div class="l3-chk ${isDone?'done':''}" onclick="toggleL3('${esc(k)}',${i})">${isDone?'✓':''}</div>
+          <span class="l3-text ${isDone?'done':''}">${task}</span>
+          <input class="l3-owner-inp" type="text" placeholder="Owner" value="${esc(owner)}"
+            onchange="setL3Owner('${esc(k)}',${i},this.value)" title="Task owner">
+        </li>`;
+      }).join('');
+
+      // L2 status dot
+      const dotColor=stC(t.st);
+      const pctVal=t.pct||0;
+      const pctId='mpct_'+l2Id;
+
+      return`<div class="l2-block">
+        <div class="l2-header" onclick="toggleL2('${l2Id}')">
+          <div class="l2-dot" style="background:${dotColor}"></div>
+          <div class="l2-name">${l2}</div>
+          <span class="l2-pctbadge" id="${pctId}">${pctVal}%</span>
+          <span class="l2-statusbadge ${stK(t.st)}">${stL(t.st)}</span>
+          <span class="l2-toggle" id="tog_${l2Id}">▶</span>
+        </div>
+        <div class="l2-detail" id="${l2Id}">
+          ${tip?`<div class="l2-tooltip"><span class="l2-tooltip-icon">💡</span>${tip}</div>`:''}
+          ${l3rows?`<div class="stt">L3 Sub-Tasks (${l3list.length})</div>
+          <ul class="l3-progress-list">${l3rows}</ul>`:'<div style="font-size:11px;color:var(--tx3);padding:4px 0">No sub-tasks defined.</div>'}
+          <div class="l2-controls">
+            <span class="l2-ctrl-label">Progress</span>
+            <input type="range" min="0" max="100" value="${pctVal}" class="mini-psl"
+              oninput="updateL2Pct('${esc(k)}','${pctId}',this.value)">
+            <span class="mini-pv" id="pvd_${l2Id}">${pctVal}%</span>
+            <div class="mini-st-btns">
+              ${['ns','ip','dn','bl'].map(s=>`<button class="mini-st ${s} ${t.st===s?'act':''}" onclick="setL2St('${esc(k)}','${l2Id}','${s}')">${{ns:'—',ip:'▶',dn:'✓',bl:'✕'}[s]}</button>`).join('')}
+            </div>
+          </div>
+          <div class="l2-owner-row">
+            <input class="l2-owner-inp" type="text" placeholder="Owner…" value="${esc(t.owner||'')}"
+              id="own_${l2Id}" title="L2 task owner">
+            <input class="l2-owner-inp" type="date" value="${t.due||''}" id="due_${l2Id}" title="Due date">
+            <button class="save-mini" onclick="saveL2('${esc(k)}','${l2Id}')">💾 Save</button>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+
+    // WS level stats
+    const wsL2s=l2s.length;
+    const wsDone=l2s.filter(l2=>td(key(ws,ph,l2)).st==='dn').length;
+
+    return`<div class="ws-section">
+      <div class="ws-header" onclick="toggleWS('${wsId}')">
+        <span class="ws-toggle" id="wstog_${wsId}">▶</span>
+        <span class="ws-header-name">${ws}</span>
+        <span class="ws-header-stats">${wsDone}/${wsL2s} tasks</span>
+      </div>
+      <div class="ws-body" id="${wsId}">${l2blocks}</div>
+    </div>`;
+  }).filter(Boolean).join('');
+
+  document.getElementById('main').innerHTML=`<div class="fade">
+    <div style="border-radius:var(--r);overflow:hidden;box-shadow:var(--sh2);">
+      <div class="ph-hero" style="background:${color}">
+        <div class="ph-hero-left">
+          <div class="ph-hero-name">${ph}</div>
+          <div class="ph-hero-desc">${PH_DESC[ph]}${qg?' · '+qg:''}</div>
+          <div class="ph-hero-stats">
+            <div class="ph-stat"><div class="ph-stat-n">${totalL2}</div><div class="ph-stat-l">L2 Tasks</div></div>
+            <div class="ph-stat"><div class="ph-stat-n">${doneL2}</div><div class="ph-stat-l">Completed</div></div>
+            <div class="ph-stat"><div class="ph-stat-n">${totalL3}</div><div class="ph-stat-l">Sub-tasks</div></div>
+            <div class="ph-stat"><div class="ph-stat-n">${doneL3}</div><div class="ph-stat-l">Checked</div></div>
+          </div>
+        </div>
+        <div class="ph-hero-pct">${pct}%</div>
+      </div>
+      <div class="ph-content">${wsSections||'<div style="padding:20px;color:var(--tx3)">No tasks in this phase.</div>'}</div>
+    </div>
+  </div>`;
+}
+
+/* toggle WS open/close */
+function toggleWS(id){
+  const el=document.getElementById(id);
+  const tog=document.getElementById('wstog_'+id);
+  if(!el)return;
+  el.classList.toggle('open');
+  if(tog)tog.classList.toggle('open');
+}
+
+/* toggle L2 open/close */
+function toggleL2(id){
+  const el=document.getElementById(id);
+  const tog=document.getElementById('tog_'+id);
+  if(!el)return;
+  el.classList.toggle('open');
+  if(tog)tog.classList.toggle('open');
+}
+
+/* ══════════════ L3 TASK ACTIONS (Phase Detail) ══════════════ */
+function toggleL3(k,i){
+  if(!proj())return;
+  const t=ensure(k);
+  if(!t.l3chk)t.l3chk={};
+  t.l3chk[i]=!t.l3chk[i];
+  // auto-compute pct from l3 checks
+  const {ws,ph,l2}=parseKey(k);
+  const all=getl3(ws,ph,l2);
+  if(all.length){
+    const done=all.filter((_,j)=>t.l3chk[j]).length;
+    t.pct=Math.round(done/all.length*100);
+    t.st=t.pct===100?'dn':t.pct>0?'ip':'ns';
+  }
+  save();
+  renderPhaseDetail(ACTIVE_PH);
+}
+
+function setL3Owner(k,i,v){
+  const t=ensure(k);if(!t)return;
+  if(!t.l3owner)t.l3owner={};
+  t.l3owner[i]=v;
+  save();
+}
+
+function updateL2Pct(k,pctId,v){
+  const t=ensure(k);if(!t)return;
+  t.pct=+v;
+  const el=document.getElementById(pctId);
+  if(el)el.textContent=v+'%';
+  const l2Id='l2_'+k.replace(/[^a-zA-Z0-9]/g,'_');
+  const pvEl=document.getElementById('pvd_'+l2Id);
+  if(pvEl)pvEl.textContent=v+'%';
+  save();
+}
+
+function setL2St(k,l2Id,s){
+  const t=ensure(k);if(!t)return;
+  t.st=s;
+  if(s==='dn')t.pct=100;
+  save();
+  renderPhaseDetail(ACTIVE_PH);
+}
+
+function saveL2(k,l2Id){
+  const t=ensure(k);if(!t)return;
+  const ownEl=document.getElementById('own_'+l2Id);
+  const dueEl=document.getElementById('due_'+l2Id);
+  if(ownEl)t.owner=ownEl.value;
+  if(dueEl)t.due=dueEl.value;
+  save();toast('✅ Saved');
+}
+
+function parseKey(k){
+  const parts=k.split('||');
+  return{ws:parts[0],ph:parts[1],l2:parts[2]};
+}
+
+/* ══════════════ DRAWER (from matrix) ══════════════ */
 function openDrw(ws,ph,l2){
   DS={ws,ph,l2,tab:'tasks'};
-  if(!CF[key(ws,ph,l2)]) CF[key(ws,ph,l2)]={};
+  if(!CF[key(ws,ph,l2)])CF[key(ws,ph,l2)]={};
   renderDrw();
   document.getElementById('drwBg').classList.add('show');
   document.getElementById('drw').classList.add('open');
@@ -375,15 +915,13 @@ function openDrw(ws,ph,l2){
 function closeDrawer(){
   document.getElementById('drwBg').classList.remove('show');
   document.getElementById('drw').classList.remove('open');
-  renderMatrix();
+  if(VIEW==='matrix')renderMatrix();
+  else renderPhaseDetail(ACTIVE_PH);
 }
 function renderDrw(){
-  const {ws,ph,l2}=DS; const k=key(ws,ph,l2); const t=td(k); const c=PH_COLOR[ph];
+  const {ws,ph,l2}=DS;const k=key(ws,ph,l2);const t=td(k);const c=PH_COLOR[ph];
   document.getElementById('drwHdr').innerHTML=`
-    <div class="drw-title">
-      ${l2}
-      <span class="drw-close" onclick="closeDrawer()">✕</span>
-    </div>
+    <div class="drw-title">${l2}<span class="drw-close" onclick="closeDrawer()">✕</span></div>
     <div class="drw-meta">
       <span style="background:${c};color:#fff;padding:2px 9px;border-radius:12px;font-size:10px;font-weight:700">${ph}</span>
       <span class="txs txm">${ws}</span>
@@ -400,63 +938,59 @@ function renderDrw(){
 }
 function switchTab(t){DS.tab=t;renderDrw();}
 function renderDrwBody(){
-  const {ws,ph,l2,tab}=DS; const k=key(ws,ph,l2); const t=td(k);
+  const {ws,ph,l2,tab}=DS;const k=key(ws,ph,l2);const t=td(k);
   const body=document.getElementById('drwBody');
-  if(tab==='tasks') body.innerHTML=renderTasks(ws,ph,l2,k,t);
-  else if(tab==='progress') body.innerHTML=renderProgress(k,t);
-  else if(tab==='template') body.innerHTML=renderTemplate(k);
-  else if(tab==='ai') body.innerHTML=renderAI(k,l2,t);
+  if(tab==='tasks')body.innerHTML=renderTasks(ws,ph,l2,k,t);
+  else if(tab==='progress')body.innerHTML=renderProgress(k,t);
+  else if(tab==='template')body.innerHTML=renderTemplate(k);
+  else if(tab==='ai')body.innerHTML=renderAI(k,l2,t);
 }
 
-/* TASKS TAB */
 function renderTasks(ws,ph,l2,k,t){
-  const base=getl3(ws,ph,l2);
-  const extra=t.extra||[];
-  const all=[...base,...extra];
-  const del=t.del||{}; const chk=t.chk||{};
+  const base=getl3(ws,ph,l2);const extra=t.extra||[];const all=[...base,...extra];
+  const del=t.del||{};const chk=t.chk||{};
   const active=all.filter((_,i)=>!del[i]);
   const doneCnt=active.filter((_,i)=>{const ri=all.indexOf(active[i]);return chk[ri];}).length;
+  const tip=L2_TIP[l2]||'';
   const items=all.map((tx,i)=>{
-    const isDel=del[i]; const isDone=chk[i];
-    const fid='nt_'+k.replace(/[\|]/g,'_');
-    if(isDel) return `<li class="l3-item">
-      <span class="rm-btn" onclick="restoreT('${k}',${i})" title="Restore">↩</span>
+    const isDel=del[i];const isDone=chk[i];
+    if(isDel)return`<li class="l3-item">
+      <span class="rm-btn" onclick="restoreT('${esc(k)}',${i})" title="Restore">↩</span>
       <span class="task-txt del">${tx}</span></li>`;
-    return `<li class="l3-item">
-      <div class="chk ${isDone?'dn':''}" onclick="toggleChk('${k}',${i})">${isDone?'✓':''}</div>
+    return`<li class="l3-item">
+      <div class="chk ${isDone?'dn':''}" onclick="toggleChk('${esc(k)}',${i})">${isDone?'✓':''}</div>
       <span class="task-txt ${isDone?'done':''}">${tx}</span>
-      <span class="rm-btn" onclick="removeT('${k}',${i})" title="Remove">✕</span>
+      <span class="rm-btn" onclick="removeT('${esc(k)}',${i})" title="Remove">✕</span>
     </li>`;
   }).join('');
   const delCount=Object.keys(del).length;
-  return `<div class="stt">L3 Sub-Tasks (${doneCnt}/${active.length} completed)</div>
+  return`${tip?`<div class="l2-tooltip" style="margin-bottom:12px"><span class="l2-tooltip-icon">💡</span>${tip}</div>`:''}
+    <div class="stt">L3 Sub-Tasks (${doneCnt}/${active.length} completed)</div>
     <ul class="l3-list">${items||'<li style="color:var(--tx3);font-size:12px;padding:8px 0">No sub-tasks defined.</li>'}</ul>
     ${delCount?`<div style="margin-top:8px;font-size:10px;color:var(--tx3);border-top:1px solid var(--bd);padding-top:8px">${delCount} removed task(s) — click ↩ to restore.</div>`:''}
     <div class="add-row mt3">
       <input class="fi" type="text" id="nt_${k.replace(/[\|]/g,'_')}" placeholder="Add custom task…" style="flex:1"
-        onkeydown="if(event.key===\'Enter\')addT('${k}')">
-      <button class="btn btn-p" onclick="addT('${k}')">+ Add</button>
+        onkeydown="if(event.key==='Enter')addT('${esc(k)}')">
+      <button class="btn btn-p" onclick="addT('${esc(k)}')">+ Add</button>
     </div>`;
 }
 
-/* PROGRESS TAB */
 function renderProgress(k,t){
   const ss=[['ns','sbn-ns'],['ip','sbn-ip'],['dn','sbn-dn'],['bl','sbn-bl'],['rv','sbn-rv']];
-  return `<div class="stt">Status</div>
-    <div class="stbns">${ss.map(([s,c])=>`<button class="sbn ${c} ${t.st===s?'act':''}" onclick="setSt('${k}','${s}')">${stL(s)}</button>`).join('')}</div>
+  return`<div class="stt">Status</div>
+    <div class="stbns">${ss.map(([s,c])=>`<button class="sbn ${c} ${t.st===s?'act':''}" onclick="setSt('${esc(k)}','${s}')">${stL(s)}</button>`).join('')}</div>
     <div class="stt">Completion %</div>
-    <div class="slr"><input type="range" min="0" max="100" value="${t.pct}" class="psl" oninput="slPct('${k}',this.value)">
+    <div class="slr"><input type="range" min="0" max="100" value="${t.pct}" class="psl" oninput="slPct('${esc(k)}',this.value)">
     <span class="pv" id="pv_${k.replace(/[\|]/g,'_')}">${t.pct}%</span></div>
-    <div class="ff"><label class="fl">Owner</label><input class="fi" type="text" value="${t.owner||''}" placeholder="Name" oninput="setF('${k}','owner',this.value)"></div>
-    <div class="ff"><label class="fl">Due Date</label><input class="fi" type="date" value="${t.due||''}" oninput="setF('${k}','due',this.value)"></div>
-    <div class="ff"><label class="fl">Notes</label><textarea class="fta" placeholder="Notes…" oninput="setF('${k}','notes',this.value)">${t.notes||''}</textarea></div>
-    <button class="btn btn-p btn-full" onclick="saveProg('${k}')">💾 Save Progress</button>`;
+    <div class="ff"><label class="fl">Owner</label><input class="fi" type="text" value="${t.owner||''}" placeholder="Name" oninput="setF('${esc(k)}','owner',this.value)"></div>
+    <div class="ff"><label class="fl">Due Date</label><input class="fi" type="date" value="${t.due||''}" oninput="setF('${esc(k)}','due',this.value)"></div>
+    <div class="ff"><label class="fl">Notes</label><textarea class="fta" placeholder="Notes…" oninput="setF('${esc(k)}','notes',this.value)">${t.notes||''}</textarea></div>
+    <button class="btn btn-p btn-full" onclick="saveProg('${esc(k)}')">💾 Save Progress</button>`;
 }
 
-/* TEMPLATE TAB */
 function renderTemplate(k){
-  const fk=k.replace(/[\|]/g,'_'); const tpl=CF[k]?.tpl;
-  return `<div class="txs txm" style="margin-bottom:14px">Upload your Best Practice / reference template for this task. Used as the comparison baseline in AI analysis.</div>
+  const fk=k.replace(/[\|]/g,'_');const tpl=CF[k]?.tpl;
+  return`<div class="txs txm" style="margin-bottom:14px">Upload your Best Practice / reference template for this task.</div>
     <div class="stt">Reference Template</div>
     <div class="upz ${tpl?'ld':''}" onclick="trigU('tpl_${fk}')">
       <div class="upz-ico">${tpl?'✅':'📋'}</div>
@@ -465,7 +999,7 @@ function renderTemplate(k){
     </div>
     <input type="file" id="tpl_${fk}" accept=".xlsx,.xls,.csv" class="hidden" onchange="upFile(this,'${k}','tpl')">
     ${tpl?`<div style="background:var(--sf2);border:1px solid var(--bd);border-radius:var(--rs);padding:9px 11px;font-size:11px;color:var(--tx2)">
-      <strong>Loaded:</strong> ${tpl.name} &nbsp;·&nbsp; ${Object.keys(tpl.data).length} sheet(s)
+      <strong>Loaded:</strong> ${tpl.name}
       <span style="float:right;cursor:pointer;color:var(--tx3)" onclick="clearF('${k}','tpl')">✕ Remove</span>
     </div>`:''}
     <div class="mt3" style="padding:10px;background:#FEF3C7;border-radius:var(--rs);font-size:11px;color:#92400E">
@@ -473,44 +1007,43 @@ function renderTemplate(k){
     </div>`;
 }
 
-/* AI COMPARE TAB */
 function renderAI(k,l2,t){
-  const fk=k.replace(/[\|]/g,'_'); const tpl=CF[k]?.tpl; const cust=CF[k]?.cust;
+  const fk=k.replace(/[\|]/g,'_');const tpl=CF[k]?.tpl;const cust=CF[k]?.cust;
   const tplSec=tpl
     ?`<div class="preloaded"><span class="pre-ico">📋</span><div><div class="pre-txt">Reference Template Loaded</div><div class="pre-sub">${tpl.name}</div></div>
        <button class="btn btn-danger" style="margin-left:auto;font-size:10px" onclick="clearF('${k}','tpl')">✕</button></div>`
     :`<div style="background:var(--sf2);border:1px solid var(--bd);border-radius:var(--rs);padding:9px 11px;margin-bottom:9px;font-size:11px;color:var(--tx3)">
-       ⚠ No reference template. Go to <strong>Template</strong> tab to upload your Best Practice file first.</div>`;
+       ⚠ No reference template. Go to <strong>Template</strong> tab first.</div>`;
   const custSec=`<div class="stt mt2">📨 Customer Submitted File</div>
     <div class="upz ${cust?'ld':''}" onclick="trigU('cust_${fk}')">
       <div class="upz-ico">${cust?'✅':'📁'}</div>
       <div class="upz-name">${cust?cust.name:'Upload customer file'}</div>
-      <div class="upz-sub">.xlsx / .xls / .csv — the customer filled version</div>
+      <div class="upz-sub">.xlsx / .xls / .csv</div>
     </div>
     <input type="file" id="cust_${fk}" accept=".xlsx,.xls,.csv" class="hidden" onchange="upFile(this,'${k}','cust')">
-    ${cust?`<div style="font-size:10px;color:var(--tx3);margin-bottom:4px;text-align:right;cursor:pointer" onclick="clearF('${k}','cust')">✕ Remove customer file</div>`:''}`;
+    ${cust?`<div style="font-size:10px;color:var(--tx3);margin-bottom:4px;text-align:right;cursor:pointer" onclick="clearF('${k}','cust')">✕ Remove</div>`:''}`;
   const btn=tpl&&cust
-    ?`<button class="btn btn-g btn-full mt2" onclick="runAI('${k}','${esc(l2)}')">🤖 Run QA Analysis</button>`
-    :`<div style="text-align:center;font-size:11px;color:var(--tx3);padding:8px">${!tpl?'Load reference template first.':!cust?'Upload the customer file to run analysis.':''}</div>`;
+    ?`<button class="btn btn-g btn-full mt2" onclick="runAI('${esc(k)}','${esc(l2)}')">🤖 Run QA Analysis</button>`
+    :`<div style="text-align:center;font-size:11px;color:var(--tx3);padding:8px">${!tpl?'Load reference template first.':'Upload the customer file to run analysis.'}</div>`;
   let res='';
   if(t.air){
     const bn=t.ai==='ok'
-      ?`<div class="bn-g"><span class="bn-ico">🟢</span><div><div class="bn-txt">Approved — marked green on dashboard</div></div></div>`
-      :`<div class="bn-y"><span class="bn-ico">🟡</span><div class="bn-txt" style="color:#92400E">Differences found — marked yellow on dashboard<div class="bn-sub">Review below, approve when satisfied.</div></div>
-         <button class="btn btn-ok" style="margin-left:auto;white-space:nowrap" onclick="approveT('${k}')">✅ Approve</button></div>`;
+      ?`<div class="bn-g"><span class="bn-ico">🟢</span><div><div class="bn-txt">Approved</div></div></div>`
+      :`<div class="bn-y"><span class="bn-ico">🟡</span><div class="bn-txt" style="color:#92400E">Differences found<div class="bn-sub">Review below, approve when satisfied.</div></div>
+         <button class="btn btn-ok" style="margin-left:auto" onclick="approveT('${esc(k)}')">✅ Approve</button></div>`;
     res=`<div class="mt3">${bn}<div class="row" style="margin-bottom:10px">
       <div class="stt" style="margin:0">🤖 QA Analysis Report</div>
-      <button class="btn btn-d" style="margin-left:auto" onclick="dlRep('${k}','${esc(l2)}')">⬇ Download</button>
+      <button class="btn btn-d" style="margin-left:auto" onclick="dlRep('${esc(k)}','${esc(l2)}')">⬇ Download</button>
     </div>${t.air}</div>`;
   }
-  return `${tplSec}${custSec}${btn}${res}`;
+  return`${tplSec}${custSec}${btn}${res}`;
 }
 
 /* ══════════════ TASK ACTIONS ══════════════ */
 function ensure(k){
   if(!proj())return null;
-  if(!proj().tasks) proj().tasks={};
-  if(!proj().tasks[k]) proj().tasks[k]={st:'ns',pct:0,notes:'',owner:'',due:'',chk:{},del:{},extra:[],ai:null,air:null};
+  if(!proj().tasks)proj().tasks={};
+  if(!proj().tasks[k])proj().tasks[k]={st:'ns',pct:0,notes:'',owner:'',due:'',chk:{},del:{},extra:[],l3chk:{},l3owner:{},ai:null,air:null};
   return proj().tasks[k];
 }
 function toggleChk(k,i){
@@ -522,7 +1055,7 @@ function toggleChk(k,i){
   const del=t.del||{};
   const active=all.filter((_,j)=>!del[j]);
   const done=active.filter((_,j)=>{const ri=all.indexOf(active[j]);return t.chk[ri];}).length;
-  if(active.length) t.pct=Math.round(done/active.length*100);
+  if(active.length)t.pct=Math.round(done/active.length*100);
   t.st=t.pct===100?'dn':t.pct>0?'ip':'ns';
   save();renderDrwBody();
 }
@@ -548,7 +1081,7 @@ function setF(k,f,v){const t=ensure(k);if(!t)return;t[f]=v;}
 function saveProg(k){save();toast('✅ Saved');renderDrw();}
 function approveT(k){const t=ensure(k);if(!t)return;t.ai='ok';t.st='dn';t.pct=100;save();toast('🟢 Approved!');renderDrw();}
 
-/* ══════════════ FILE UPLOAD ══════════════ */
+/* FILE UPLOAD */
 function trigU(id){document.getElementById(id)?.click();}
 async function upFile(inp,k,type){
   const f=inp.files[0];if(!f)return;
@@ -556,8 +1089,7 @@ async function upFile(inp,k,type){
     const d=await readXL(f);
     if(!CF[k])CF[k]={};
     CF[k][type]={name:f.name,data:d};
-    toast('✅ '+f.name+' loaded');
-    renderDrwBody();
+    toast('✅ '+f.name+' loaded');renderDrwBody();
   }catch(e){toast('❌ Could not read file');}
 }
 function clearF(k,type){if(CF[k])delete CF[k][type];renderDrwBody();}
@@ -573,32 +1105,18 @@ function readXL(f){
   });
 }
 function x2txt(d){
-  return Object.entries(d).map(([s,rows])=>
-    '=== Sheet: '+s+' ===\n'+rows.slice(0,80).map(r=>r.join(' | ')).join('\n')
-  ).join('\n\n');
+  return Object.entries(d).map(([s,rows])=>'=== Sheet: '+s+' ===\n'+rows.slice(0,80).map(r=>r.join(' | ')).join('\n')).join('\n\n');
 }
 
-/* ══════════════ AI QA ══════════════ */
+/* AI QA */
 async function runAI(k,l2Name){
   const f=CF[k];if(!f?.tpl||!f?.cust){toast('⚠ Both files required');return;}
   const {ws,ph}=DS;
   const l3list=(L3M[ws+'__'+ph+'__'+l2Name]||[]).join('\n• ');
   loading(true,'Running QA analysis… (~20 sec)');
   try{
-    const p='You are an SAP S/4HANA implementation QA expert.\n\n'+
-      'Task/Deliverable: "'+l2Name+'"\nPhase: '+ph+' | Workstream: '+ws+'\n'+
-      'Expected sub-tasks:\n• '+l3list+'\n\n'+
-      '=== REFERENCE / BEST PRACTICE TEMPLATE ===\n'+x2txt(f.tpl.data)+'\n\n'+
-      '=== CUSTOMER SUBMITTED FILE ===\n'+x2txt(f.cust.data)+'\n\n'+
-      'Perform thorough QA. Respond ONLY with this JSON:\n'+
-      '{"summary":"2-3 sentence assessment","overall_score":72,'+
-      '"critical_gaps":["critical gap 1"],"overdue_risks":["overdue/at-risk item 1"],'+
-      '"missing_items":["forgotten item 1"],"differences":["content diff 1"],'+
-      '"positives":["what was done well"],"recommendations":["recommendation 1"]}';
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1500,messages:[{role:'user',content:p}]})
-    });
+    const p='You are an SAP S/4HANA implementation QA expert.\n\nTask/Deliverable: "'+l2Name+'"\nPhase: '+ph+' | Workstream: '+ws+'\nExpected sub-tasks:\n• '+l3list+'\n\n=== REFERENCE / BEST PRACTICE TEMPLATE ===\n'+x2txt(f.tpl.data)+'\n\n=== CUSTOMER SUBMITTED FILE ===\n'+x2txt(f.cust.data)+'\n\nPerform thorough QA. Respond ONLY with this JSON:\n{"summary":"2-3 sentence assessment","overall_score":72,"critical_gaps":["gap"],"overdue_risks":["risk"],"missing_items":["item"],"differences":["diff"],"positives":["positive"],"recommendations":["rec"]}';
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1500,messages:[{role:'user',content:p}]})});
     const data=await resp.json();
     const txt=data.content?.find(b=>b.type==='text')?.text||'';
     let parsed;
@@ -609,57 +1127,34 @@ async function runAI(k,l2Name){
     save();loading(false);renderDrw();
   }catch(e){loading(false);toast('❌ AI error: '+e.message);}
 }
-
 function buildReport(r){
-  const sc=r.overall_score||0;
-  const sc2=sc>=80?'#16A34A':sc>=60?'#D97706':'#DC2626';
+  const sc=r.overall_score||0;const sc2=sc>=80?'#16A34A':sc>=60?'#D97706':'#DC2626';
   function sec(items,hc,bc,em,ttl){
-    if(!items?.length)return '';
-    return '<div class="qa-sec"><div class="qa-hdr '+hc+'">'+em+' '+ttl+' ('+items.length+')</div>'+
-      items.map(i=>'<div class="qa-it" style="border-left-color:'+bc+'">'+i+'</div>').join('')+'</div>';
+    if(!items?.length)return'';
+    return'<div class="qa-sec"><div class="qa-hdr '+hc+'">'+em+' '+ttl+' ('+items.length+')</div>'+items.map(i=>'<div class="qa-it" style="border-left-color:'+bc+'">'+i+'</div>').join('')+'</div>';
   }
-  return '<div class="score-row"><div class="score-num" style="color:'+sc2+'">'+sc+'%</div>'+
-    '<div><div class="score-lbl">QA Compliance Score</div><div class="score-txt">'+r.summary+'</div></div></div>'+
-    sec(r.critical_gaps,'qa-cr','#DC2626','🔴','Critical Gaps')+
-    sec(r.overdue_risks,'qa-od','#D97706','⏰','Overdue / At-Risk Items')+
-    sec(r.missing_items,'qa-ms','#1D4ED8','📋','Missing / Forgotten Items')+
-    sec(r.differences,'qa-df','#92400E','⚠️','Content Differences')+
-    sec(r.positives,'qa-ok','#16A34A','✅','Positives')+
-    sec(r.recommendations,'qa-ok','#16A34A','💡','Recommendations');
+  return'<div class="score-row"><div class="score-num" style="color:'+sc2+'">'+sc+'%</div><div><div class="score-lbl">QA Compliance Score</div><div class="score-txt">'+r.summary+'</div></div></div>'+
+    sec(r.critical_gaps,'qa-cr','#DC2626','🔴','Critical Gaps')+sec(r.overdue_risks,'qa-od','#D97706','⏰','Overdue / At-Risk')+
+    sec(r.missing_items,'qa-ms','#1D4ED8','📋','Missing Items')+sec(r.differences,'qa-df','#92400E','⚠️','Content Differences')+
+    sec(r.positives,'qa-ok','#16A34A','✅','Positives')+sec(r.recommendations,'qa-ok','#16A34A','💡','Recommendations');
 }
-
 function dlRep(k,l2Name){
   const t=td(k);if(!t.air)return;
-  const {ws,ph}=DS; const pn=proj()?.name||'Project';
-  const html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>QA Report</title>'+
-    '<style>body{font-family:Arial,sans-serif;max-width:840px;margin:36px auto;color:#1a1a1a}'+
-    'h1{color:#1D4ED8}p.m{color:#666;font-size:12px;margin-bottom:20px}'+
-    '.hdr{padding:6px 10px;border-radius:5px;font-size:13px;font-weight:700;margin-bottom:8px}'+
-    '.qa-cr{background:#FEE2E2;color:#DC2626}.qa-od{background:#FEF3C7;color:#D97706}'+
-    '.qa-ms{background:#DBEAFE;color:#1D4ED8}.qa-df{background:#FEF9C3;color:#92400E}'+
-    '.qa-ok{background:#DCFCE7;color:#16A34A}'+
-    '.it{padding:7px 10px;border-left:3px solid;background:#F8F9FC;margin:3px 0;font-size:12px}'+
-    '.sr{display:flex;gap:14px;background:#F8F9FC;padding:14px;border-radius:8px;margin-bottom:20px}'+
-    '.sn{font-size:34px;font-weight:800}</style></head>'+
-    '<body><h1>SAP Activate QA Report</h1><p class="m"><b>Project:</b> '+pn+' &nbsp;|&nbsp; <b>Phase:</b> '+ph+' &nbsp;|&nbsp; <b>WS:</b> '+ws+'<br>'+
-    '<b>Task:</b> '+l2Name+' &nbsp;|&nbsp; <b>Date:</b> '+new Date().toLocaleDateString('en-GB')+'</p>'+
-    t.air.replace(/class="score-row"/g,'class="sr"').replace(/class="score-num"/g,'class="sn"')
-      .replace(/class="qa-sec"/g,'').replace(/class="qa-hdr /g,'class="hdr ')
-      .replace(/class="qa-it"/g,'class="it"')+'</body></html>';
+  const {ws,ph}=DS;const pn=proj()?.name||'Project';
+  const html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>QA Report</title><style>body{font-family:Arial,sans-serif;max-width:840px;margin:36px auto;color:#1a1a1a}h1{color:#1D4ED8}.hdr{padding:6px 10px;border-radius:5px;font-size:13px;font-weight:700;margin-bottom:8px}.qa-cr{background:#FEE2E2;color:#DC2626}.qa-od{background:#FEF3C7;color:#D97706}.qa-ms{background:#DBEAFE;color:#1D4ED8}.qa-df{background:#FEF9C3;color:#92400E}.qa-ok{background:#DCFCE7;color:#16A34A}.it{padding:7px 10px;border-left:3px solid;background:#F8F9FC;margin:3px 0;font-size:12px}.sr{display:flex;gap:14px;background:#F8F9FC;padding:14px;border-radius:8px;margin-bottom:20px}.sn{font-size:34px;font-weight:800}</style></head><body><h1>SAP Activate QA Report</h1><p><b>Project:</b> '+pn+' | <b>Phase:</b> '+ph+' | <b>WS:</b> '+ws+'<br><b>Task:</b> '+l2Name+' | <b>Date:</b> '+new Date().toLocaleDateString('en-GB')+'</p>'+t.air.replace(/class="score-row"/g,'class="sr"').replace(/class="score-num"/g,'class="sn"').replace(/class="qa-sec"/g,'').replace(/class="qa-hdr /g,'class="hdr ').replace(/class="qa-it"/g,'class="it"')+'</body></html>';
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([html],{type:'text/html'}));
   a.download='QA_'+l2Name.replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_]/g,'').slice(0,40)+'.html';
   a.click();toast('📥 Downloaded');
 }
 
-/* ══════════════ EXPORT ══════════════ */
+/* EXPORT */
 function exportCSV(){
   if(!proj())return;
-  const rows=[['Phase','Workstream','L2 Task','Status','%','Owner','Due','AI Status','Notes']];
+  const rows=[['Phase','Workstream','L2 Task','Status','%','Owner','Due','Notes']];
   WS.forEach(ws=>PHASES.forEach(ph=>(L2M[ws+'__'+ph]||[]).forEach(l2=>{
     const t=td(key(ws,ph,l2));
-    rows.push([ph,ws,l2,stL(t.st),t.pct+'%',t.owner||'',t.due||'',
-      t.ai==='ok'?'Approved':t.ai==='diff'?'Diff Found':'—',t.notes||'']);
+    rows.push([ph,ws,l2,stL(t.st),t.pct+'%',t.owner||'',t.due||'',t.notes||'']);
   })));
   const csv=rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');
   const a=document.createElement('a');
@@ -668,7 +1163,6 @@ function exportCSV(){
   a.click();toast('📥 Exported');
 }
 
-/* ══════════════ INIT ══════════════ */
 render();
 </script>
 </body>
