@@ -1539,10 +1539,22 @@ async function runAI(k,l2Name){
 
   loading(true,'Running QA analysis… (~20 sec)');
   try{
-    const tplContext=l3WithTpl.map(x=>`--- Sub-task: ${x.task} ---\n${x2txt(x.tpl.data)}`).join('\n\n');
-    const l3list=l3tasks.join('\n• ');
-    const p=`You are an SAP S/4HANA implementation QA expert.\n\nL2 Task: "${l2Name}"\nPhase: ${ph} | Workstream: ${ws}\n\nL3 Sub-tasks:\n• ${l3list}\n\n=== REFERENCE TEMPLATES (per sub-task) ===\n${tplContext}\n\n=== CUSTOMER SUBMITTED DELIVERABLE ===\n${x2txt(cust.data)}\n\nCompare the customer deliverable against the reference templates. Respond ONLY with JSON:\n{"summary":"2-3 sentence assessment","overall_score":72,"critical_gaps":["gap"],"overdue_risks":["risk"],"missing_items":["item"],"differences":["diff"],"positives":["done well"],"recommendations":["rec"]}`;
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1500,messages:[{role:'user',content:p}]})});
+    const tplContext=l3WithTpl.map(x=>'--- Sub-task: '+x.task+' ---\n'+x2txt(x.tpl.data)).join('\n\n');
+    const resp=await fetch('https://lhrgjxspcrsnrzcxdtby.supabase.co/functions/v1/ai-qa',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxocmdqeHNwY3JzbnJ6Y3hkdGJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUxNjgwODQsImV4cCI6MjA5MDc0NDA4NH0.l5lY52yty3w-ipvoujhx9rEugX9hckHgAA6Z5X6VCSM'
+      },
+      body:JSON.stringify({
+        l2Name,
+        phase:ph,
+        workstream:ws,
+        l3tasks,
+        templateContext:tplContext,
+        customerFileText:x2txt(cust.data)
+      })
+    });
     const data=await resp.json();
     const txt=data.content?.find(b=>b.type==='text')?.text||'';
     let parsed;
