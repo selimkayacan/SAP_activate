@@ -1,0 +1,1949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>SAP Activate | PM Tool</title>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{
+  --bg:#F0F2F7;--srf:#fff;--sf2:#F8F9FC;--bd:#E2E6EF;
+  --tx:#0F172A;--tx2:#475569;--tx3:#94A3B8;--navy:#0F172A;
+  --r:10px;--rs:6px;
+  --sh:0 1px 3px rgba(0,0,0,.08),0 4px 16px rgba(0,0,0,.04);
+  --sh2:0 4px 24px rgba(0,0,0,.14);
+  --fn:'Lexend',sans-serif;--mo:'JetBrains Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:var(--fn);background:var(--bg);color:var(--tx);font-size:13px;line-height:1.5;min-height:100vh;}
+
+.hdr{background:var(--navy);color:#fff;height:50px;display:flex;align-items:center;padding:0 16px;gap:10px;position:sticky;top:0;z-index:300;box-shadow:0 2px 10px rgba(0,0,0,.3);}
+.logo{font-size:14px;font-weight:800;display:flex;align-items:center;gap:6px;flex-shrink:0;}
+.logo-sap{color:#F0AB00;}
+.logo-sep{width:1px;height:16px;background:rgba(255,255,255,.2);}
+.logo-sub{font-size:11px;font-weight:400;color:rgba(255,255,255,.5);}
+.proj-badge{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:3px 12px;font-size:11px;font-weight:600;color:#fff;cursor:pointer;max-width:240px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex-shrink:0;}
+.proj-badge:hover{background:rgba(255,255,255,.22);}
+.hdr-r{margin-left:auto;display:flex;align-items:center;gap:7px;}
+.btn{padding:5px 12px;border-radius:var(--rs);font-size:11px;font-weight:600;font-family:var(--fn);cursor:pointer;border:none;transition:all .15s;display:inline-flex;align-items:center;gap:4px;white-space:nowrap;}
+.btn-p{background:#1D4ED8;color:#fff;}.btn-p:hover{background:#1e40af;}
+.btn-s{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2);}.btn-s:hover{background:rgba(255,255,255,.22);}
+.btn-d{background:var(--sf2);color:var(--tx2);border:1px solid var(--bd);}.btn-d:hover{background:var(--bd);}
+.btn-g{background:#F0AB00;color:var(--navy);}.btn-g:hover{background:#d99e00;}
+.btn-ok{background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0;}
+.btn-danger{background:#FEE2E2;color:#DC2626;border:1px solid #FCA5A5;}
+.btn-full{width:100%;justify-content:center;}
+.btn-back{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);padding:4px 10px;font-size:11px;}.btn-back:hover{background:rgba(255,255,255,.25);}
+
+.main{padding:14px 16px;}
+
+/* PROJECT PICKER */
+.picker-wrap{max-width:520px;margin:50px auto 0;background:var(--srf);border-radius:var(--r);box-shadow:var(--sh2);overflow:hidden;}
+.picker-hdr{background:var(--navy);padding:22px 22px 18px;color:#fff;}
+.picker-title{font-size:19px;font-weight:800;margin-bottom:3px;}
+.picker-sub{font-size:11px;color:rgba(255,255,255,.5);}
+.picker-body{padding:18px 22px;}
+.sec-lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--tx3);margin-bottom:9px;}
+.new-row{display:flex;gap:8px;margin-bottom:18px;}
+.fi{width:100%;padding:8px 11px;border:1px solid var(--bd);border-radius:var(--rs);font-family:var(--fn);font-size:12px;background:var(--srf);color:var(--tx);outline:none;}
+.fi:focus{border-color:#1D4ED8;}
+.proj-list{display:flex;flex-direction:column;gap:5px;max-height:280px;overflow-y:auto;}
+.proj-item{display:flex;align-items:center;gap:9px;padding:9px 11px;border:1px solid var(--bd);border-radius:var(--rs);cursor:pointer;transition:all .15s;}
+.proj-item:hover{border-color:#1D4ED8;background:#EFF6FF;}
+.pi-ico{font-size:15px;}
+.pi-name{font-size:12px;font-weight:600;flex:1;}
+.pi-date{font-size:10px;color:var(--tx3);}
+.pi-del{font-size:11px;color:var(--tx3);padding:2px 6px;border-radius:3px;cursor:pointer;}.pi-del:hover{background:#FEE2E2;color:#DC2626;}
+.empty-msg{text-align:center;color:var(--tx3);font-size:12px;padding:22px;}
+
+/* LEGEND */
+.lgnd{background:var(--srf);border-bottom:1px solid var(--bd);padding:6px 16px;display:flex;align-items:center;gap:14px;font-size:11px;flex-wrap:wrap;}
+.leg{display:flex;align-items:center;gap:4px;color:var(--tx2);}
+.ldot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+
+/* MATRIX */
+.mx-outer{background:var(--srf);border-radius:var(--r);box-shadow:var(--sh);overflow:auto;}
+.mx-table{width:100%;border-collapse:collapse;min-width:920px;}
+.mxh-ws{background:var(--sf2);padding:8px 12px;font-size:11px;font-weight:700;color:var(--tx2);text-transform:uppercase;letter-spacing:.4px;border-right:2px solid var(--bd);border-bottom:2px solid var(--bd);position:sticky;left:0;z-index:2;min-width:155px;}
+.mxh-ph{padding:9px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.2);border-bottom:2px solid var(--bd);vertical-align:middle;cursor:pointer;transition:opacity .15s;}
+.mxh-ph:hover{opacity:.85;}
+.mxh-ph:last-child{border-right:none;}
+.ph-name-big{font-size:14px;font-weight:800;color:#fff;letter-spacing:-.3px;}
+.ph-click-hint{font-size:9px;color:rgba(255,255,255,.6);margin-top:2px;}
+.mx-ws{background:var(--sf2);padding:7px 12px;border-right:2px solid var(--bd);border-bottom:1px solid var(--bd);font-size:11px;font-weight:500;vertical-align:top;position:sticky;left:0;z-index:1;min-width:155px;}
+.mx-td{padding:5px 6px;border-right:1px solid var(--bd);border-bottom:1px solid var(--bd);vertical-align:top;min-height:54px;}
+.mx-td:last-child{border-right:none;}
+.mx-td.clickable:hover{background:#F1F5FF;cursor:pointer;}
+.mx-td.empty{cursor:default;background:repeating-linear-gradient(45deg,transparent,transparent 4px,rgba(0,0,0,.013) 4px,rgba(0,0,0,.013) 8px);}
+.chip{display:flex;align-items:center;gap:4px;padding:3px 5px;margin-bottom:2px;border-radius:4px;font-size:10px;cursor:pointer;transition:background .1s;line-height:1.3;}
+.chip:hover{background:rgba(0,0,0,.05);}
+.cdot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.cname{flex:1;color:var(--tx2);}
+.cname.cy{color:#92400E;font-weight:600;}
+.cname.cg{color:#14532D;font-weight:600;}
+.cpct{font-size:9px;font-family:var(--mo);color:var(--tx3);}
+.mx-foot{border-top:2px solid var(--bd);}
+.mxf-ws{background:var(--sf2);padding:6px 12px;font-size:10px;font-weight:600;color:var(--tx3);border-right:2px solid var(--bd);position:sticky;left:0;z-index:1;}
+.mxf-ph{padding:8px 10px;text-align:center;border-right:1px solid var(--bd);}
+.mxf-ph:last-child{border-right:none;}
+.ph-pct{font-size:15px;font-weight:800;font-family:var(--mo);}
+.ph-desc{font-size:10px;margin-top:2px;}
+.ph-qg{display:inline-flex;align-items:center;gap:2px;padding:1px 7px;border-radius:10px;font-size:9px;font-weight:700;margin-top:3px;background:rgba(0,0,0,.06);}
+
+/* ══════════════════════════════════
+   PHASE DETAIL PAGE
+══════════════════════════════════ */
+.ph-detail{display:none;}
+.ph-detail.show{display:block;}
+
+.ph-hero{padding:18px 20px;color:#fff;border-radius:var(--r) var(--r) 0 0;display:flex;align-items:center;gap:14px;}
+.ph-hero-left{flex:1;}
+.ph-hero-name{font-size:22px;font-weight:800;letter-spacing:-.5px;}
+.ph-hero-desc{font-size:12px;opacity:.75;margin-top:2px;}
+.ph-hero-stats{display:flex;gap:16px;margin-top:10px;}
+.ph-stat{text-align:center;}
+.ph-stat-n{font-size:20px;font-weight:800;font-family:var(--mo);}
+.ph-stat-l{font-size:10px;opacity:.7;margin-top:1px;}
+.ph-hero-pct{font-size:42px;font-weight:800;font-family:var(--mo);opacity:.9;}
+
+.ph-content{background:var(--srf);border-radius:0 0 var(--r) var(--r);box-shadow:var(--sh);}
+
+/* Workstream sections */
+.ws-section{border-bottom:1px solid var(--bd);}
+.ws-section:last-child{border-bottom:none;}
+.ws-header{padding:10px 16px;background:var(--sf2);display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;}
+.ws-header:hover{background:#EFF6FF;}
+.ws-header-name{font-size:12px;font-weight:700;color:var(--tx);flex:1;}
+.ws-header-stats{font-size:10px;color:var(--tx3);font-family:var(--mo);}
+.ws-toggle{font-size:11px;color:var(--tx3);transition:transform .2s;}
+.ws-toggle.open{transform:rotate(90deg);}
+.ws-body{display:none;padding:0 0 8px 0;}
+.ws-body.open{display:block;}
+
+/* L2 task blocks */
+.l2-block{margin:8px 14px 0 14px;border:1px solid var(--bd);border-radius:var(--rs);overflow:hidden;}
+.l2-header{padding:8px 12px;display:flex;align-items:center;gap:8px;cursor:pointer;background:var(--sf2);}
+.l2-header:hover{background:#EFF6FF;}
+.l2-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.l2-name{font-size:11px;font-weight:700;color:var(--tx);flex:1;}
+.l2-pctbadge{font-size:10px;font-family:var(--mo);color:var(--tx3);background:var(--bg);padding:1px 6px;border-radius:10px;}
+.l2-statusbadge{font-size:9px;font-weight:600;padding:1px 7px;border-radius:10px;}
+.l2-toggle{font-size:10px;color:var(--tx3);transition:transform .2s;}
+.l2-toggle.open{transform:rotate(90deg);}
+
+.l2-detail{display:none;padding:10px 12px;border-top:1px solid var(--bd);background:#fff;}
+.l2-detail.open{display:block;}
+
+/* Tooltip */
+.l2-tooltip{background:#FFFBEB;border:1px solid #FDE68A;border-radius:var(--rs);padding:8px 11px;margin-bottom:10px;font-size:11px;color:#78350F;line-height:1.5;}
+.l2-tooltip-icon{font-size:13px;margin-right:4px;}
+
+/* L3 tasks inside phase detail */
+.l3-progress-list{list-style:none;}
+.l3-row{display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid var(--bd);flex-wrap:wrap;}
+.l3-row:last-child{border-bottom:none;}
+.l3-chk{width:15px;height:15px;border:1.5px solid var(--bd);border-radius:3px;cursor:pointer;flex-shrink:0;margin-top:3px;display:flex;align-items:center;justify-content:center;font-size:9px;transition:all .15s;}
+.l3-chk.done{background:#22C55E;border-color:#22C55E;color:#fff;}
+/* tooltip wrapper */
+.l3-tip-wrap{position:relative;flex:1;min-width:0;}
+.l3-text{font-size:11px;line-height:1.5;color:var(--tx2);cursor:default;}
+.l3-text.done{text-decoration:line-through;color:var(--tx3);}
+.l3-tip-popup{display:none;position:absolute;left:0;top:calc(100% + 4px);z-index:999;
+  background:#1E293B;color:#E2E8F0;border-radius:var(--rs);padding:9px 12px;
+  font-size:11px;line-height:1.6;max-width:320px;min-width:180px;
+  box-shadow:0 6px 24px rgba(0,0,0,.3);pointer-events:none;}
+.l3-tip-popup strong{color:#F0AB00;}
+.l3-tip-popup::before{content:'';position:absolute;top:-5px;left:12px;
+  width:0;height:0;border:5px solid transparent;border-bottom-color:#1E293B;border-top:none;}
+.l3-tip-wrap:hover .l3-tip-popup{display:block;}
+/* progress expand button */
+.l3-prog-btn{flex-shrink:0;font-size:10px;color:var(--tx3);cursor:pointer;padding:1px 5px;border-radius:3px;border:1px solid var(--bd);background:var(--sf2);line-height:1.4;}
+.l3-prog-btn:hover{background:#EFF6FF;color:#1D4ED8;border-color:#1D4ED8;}
+.l3-prog-btn.active{background:#EFF6FF;color:#1D4ED8;border-color:#1D4ED8;}
+/* L3 progress panel */
+.l3-prog-panel{display:none;width:100%;margin-left:23px;margin-top:4px;margin-bottom:4px;
+  padding:10px 12px;background:#F0F6FF;border:1px solid #BFDBFE;border-radius:var(--rs);}
+.l3-prog-panel.open{display:block;}
+.l3-prog-row{display:flex;align-items:center;gap:8px;margin-bottom:7px;flex-wrap:wrap;}
+.l3-prog-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:#64748B;width:46px;flex-shrink:0;}
+.l3-mini-sl{flex:1;min-width:60px;-webkit-appearance:none;height:4px;border-radius:2px;background:var(--bd);outline:none;}
+.l3-mini-sl::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:#1D4ED8;cursor:pointer;}
+.l3-mini-pv{font-family:var(--mo);font-size:10px;font-weight:700;width:28px;text-align:right;}
+.l3-st-row{display:flex;gap:3px;flex-wrap:wrap;}
+.l3-stb{padding:1px 8px;border-radius:8px;font-size:9px;font-weight:700;cursor:pointer;border:1.5px solid transparent;font-family:var(--fn);}
+.l3-stb.ns{background:#F1F5F9;color:#64748B;border-color:#CBD5E1;}
+.l3-stb.ip{background:#FEF3C7;color:#D97706;border-color:#F59E0B;}
+.l3-stb.dn{background:#DCFCE7;color:#16A34A;border-color:#22C55E;}
+.l3-stb.bl{background:#FEE2E2;color:#DC2626;border-color:#EF4444;}
+.l3-stb.act{box-shadow:0 0 0 2px currentColor;}
+.l3-inp{font-size:10px;font-family:var(--fn);border:1px solid var(--bd);border-radius:3px;padding:2px 7px;background:var(--srf);color:var(--tx);flex:1;min-width:80px;}
+.l3-inp:focus{outline:none;border-color:#1D4ED8;}
+.l3-save{padding:2px 9px;font-size:10px;background:#1D4ED8;color:#fff;border:none;border-radius:3px;cursor:pointer;font-family:var(--fn);font-weight:600;}
+.l3-save:hover{background:#1e40af;}
+.l3-owner-inp{font-size:10px;font-family:var(--fn);border:1px solid var(--bd);border-radius:3px;padding:1px 5px;width:90px;color:var(--tx2);background:var(--sf2);}
+.l3-owner-inp:focus{outline:none;border-color:#1D4ED8;}
+
+/* L2 progress controls inside phase detail */
+.l2-controls{display:flex;align-items:center;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--bd);flex-wrap:wrap;}
+.l2-ctrl-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--tx3);}
+.mini-psl{flex:1;min-width:80px;-webkit-appearance:none;height:4px;border-radius:2px;background:var(--bg);outline:none;}
+.mini-psl::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:#1D4ED8;cursor:pointer;}
+.mini-pv{font-family:var(--mo);font-size:11px;font-weight:600;width:30px;}
+.mini-st-btns{display:flex;gap:4px;}
+.mini-st{padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;cursor:pointer;border:1px solid transparent;font-family:var(--fn);}
+.mini-st.ns{background:#F1F5F9;color:#64748B;border-color:#CBD5E1;}
+.mini-st.ip{background:#FEF3C7;color:#D97706;border-color:#F59E0B;}
+.mini-st.dn{background:#DCFCE7;color:#16A34A;border-color:#22C55E;}
+.mini-st.bl{background:#FEE2E2;color:#DC2626;border-color:#EF4444;}
+.mini-st.act{box-shadow:0 0 0 2px currentColor;}
+.l2-owner-row{display:flex;gap:7px;align-items:center;margin-top:6px;}
+.l2-owner-inp{font-size:11px;font-family:var(--fn);border:1px solid var(--bd);border-radius:var(--rs);padding:3px 8px;flex:1;color:var(--tx);background:var(--sf2);}
+.l2-owner-inp:focus{outline:none;border-color:#1D4ED8;}
+.save-mini{padding:3px 10px;font-size:10px;background:#1D4ED8;color:#fff;border:none;border-radius:var(--rs);cursor:pointer;font-family:var(--fn);font-weight:600;}
+.save-mini:hover{background:#1e40af;}
+
+/* DRAWER */
+.drw-bg{position:fixed;inset:0;background:rgba(0,0,0,.28);z-index:400;display:none;}
+.drw-bg.show{display:block;}
+.drw{position:fixed;top:0;right:0;bottom:0;width:680px;max-width:96vw;background:var(--srf);box-shadow:-4px 0 24px rgba(0,0,0,.15);z-index:500;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .22s ease;}
+.drw.open{transform:translateX(0);}
+.drw-hdr{padding:13px 16px;border-bottom:1px solid var(--bd);background:var(--sf2);}
+.drw-title{font-size:14px;font-weight:700;margin-bottom:5px;line-height:1.3;padding-right:28px;position:relative;}
+.drw-close{position:absolute;top:0;right:0;font-size:16px;cursor:pointer;color:var(--tx3);padding:2px 5px;border-radius:4px;}.drw-close:hover{background:var(--bd);color:var(--tx);}
+.drw-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.tabs{display:flex;border-bottom:1px solid var(--bd);background:var(--sf2);}
+.tab{padding:8px 14px;font-size:11px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;color:var(--tx2);white-space:nowrap;}
+.tab.act{color:#1D4ED8;border-bottom-color:#1D4ED8;background:var(--srf);}
+.drw-body{padding:15px;overflow-y:auto;flex:1;}
+
+/* STATUS BADGES */
+.sb{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;}
+.s-ns{background:#F1F5F9;color:#64748B;}.s-ip{background:#FEF3C7;color:#D97706;}
+.s-dn{background:#DCFCE7;color:#16A34A;}.s-bl{background:#FEE2E2;color:#DC2626;}
+.s-rv{background:#EDE9FE;color:#7C3AED;}
+.s-df{background:#FEF3C7;color:#92400E;border:1px solid #FDE68A;}
+.s-ap{background:#DCFCE7;color:#14532D;border:1px solid #BBF7D0;}
+
+.stt{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--tx3);margin-bottom:8px;}
+.l3-list{list-style:none;}
+.l3-item{display:flex;align-items:flex-start;gap:7px;padding:6px 0;border-bottom:1px solid var(--bd);font-size:12px;}
+.l3-item:last-child{border-bottom:none;}
+.chk{width:14px;height:14px;border:1.5px solid var(--bd);border-radius:3px;cursor:pointer;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;font-size:8px;transition:all .15s;}
+.chk.dn{background:#22C55E;border-color:#22C55E;color:#fff;}
+.task-txt{flex:1;line-height:1.4;}
+.task-txt.done{text-decoration:line-through;color:var(--tx3);}
+.task-txt.del{text-decoration:line-through;color:#FCA5A5;}
+.rm-btn{font-size:11px;color:var(--tx3);cursor:pointer;padding:1px 4px;border-radius:3px;flex-shrink:0;line-height:1;}.rm-btn:hover{background:#FEE2E2;color:#DC2626;}
+.add-row{display:flex;gap:7px;margin-top:10px;}
+.stbns{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:11px;}
+.sbn{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid transparent;font-family:var(--fn);}
+.sbn-ns{background:#F1F5F9;color:var(--tx2);border-color:var(--bd);}
+.sbn-ip{background:#FEF3C7;color:#D97706;border-color:#F59E0B;}
+.sbn-dn{background:#DCFCE7;color:#16A34A;border-color:#22C55E;}
+.sbn-bl{background:#FEE2E2;color:#DC2626;border-color:#EF4444;}
+.sbn-rv{background:#EDE9FE;color:#7C3AED;border-color:#8B5CF6;}
+.sbn.act{box-shadow:0 0 0 2px currentColor;}
+.slr{display:flex;align-items:center;gap:9px;margin-bottom:11px;}
+.psl{flex:1;-webkit-appearance:none;height:5px;border-radius:3px;background:var(--bg);outline:none;}
+.psl::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:#1D4ED8;cursor:pointer;}
+.pv{font-family:var(--mo);font-size:12px;font-weight:600;width:34px;text-align:right;}
+.ff{margin-bottom:10px;}
+.fl{font-size:11px;font-weight:600;color:var(--tx2);margin-bottom:3px;display:block;}
+.fta{width:100%;padding:7px 10px;border:1px solid var(--bd);border-radius:var(--rs);font-family:var(--fn);font-size:12px;background:var(--srf);color:var(--tx);outline:none;resize:vertical;min-height:64px;}
+.fta:focus{border-color:#1D4ED8;}
+.upz{border:2px dashed var(--bd);border-radius:var(--r);padding:18px;text-align:center;cursor:pointer;transition:all .2s;background:var(--sf2);margin-bottom:10px;}
+.upz:hover{border-color:#1D4ED8;background:#EFF6FF;}
+.upz.ld{border-color:#22C55E;background:#F0FDF4;}
+.upz-ico{font-size:22px;margin-bottom:5px;}
+.upz-name{font-size:11px;font-weight:500;color:var(--tx2);}
+.upz-sub{font-size:10px;color:var(--tx3);margin-top:2px;}
+.preloaded{background:linear-gradient(135deg,#EFF6FF,#DBEAFE);border:1px solid #BFDBFE;border-radius:var(--r);padding:10px;margin-bottom:10px;display:flex;align-items:center;gap:9px;}
+.pre-ico{font-size:17px;}.pre-txt{font-size:11px;font-weight:600;color:#1D4ED8;}.pre-sub{font-size:10px;color:#2563EB;margin-top:2px;}
+.qa-sec{margin-bottom:13px;}
+.qa-hdr{font-size:11px;font-weight:700;padding:5px 9px;border-radius:var(--rs);margin-bottom:6px;display:flex;align-items:center;gap:5px;}
+.qa-cr{background:#FEE2E2;color:#DC2626;}.qa-od{background:#FEF3C7;color:#D97706;}.qa-ms{background:#DBEAFE;color:#1D4ED8;}.qa-df{background:#FEF9C3;color:#92400E;}.qa-ok{background:#DCFCE7;color:#16A34A;}
+.qa-it{padding:7px 10px;border-left:3px solid;background:var(--sf2);margin-bottom:3px;border-radius:0 var(--rs) var(--rs) 0;font-size:11px;line-height:1.5;}
+.score-row{display:flex;align-items:center;gap:12px;background:var(--sf2);border-radius:var(--rs);padding:11px;margin-bottom:12px;}
+.score-num{font-size:28px;font-weight:800;font-family:var(--mo);}
+.score-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--tx3);}
+.score-txt{font-size:11px;color:var(--tx2);margin-top:3px;}
+.bn-y{background:#FFFBEB;border:1px solid #FDE68A;border-radius:var(--rs);padding:10px 12px;margin-bottom:10px;display:flex;align-items:center;gap:9px;}
+.bn-g{background:#F0FDF4;border:1px solid #BBF7D0;border-radius:var(--rs);padding:10px 12px;margin-bottom:10px;display:flex;align-items:center;gap:9px;}
+.bn-ico{font-size:16px;}.bn-txt{font-size:11px;font-weight:600;flex:1;}.bn-sub{font-size:10px;margin-top:2px;font-weight:400;}
+.ovl{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;z-index:600;}
+.ovl.show{display:flex;}
+.sc{background:var(--srf);border-radius:var(--r);padding:24px 30px;text-align:center;box-shadow:var(--sh2);}
+.spn{width:30px;height:30px;border:3px solid var(--bg);border-top-color:#1D4ED8;border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 10px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.sptx{font-size:12px;color:var(--tx2);}
+.toast{position:fixed;bottom:16px;right:16px;background:var(--navy);color:#fff;padding:8px 14px;border-radius:var(--r);font-size:12px;box-shadow:var(--sh2);transform:translateY(36px);opacity:0;transition:all .2s;z-index:700;}
+.toast.show{transform:translateY(0);opacity:1;}
+.hidden{display:none!important;}
+.fade{animation:fi .18s ease;}
+@keyframes fi{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+.row{display:flex;align-items:center;gap:8px;}
+.mt2{margin-top:8px;}.mt3{margin-top:12px;}
+.txm{color:var(--tx3);}.txs{font-size:11px;}
+</style>
+</head>
+<body>
+<div class="ovl" id="ovl"><div class="sc"><div class="spn"></div><div class="sptx" id="spTx">Running…</div></div></div>
+<div class="toast" id="toast"></div>
+<div class="drw-bg" id="drwBg" onclick="closeDrawer()"></div>
+<div class="drw" id="drw">
+  <div class="drw-hdr" id="drwHdr"></div>
+  <div class="tabs" id="drwTabs"></div>
+  <div class="drw-body" id="drwBody"></div>
+</div>
+
+<header class="hdr">
+  <div class="logo"><span class="logo-sap">SAP</span> Activate<div class="logo-sep"></div><span class="logo-sub">PM Tool</span></div>
+  <div class="proj-badge" id="projBadge" onclick="showPicker()">📁 Select Project</div>
+  <div class="hdr-r" id="hdrR"></div>
+</header>
+
+<div class="lgnd" id="lgnd" style="display:none">
+  <span style="font-size:11px;font-weight:600;color:var(--tx2)">Status:</span>
+  <div class="leg"><div class="ldot" style="background:#94A3B8"></div>Not Started</div>
+  <div class="leg"><div class="ldot" style="background:#F59E0B"></div>In Progress</div>
+  <div class="leg"><div class="ldot" style="background:#22C55E"></div>Completed</div>
+  <div class="leg"><div class="ldot" style="background:#EF4444"></div>Blocked</div>
+</div>
+
+<div class="main" id="main"></div>
+
+<script>
+/* ══════════════ DATA ══════════════ */
+const PHASES=["DISCOVER","PREPARE","EXPLORE","REALIZE","DEPLOY","RUN"];
+const PH_DESC={"DISCOVER":"Solution Discovery & Value","PREPARE":"Setup & Mobilization","EXPLORE":"Fit-to-Standard Analysis","REALIZE":"Configuration & Development","DEPLOY":"Cutover & Go-Live","RUN":"Operations & Improvement"};
+const PH_COLOR={"DISCOVER":"#7C3AED","PREPARE":"#1D4ED8","EXPLORE":"#0891B2","REALIZE":"#D97706","DEPLOY":"#DC2626","RUN":"#16A34A"};
+const PH_QG={"PREPARE":"QG1","EXPLORE":"QG2","REALIZE":"QG3","DEPLOY":"QG4"};
+const WS=["Project Management","Tech. Architecture & Infrastructure","App. Design & Configuration","Extensibility & Clean Core Strategy","Integration","Data Management","Testing","Analytics","Org. Change Management","Customer Team Enablement","Operations"];
+
+/* L2 tooltips — Türkçe, sade, "ne yapmalıyım" formatında */
+const L2_TIP={
+  "Strategic Planning":"SAP projen için yenilik stratejisini ve yol haritasını oluştur. Güvenlik, analitik mimari ve temiz süreç çerçevesini tanımla.",
+  "Discovery Assessment":"Mevcut ERP ortamını SAP dijital keşif araçlarıyla analiz et, doğru cloud partneri seç, ekibin bulut zihniyetini benimse.",
+  "Application Value and Scoping":"SAP S/4HANA'nın organizasyona kattığı değeri hesapla, iş senaryolarını analiz et ve uygulama stratejisini belirle.",
+  "Conversion Readiness Assessment":"SAP Readiness Check aracını çalıştır, custom kod hacmini, add-on uyumluluğunu ve teknik riskleri değerlendir.",
+  "Operation and Support Assessment":"Mevcut operasyon ve destek modelini incele, yeni SAP çözümü için neyin değişmesi gerektiğini belirle.",
+  "Organizational Change Management Overview":"Ekibe ve paydaşlara OCM temellerini anlat, değişim yönetimi yaklaşımını tanımla.",
+  "Introduction to RISE with SAP":"RISE with SAP çerçevesini, Clean Core prensiplerini öğren ve projen için Clean Core başarı planını oluştur.",
+  "Clean Core Quality Gate 0":"Discover fazı sonu kontrol noktası — Clean Core temelini doğrula, ilerlemeden önce hazırlığını onayla.",
+  "Cloud Trial":"SAP S/4HANA Cloud trial sistemine eriş, yetenekleri keşfet ve çözümün uygunluğunu doğrula.",
+  "Project Initiation, Standards and Governance":"Proje tüzüğünü, yönetişim çerçevesini ve proje standartlarını oluştur. Ekibi oryante et, kickoff toplantısını yap.",
+  "Project Plans, Schedule and Budget":"Proje takvimini ve bütçeyi oluştur, SAP Cloud ALM'de görevleri ata, paydaş takvimlerini hizala.",
+  "Project Kick-Off and Onboarding":"Projeyi resmi olarak başlat — tüm ekip üyelerini sisteme dahil et ve kickoff toplantısını gerçekleştir.",
+  "Value Determination":"Değer haritasını doğrula ve tamamla. Ön satıştan gelen iş gerekçesini projenin değer takibi için referans al.",
+  "Prepare Phase Closure and Sign-Off":"Prepare fazı kalite kapısı incelemesini yap, resmi onayı al ve Explore fazına geçiş hazırlığını tamamla.",
+  "Getting Started with your SAP Implementation":"SAP uygulama kılavuzlarını ve onboarding belgelerini incele, ekibin metodoloji anlayışını güçlendir.",
+  "Supporting Tools for Implementation":"SAP for Me, Learning Hub ve topluluk platformlarına tüm ekip erişimini kur ve doğrula.",
+  "Initial System Access":"SAP Cloud ALM, S/4HANA Private Edition (sandbox), BTP ve SAP Analytics Cloud sistemlerine ilk erişimleri yapılandır.",
+  "Technical Project Preparation":"Teknik uyumluluğu değerlendir, BTP servislerini gözden geçir, Clean Core extensibility yaklaşımını tanımla.",
+  "Transition & Conversion Planning":"Sistem dönüşüm stratejisini, cutover yaklaşımını, interface kaydını ve dual maintenance ihtiyacını planla.",
+  "Transition Preparation":"Dönüşüm öncesi tüm teknik hazırlıkları tamamla — entegrasyon erişimlerini doğrula, Fit-to-Standard için ortamı hazırla.",
+  "Pre-Conversion Projects Execution":"Dönüşüm öncesi temizlik yapılandır — veri hacmi yönetimi, BP senkronizasyonu, kullanılmayan kodu temizle.",
+  "Clean Core Quality Gate 1":"Prepare fazı sonu kontrol noktası — Clean Core runbook'unu SAP Cloud ALM'de doğrula, Explore'a geçmeye hazır ol.",
+  "Solution Scope":"Fit-to-Standard analizine göre uygulama kapsam ve süreçlerini tanımla ve onayla.",
+  "Fit-to-Standard Preparation For Specific Features":"Belirli SAP özellikleri için Fit-to-Standard atölyelerini hazırla — Fiori aktivasyonu, sistem kurulumu, veri koruma incelemesi.",
+  "Fit-to-Standard Workshop Preparation":"Ana Fit-to-Standard atölyeler için ortamı, içeriği ve katılımcıları hazırla.",
+  "Data Migration Approach and Plan":"Genel veri migrasyon stratejisini tanımla, kaynak sistemleri belirle ve detaylı migrasyon planını oluştur.",
+  "Prepare Integration Setup":"Entegrasyon senaryolarını belirle, mimariyi planla, araçları seç ve Fit-to-Standard atölyeleri için entegrasyonları kur.",
+  "Analytics Approach and Plan":"Embedded analytics ve SAP Analytics Cloud için analitik strateji ve uygulama planını hazırla.",
+  "Enablement Strategy":"Proje için eğitim ve enablement stratejisini araştır ve belgele.",
+  "Learning Needs Analysis for Project Team":"Proje ekibinin öğrenme ihtiyaçlarını belirle ve SAP standart içeriklerine dayalı eğitim müfredatı oluştur.",
+  "Customer Team Self-Enablement":"Ekip SAP Cloud ALM, Fiori, BTP, Signavio gibi konularda kendi kendini eğitsin — self-enablement planını uygula.",
+  "Operations Planning":"Operasyon modelini tanımla, monitoring ve destek süreçlerini planla, canlı sistem için gerekli araçları belirle.",
+  "Change Concept":"OCM rollerini ve kaynaklarını tanımla, organizasyonel değişim yönetimi çerçevesini oluştur.",
+  "Change Plan":"Değişim yönetimi planını detaylandır — aktiviteler, zaman çizelgesi, aksiyon alanları ve güncelleme prosedürleri.",
+  "Stakeholder Analysis":"Tüm paydaşları tanımla ve değerlendir, katılım stratejilerini belirle ve beklentileri yönet.",
+  "Communication Analysis and Plan":"İletişim kanallarını analiz et ve iletişim planını oluştur — tüm paydaşları bilgilendirmeye devam et.",
+  "Execution and Monitoring of Project":"Proje yürütmesini izle, sorunları/riskleri yönet, durumu paydaşlara ilet, proje belgelerini güncelle.",
+  "Value Realization":"Değer panosunu hazırla ve doğrula — iş gerekçesine göre değer takibini sürdür.",
+  "Release and Sprint Plan":"Sürümleri ve sprintleri planla, sprint backlog'unu tanımla, planı SoW ile doğrula.",
+  "Explore Phase Closure and Sign-Off":"QG2 kalite kapısı incelemesini yap, proje performansını değerlendir, Realize'a geçiş onayı al.",
+  "System Conversion Execution of the Sandbox/Shell System":"Sandbox/Shell sistemde teknik dönüşümü gerçekleştir, sonuçları doğrula ve sorunları belgele.",
+  "Additional Activities in the Converted Sandbox/Shell System":"Dönüştürülen sandbox'ta Fiori'yi aktive et, migrasyon araçlarını kur, dual maintenance'ı yapılandır.",
+  "User Access and Security Planning and Design":"Yetkilendirme rolleri, kullanıcı erişim konsepti ve güvenlik modelini tasarla.",
+  "Sizing Validation":"Sistem boyutlandırmasını doğrula, altyapının prodüksiyon yüküne uygun olduğunu teyit et.",
+  "Fit-to-Standard Workshops for Specific Features":"Belirli SAP özellikleri için Fit-to-Standard atölyelerini gerçekleştir, analizi belgele ve müşteri onayı al.",
+  "Fit-to-Standard Workshop Execution":"İş kullanıcılarıyla standart SAP süreçlerini gözden geçiren Fit-to-Standard atölyelerini yönet.",
+  "Fit-to-Standard Workshop Documentation":"Atölye çıktılarını belgele — gereksinimler, konfigürasyon değerleri, master data, analitik ve extensibility ihtiyaçları.",
+  "Fit-to-Standard Workshop Validation":"Delta gereksinimleri önceliklendir ve doğrula, çözüm doğrulama anketini uygula.",
+  "User Experience Design":"SAP Fiori launchpad düzenini ve genel UX/UI tasarımını oluştur.",
+  "SAP Build Planning and Design":"Fit-to-Standard'da belirlenen SAP Build Process Automation senaryolarını planla ve tasarla.",
+  "SAP Build Setup":"SAP Build Process Automation bileşenlerini kurun ve yapılandırın.",
+  "Custom Code Deep Dive Analysis":"Custom kod hacmini analiz et, etkiye göre sınıflandır ve Clean Core prensiplerine uygun bir iyileştirme planı geliştir.",
+  "Extension Planning and Design":"Key-user, side-by-side ve klasik extensibility tasarımlarını yap, onay al.",
+  "Clean Core Quality Gate 2":"Explore fazı sonu kontrol noktası — entegrasyon, extensibility ve veri alanlarında Clean Core değerlendirmesini doğrula.",
+  "Integration Planning and Design":"Entegrasyon mimarisini tasarla, entegrasyon listesini hizala ve müşteri onayı al.",
+  "Integration Review and Redesign":"Mevcut entegrasyonların S/4HANA'ya etkisini analiz et, hedef entegrasyon mimarisini belirle.",
+  "Data Migration Planning and Design":"Migrasyon nesnelerini tasarla, veri eşleştirme belgelerini oluştur, veri temizleme faaliyetlerini planla.",
+  "Data Load Preparation":"Gerekli master datayı belirle, migrasyon cockpit alan yapılarını tanımla, legacy veriyi çıkar ve dönüştür.",
+  "Analytics Planning and Design":"Analitik mimarisini tasarla, embedded analytics kapsam maddelerini gözden geçir.",
+  "Learning Needs Analysis for Users":"Son kullanıcıların öğrenme ihtiyaçlarını belirle, role göre eğitim müfredatı oluştur.",
+  "Test Planning":"Test stratejisini tanımla, kapsamı belirle ve genel test planını oluştur.",
+  "Operations Impact Evaluation and Design":"Yeni çözümün operasyonel etkisini değerlendir, CoE yeteneklerini tanımla, destek modelini belirle.",
+  "Sprint Planning and Execution":"Sprintleri planla, uygula ve kapat. Sprint değerlendirme ve retrospektif toplantılarını yönet.",
+  "Sprint Closing":"Sprintleri resmi olarak kapat — sprint değerlendirme toplantısı yap, sonuçları onayla, retrospektif gerçekleştir.",
+  "Value Realization (Realize)":"İş gerekçesine göre değer ilerleme denetimini gerçekleştir.",
+  "Cutover Preparation":"Cutover planını ve belgelerini hazırla, sistem dönüşümü cutover planını oluştur.",
+  "Realize Phase Closure and Sign-Off":"QG3 kalite kapısı incelemesini yap, performansı değerlendir, Deploy'a geçiş onayı al.",
+  "Quality System Initial Access":"Kalite sistemine ilk erişimi sağla, kullanıcıları oluştur ve sistem ortamını yapılandır.",
+  "Initial Quality System Setup":"Kalite sistemini uygulama yaklaşımına göre (yeni kurulum, dönüşüm vb.) yapılandır.",
+  "Production System Request":"SAP S/4HANA Cloud prodüksiyon sistemini resmi olarak talep et.",
+  "System Conversion Execution of the Development System":"Development sisteminin teknik dönüşümünü gerçekleştir.",
+  "Additional Activities in the Converted Development System":"Development sisteminde Fiori'yi aktive et, custom kod düzeltmesini yap, ek özellikleri yapılandır.",
+  "System Conversion Execution of the Quality System":"Kalite sisteminin teknik dönüşümünü gerçekleştir.",
+  "Additional Activities in the Converted Quality System":"Kalite sisteminde Fiori'yi aktive et ve dönüşüm sonrası ek aktiviteleri tamamla.",
+  "Production System Initial Access":"Prodüksiyon sistemine ilk erişimi sağla, Fiori rapid activation'ı transport et.",
+  "User Access and Security Implementation":"Kullanıcı erişim ve güvenlik modelini uygula, prodüksiyon sisteminde yetkilendirmeleri doğrula.",
+  "Solution Configuration":"SAP S/4HANA çözümünü yapılandır — master data, core finans, iş rolleri, entegrasyonlar. Unit ve string testlerini çalıştır.",
+  "Product Enhancements":"Clean Core uyumlu extensionlar geliştir, kullanıcı arayüzünü geliştir ve custom geliştirmeleri tamamla.",
+  "Set up SAP Build in the Quality System":"Kalite sistemini SAP Build Process Automation için hazırla.",
+  "Extension Development in the Development and Quality Systems":"Key-user, klasik ve side-by-side extensionları geliştir ve kur.",
+  "Data Migration Execution":"Development tenant'ta tam veri migrasyon döngüsünü çalıştır, test et ve tutarsızlıkları gider.",
+  "Data Migration in the Development Tenant":"Staging tabloları veya mevcut SAP sisteminden doğrudan migrasyon yöntemiyle veriyi development tenant'a taşı.",
+  "Data Migration in the Test Tenant":"Test tenant'ta veri migrasyonunu çalıştır ve doğrula, son veri kalitesi değerlendirmesini yap.",
+  "Analytics Configuration in the Quality System":"Embedded analytics'i aktive et ve kalite sisteminde analitik senaryoları yapılandır.",
+  "Integration Setup in Development and Quality Landscape":"Development ve kalite ortamlarında entegrasyon akışlarını uygula.",
+  "Test Preparation":"Test senaryolarını oluştur, test verilerini hazırla, araçları yapılandır ve UAT hazırlığını sağla.",
+  "Test Execution":"Unit, entegrasyon ve UAT testlerini çalıştır. Hataları yönet ve sonuçları belgele.",
+  "Deploy Extensions to the Production System":"Key-user, side-by-side ve klasik extensionları prodüksiyon ortamına deploy et.",
+  "Analytics Configuration in the Production System":"Prodüksiyon sisteminde analitik yapılandırmasını doğrula ve tamamla.",
+  "Set up SAP Build in Production System":"SAP Build Process Automation scriptlerini prodüksiyon tenant'a deploy et.",
+  "Set up Integration in the Production System":"Cloud Integration Automation Service kullanarak tüm entegrasyonları prodüksiyon ortamında kur.",
+  "Integration Validation":"Çözüm genelinde uçtan uca entegrasyon doğrulamasını gerçekleştir.",
+  "Enablement Content Development":"İçerik geliştirme planı oluştur, tüm eğitim materyalleri ve e-öğrenme içeriklerini hazırla.",
+  "Enablement Delivery":"Eğitim lojistiğini planla, son kullanıcı ve süper kullanıcı eğitimlerini ver, memnuniyeti değerlendir.",
+  "Operations Implementation":"Operasyon destek süreçlerini ve araçlarını uygula, operasyon geçişini ve devir teslimini planla.",
+  "Clean Core Quality Gate 3":"Realize fazı sonu kontrol noktası — extension, entegrasyon ve konfigürasyon genelinde Clean Core uyumluluğunu doğrula.",
+  "Execution and Monitoring of Project (Deploy)":"Canlıya geçiş hazırlığını izle, Deploy fazında proje yürütme ve sorunları yönet.",
+  "Operations Readiness":"Operasyon süreçlerinin, monitoring'in ve desteğin canlıya geçişe hazır olduğunu doğrula.",
+  "Dress Rehearsal":"Cutover'ın tam simülasyonunu gerçekleştir, prosedürleri doğrula ve öğrenilen dersleri belgele.",
+  "System Conversion Execution of the Dress Rehearsal System":"Dress rehearsal sistemi için teknik dönüşümü gerçekleştir.",
+  "Production Cutover":"Onaylı cutover planındaki tüm görevleri sırasıyla uygula.",
+  "System Conversion Execution of the Production System (Cutover)":"Canlıya geçiş cutover'ı kapsamında prodüksiyon sisteminin teknik dönüşümünü gerçekleştir.",
+  "System Go-Live":"Prodüksiyon sistemini canlıya al, doğrulamaları tamamla ve tüm paydaşlara bildir.",
+  "Production Hypercare Support":"Canlıya geçiş sonrası yoğunlaştırılmış destek sürecini yönet, sorunları hızla çöz.",
+  "Handover to Support Organization":"Açık sorunları çöz ve kapat, operasyon sorumluluğunu destek organizasyonuna devret.",
+  "Deploy Phase Closure and Sign-Off":"QG4 kalite kapısı incelemesini yap, performansı değerlendir, Deploy fazını kapat.",
+  "Governance Model":"Yönetişim modelini ve sürekli iyileştirme sürecini uygula.",
+  "Value Management":"Kıyaslama değerlendirmesi yap, değer denetim stratejisini uygula, çözüm performansını değerlendir.",
+  "Service Management":"Servis yönetimi çerçevesini oluştur ve SAP destek servislerine erişimi sağla.",
+  "Ongoing System Operations":"Yeni çözümü işlet — sistem sağlığını izle, düzenleyici değişiklikleri takip et, BTP ve SAP Build işlerini yönet.",
+  "Incident and Problem Management":"Canlı sistemdeki olayları ve sorunları tanımlı destek modeline göre yönet.",
+  "Identify Innovation and Growth Opportunities":"SAP sistemini periyodik olarak güncelle, Fiori uygulamalarını gözden geçir, yeni iyileştirme projeleri başlat.",
+  "Clean Core Quality Gate 5":"Run fazı Clean Core kalite kapısı — Clean Core uyumluluğunu doğrula ve değerlendirmeyi gözden geçir.",
+  "Detailed Change Impact Analysis":"Değişim etkisi atölyelerini hazırla ve gerçekleştir, değişim planını güncelle.",
+  "Communication Plan Execution":"İletişim aktivitelerini plana göre uygula, etkinliği izle ve planı güncelle.",
+  "Communication Plan Execution (Realize)":"Realize fazında iletişim aktivitelerini uygula.",
+  "Organizational Change Management Overview":"Ekibe ve proje paydaşlarına OCM temellerini anlat ve değişim yönetimi yaklaşımını aktar.",
+};
+
+const L2M={
+"Project Management__DISCOVER":["Strategic Planning","Discovery Assessment","Application Value and Scoping"],
+"Project Management__PREPARE":["Project Initiation, Standards and Governance","Project Plans, Schedule and Budget","Project Kick-Off and Onboarding","Value Determination","Prepare Phase Closure and Sign-Off"],
+"Project Management__EXPLORE":["Execution and Monitoring of Project","Value Realization","Release and Sprint Plan","Explore Phase Closure and Sign-Off"],
+"Project Management__REALIZE":["Sprint Planning and Execution","Sprint Closing","Value Realization (Realize)","Cutover Preparation","Realize Phase Closure and Sign-Off"],
+"Project Management__DEPLOY":["Execution and Monitoring of Project (Deploy)","Deploy Phase Closure and Sign-Off"],
+"Project Management__RUN":["Governance Model","Value Management"],
+"Tech. Architecture & Infrastructure__DISCOVER":["Conversion Readiness Assessment"],
+"Tech. Architecture & Infrastructure__PREPARE":["Getting Started with your SAP Implementation","Supporting Tools for Implementation","Initial System Access","Technical Project Preparation","Transition & Conversion Planning","Transition Preparation","Pre-Conversion Projects Execution"],
+"Tech. Architecture & Infrastructure__EXPLORE":["System Conversion Execution of the Sandbox/Shell System","Additional Activities in the Converted Sandbox/Shell System","User Access and Security Planning and Design","Sizing Validation"],
+"Tech. Architecture & Infrastructure__REALIZE":["Quality System Initial Access","Initial Quality System Setup","Production System Request","System Conversion Execution of the Development System","Additional Activities in the Converted Development System","System Conversion Execution of the Quality System","Additional Activities in the Converted Quality System","Production System Initial Access","User Access and Security Implementation"],
+"Tech. Architecture & Infrastructure__DEPLOY":["System Conversion Execution of the Dress Rehearsal System","System Conversion Execution of the Production System (Cutover)","System Go-Live"],
+"App. Design & Configuration__PREPARE":["Solution Scope","Fit-to-Standard Preparation For Specific Features","Fit-to-Standard Workshop Preparation"],
+"App. Design & Configuration__EXPLORE":["Fit-to-Standard Workshops for Specific Features","Fit-to-Standard Workshop Execution","Fit-to-Standard Workshop Documentation","Fit-to-Standard Workshop Validation","User Experience Design","SAP Build Planning and Design","SAP Build Setup"],
+"App. Design & Configuration__REALIZE":["Solution Configuration","Product Enhancements","Set up SAP Build in the Quality System","Set up SAP Build in Production System"],
+"Extensibility & Clean Core Strategy__DISCOVER":["Introduction to RISE with SAP","Clean Core Quality Gate 0"],
+"Extensibility & Clean Core Strategy__PREPARE":["Clean Core Quality Gate 1"],
+"Extensibility & Clean Core Strategy__EXPLORE":["Custom Code Deep Dive Analysis","Extension Planning and Design","Clean Core Quality Gate 2"],
+"Extensibility & Clean Core Strategy__REALIZE":["Extension Development in the Development and Quality Systems","Deploy Extensions to the Production System","Clean Core Quality Gate 3"],
+"Extensibility & Clean Core Strategy__RUN":["Clean Core Quality Gate 5"],
+"Integration__PREPARE":["Prepare Integration Setup"],
+"Integration__EXPLORE":["Integration Planning and Design","Integration Review and Redesign"],
+"Integration__REALIZE":["Integration Setup in Development and Quality Landscape","Integration Validation","Set up Integration in the Production System"],
+"Data Management__PREPARE":["Data Migration Approach and Plan"],
+"Data Management__EXPLORE":["Data Migration Planning and Design","Data Load Preparation"],
+"Data Management__REALIZE":["Data Migration Execution","Data Migration in the Development Tenant","Data Migration in the Test Tenant"],
+"Data Management__DEPLOY":["Production Cutover"],
+"Testing__EXPLORE":["Test Planning"],
+"Testing__REALIZE":["Test Preparation","Test Execution"],
+"Testing__DEPLOY":["Dress Rehearsal"],
+"Analytics__PREPARE":["Analytics Approach and Plan"],
+"Analytics__EXPLORE":["Analytics Planning and Design"],
+"Analytics__REALIZE":["Analytics Configuration in the Quality System","Analytics Configuration in the Production System"],
+"Org. Change Management__DISCOVER":["Organizational Change Management Overview"],
+"Org. Change Management__PREPARE":["Change Concept","Change Plan","Stakeholder Analysis","Communication Analysis and Plan"],
+"Org. Change Management__EXPLORE":["Communication Plan Execution"],
+"Org. Change Management__REALIZE":["Detailed Change Impact Analysis"],
+"Customer Team Enablement__DISCOVER":["Cloud Trial"],
+"Customer Team Enablement__PREPARE":["Customer Team Self-Enablement","Enablement Strategy","Learning Needs Analysis for Project Team"],
+"Customer Team Enablement__EXPLORE":["Learning Needs Analysis for Users"],
+"Customer Team Enablement__REALIZE":["Enablement Content Development","Enablement Delivery"],
+"Customer Team Enablement__RUN":["Identify Innovation and Growth Opportunities"],
+"Operations__DISCOVER":["Operation and Support Assessment"],
+"Operations__PREPARE":["Operations Planning"],
+"Operations__EXPLORE":["Operations Impact Evaluation and Design"],
+"Operations__REALIZE":["Operations Implementation"],
+"Operations__DEPLOY":["Operations Readiness","Production Hypercare Support","Handover to Support Organization"],
+"Operations__RUN":["Service Management","Ongoing System Operations","Incident and Problem Management"]
+};
+
+const L3M={
+"Project Management__DISCOVER__Strategic Planning":["Create an Innovation Strategy and a High-Level Road Map","Run an Innovation Discovery and Design Workshop","Create a 360-Degree View on Security","Define the Analytics Architecture","Establish a Clean Process Framework"],
+"Project Management__DISCOVER__Discovery Assessment":["Executing a Digital Discovery Assessment","Generate Digital Discovery Report","Select the Right Cloud Partner","Execute the Cloud Mindset"],
+"Project Management__DISCOVER__Application Value and Scoping":["Discover the Value of SAP S/4HANA Cloud for Your Company","Identify the value of SAP S/4HANA on Existing Business Processes","Run a Usage and Data Profiling Analysis","Run the Establish the Business Value of User Experience Workshop","Define the Implementation Strategy","Create a Strategic Road Map and Value Case"],
+"Project Management__PREPARE__Project Initiation, Standards and Governance":["Join Embedded Launch Activities in SAP S/4HANA Cloud Private Edition Onboarding Journey","Confirm Receipt of Pre-Sales Handover Deliverables","Conduct Handover Meeting with Sales Account Team","Create Project Charter and Scope Statement","Establish Project Governance","Establish Solution Standardization Board","Create Clean Core Runbook in SAP Cloud ALM","Define Project Communications and Reporting","Define Project Standards","Set Up Project Team Logistics and Infrastructure","Define Standards on Certifications"],
+"Project Management__PREPARE__Project Plans, Schedule and Budget":["Create Project Schedule and Budget","Assign Resources and Refine Project Tasks in SAP Cloud ALM","Align Project Schedules"],
+"Project Management__PREPARE__Project Kick-Off and Onboarding":["Onboard Project Team","Conduct Kickoff Workshop"],
+"Project Management__PREPARE__Value Determination":["Validate and Complete Value Map","Prepare Value Map","Obtain copy of Value Case or Business Case document from the presales team"],
+"Project Management__PREPARE__Prepare Phase Closure and Sign-Off":["Conduct Project Quality Gate for Prepare Phase","Assess Project Performance","Obtain Customer Sign-Off for Phase Completion"],
+"Project Management__EXPLORE__Execution and Monitoring of Project":["Review the SAP S/4HANA Cloud Onboarding Journey","Direct and Manage Project Execution","Update Project Management Documents","Manage Project Issues, Risks, and Changes","Communicate Project Status and Progress","Deliver Program Goal Alignment Survey"],
+"Project Management__EXPLORE__Value Realization":["Prepare and validate Value Dashboard"],
+"Project Management__EXPLORE__Release and Sprint Plan":["Update and Prioritize Backlog","Estimate Backlog Items Effort","Conduct Release and Sprint Planning Meeting","Validate Release and Sprint Plan Against SoW"],
+"Project Management__EXPLORE__Explore Phase Closure and Sign-Off":["Conduct Project Quality Gate for Explore Phase","Assess Project Performance","Obtain Customer Sign-Off for Phase Completion"],
+"Project Management__REALIZE__Sprint Planning and Execution":["Plan the Sprint","Execute the Sprint","Close the Sprint"],
+"Project Management__REALIZE__Sprint Closing":["Conduct Sprint Review Meeting","Signoff Sprint Results","Conduct Sprint Retrospective"],
+"Project Management__REALIZE__Value Realization (Realize)":["Perform Value Audit"],
+"Project Management__REALIZE__Cutover Preparation":["Create Cutover Plan and Documentation","Create the Cutover Plan for System Conversion"],
+"Project Management__REALIZE__Realize Phase Closure and Sign-Off":["Conduct Project Quality Gate for Realize Phase","Assess Project Performance","Obtain Customer Sign-Off for Phase Completion"],
+"Project Management__DEPLOY__Execution and Monitoring of Project (Deploy)":["Review the SAP S/4HANA Cloud Onboarding Journey","Direct and Manage Project Execution","Manage Project Issues, Risks, and Changes","Update Project Management Documents","Communicate Project Status and Progress"],
+"Project Management__DEPLOY__Deploy Phase Closure and Sign-Off":["Conduct Project Quality Gate for Deploy Phase","Assess Project Performance","Obtain Customer Sign-Off for Phase Completion"],
+"Project Management__RUN__Governance Model":["Establish Governance Model","Manage Change Request","Define Continuous Improvement Process"],
+"Project Management__RUN__Value Management":["Perform Benchmarking Assessment for Value Realization Comparison","Establish and implement a value audit strategy","Establish and implement a benchmarking strategy","Run the User Experience Business Benefits Workshop","Assess Solution Performance"],
+"Tech. Architecture & Infrastructure__DISCOVER__Conversion Readiness Assessment":["Perform SAP Readiness Check for SAP S/4HANA","Conduct SAP Readiness Check - Functional Review Workshop","Conduct SAP Readiness Check - Technical Review Workshop"],
+"Tech. Architecture & Infrastructure__PREPARE__Getting Started with your SAP Implementation":["Review Overview Documentation","Review Onboarding Documentation"],
+"Tech. Architecture & Infrastructure__PREPARE__Supporting Tools for Implementation":["Ensure Project Team Members Access to the SAP for Me and SAP Customer Communities","Grant Access to Partner for Creating and Managing Cases","Ensure Project Team Members Access to the SAP Learning Hub","Ensure Project Team Members Access to the SAP Activate Community"],
+"Tech. Architecture & Infrastructure__PREPARE__Initial System Access":["SAP Cloud ALM - Initial System Access for SAP Cloud ALM","SAP Cloud ALM - Setup the RISE with SAP Methodology Dashboard","SAP S/4HANA Cloud Private Edition - Receive and Access Starter System","SAP S/4HANA Cloud Private Edition - Receive System Handover Notification","SAP S/4HANA Cloud Private Edition - Set-up the Sandbox System and Prepare the Shell System","SAP S/4HANA Cloud Private Edition - Set up Users And Assign Authorizations","SAP BTP - Access to SAP Business Technology Platform","SAP BTP - Create Users in the SAP Business Technology Platform Cockpit","SAP BTP - Activate SAP Build Entitlements","SAP BTP - Subscribe to Cloud Integration Automation Service within SAP BTP","SAP BTP - Set Up SAP Start and SAP Mobile Start","SAP Analytics Cloud - Initial System Access for SAP Analytics Cloud"],
+"Tech. Architecture & Infrastructure__PREPARE__Technical Project Preparation":["Check Interoperability","Review BTP Services","Define Clean Core Approach for Extensibility Scenarios","Define the Objects and Tools for Business Data Validation","Role of the Technical Team in a SAP S/4HANA Cloud Private Edition Project","Perform Initial Business Process Assessment for SAP S/4HANA Cloud","Determine Process Scope","Prepare and Install a Content Development Tool"],
+"Tech. Architecture & Infrastructure__PREPARE__Transition & Conversion Planning":["Define Project Scope and Objectives","Define Cutover Strategy","Define Technical Architecture","Prepare Interface Register","Run a Legacy Impact Analysis on Interface Inventory and Data Integration","Run a first Assessment on Training Requirements","Determine Business Process Performance Baseline","Model As-Is Business Processes","Run a Technical Security Self Check","Define Technical System Conversion Approach","Define Conversion Cycles","Define the Need of Dual Maintenance","Define Technical Selective Data Transition Approach","Define the Landscape Architecture Framework","Conduct Data Scoping Analysis","Define Migration Cycle"],
+"Tech. Architecture & Infrastructure__PREPARE__Transition Preparation":["Verify Access to Systems for Integration","Select Key Integrations for Fit-to-Standard","Set up Integrations for Fit-to-Standard Workshops"],
+"Tech. Architecture & Infrastructure__PREPARE__Pre-Conversion Projects Execution":["Perform Data Volume Management","Synchronization of Customers/Vendors into Business Partners (CVI)","Reconciliation of Financial Data","Add-On Compatibility Check","Cleanup Unused Code","Close Open Business Documents"],
+"Tech. Architecture & Infrastructure__EXPLORE__System Conversion Execution of the Sandbox/Shell System":["Document System Conversion Runbook","Technical Pre-Conversion Activities","Functional Pre-Conversion Activities","Functional Pre-Conversion Activities: Finance Specific","System Conversion Execution","Execute Shell System Conversion","Functional Post-Conversion Activities","Functional Post-Conversion Activities: Finance Specific"],
+"Tech. Architecture & Infrastructure__EXPLORE__Additional Activities in the Converted Sandbox/Shell System":["Enable SAP Fiori","Set up and Configure Data Migration Tools","Set Up Dual Maintenance","Run Initial Testing","Resolve Inconsistencies in the Productive Landscape"],
+"Tech. Architecture & Infrastructure__EXPLORE__User Access and Security Planning and Design":["Authorization Roles and Assignments"],
+"Tech. Architecture & Infrastructure__EXPLORE__Sizing Validation":["Validate Sizing"],
+"Tech. Architecture & Infrastructure__REALIZE__Quality System Initial Access":["Access Quality System and Reset Password","Create Users in the Quality System"],
+"Tech. Architecture & Infrastructure__REALIZE__Initial Quality System Setup":["Transport Fiori Rapid Activation","Setup Quality System for New Implementation","Setup Quality System for System Conversion","Setup Quality System for Selective Data Transition"],
+"Tech. Architecture & Infrastructure__REALIZE__Production System Request":["Request the SAP S/4HANA Cloud Production System"],
+"Tech. Architecture & Infrastructure__REALIZE__System Conversion Execution of the Development System":["Execute the System Conversion of the Development System"],
+"Tech. Architecture & Infrastructure__REALIZE__Additional Activities in the Converted Development System":["Setup and Enable Analytics","Enable SAP Fiori in the Development System","Execute Custom Code Remediation","Implementation of Adjustments and Redesign of Integrations","Configure Additional Features","Integrate Enhancements for Additional Features","Review and Testing of the Remediated Custom Code for Performance"],
+"Tech. Architecture & Infrastructure__REALIZE__System Conversion Execution of the Quality System":["Execute the System Conversion of the Quality System"],
+"Tech. Architecture & Infrastructure__REALIZE__Additional Activities in the Converted Quality System":["Enable SAP Fiori in the Quality System","Execute Additional Activities in the Converted Quality System"],
+"Tech. Architecture & Infrastructure__REALIZE__Production System Initial Access":["Access Production System and Reset Password","Transport Fiori Rapid Activation","Set up Production System"],
+"Tech. Architecture & Infrastructure__REALIZE__User Access and Security Implementation":["Implement User Access and Security","Verify User Authorizations / Classification in Production Systems"],
+"Tech. Architecture & Infrastructure__DEPLOY__System Conversion Execution of the Dress Rehearsal System":["Execute the System Conversion of the Dress Rehearsal System"],
+"Tech. Architecture & Infrastructure__DEPLOY__System Conversion Execution of the Production System (Cutover)":["Execute the System Conversion of the Production System (Cutover)"],
+"Tech. Architecture & Infrastructure__DEPLOY__System Go-Live":["Set the Production System to Live","Validate Production System","Confirm Go-Live Readiness"],
+"App. Design & Configuration__PREPARE__Solution Scope":["Determine Process Scope"],
+"App. Design & Configuration__PREPARE__Fit-to-Standard Preparation For Specific Features":["Prepare Fit-to-Standard Workshop","Define and Prepare System To Be Used","Activate SAP Fiori in the Initial System"],
+"App. Design & Configuration__PREPARE__Fit-to-Standard Workshop Preparation":["Prepare for Fit-to-Standard Workshops","Setup and Verify Fit-to-Standard System","Activate SAP Fiori in the Initial System","Review Data Protection Requirements and Functionality"],
+"App. Design & Configuration__EXPLORE__Fit-to-Standard Workshops for Specific Features":["Fit-to-Standard Workshops Execution","Execution of Standard Business Processes - Customer","Fit-to-Standard Analysis Documentation","Fit-to-Standard Workshop Validation","Design Workshops and Documentation","Review and Customer Sign-off"],
+"App. Design & Configuration__EXPLORE__Fit-to-Standard Workshop Execution":["Conduct Fit-to-Standard Workshops"],
+"App. Design & Configuration__EXPLORE__Fit-to-Standard Workshop Documentation":["Document Requirement","Document Preset Parameters","Document Business Process Target State","Document Configuration Values","Document Master Data Requirements","Document Analytics Requirements","Document Extensibility Requirements","Document SAP Build Requirements"],
+"App. Design & Configuration__EXPLORE__Fit-to-Standard Workshop Validation":["Prioritize Delta Requirements","Validate Delta Requirements","Execute Solution Validation Survey"],
+"App. Design & Configuration__EXPLORE__User Experience Design":["Design the Launchpad Layout Workshop Execution","User Experience / User Interface Design"],
+"App. Design & Configuration__EXPLORE__SAP Build Planning and Design":["Review SAP Build requirements from workshops","Define SAP Build process automation scenarios"],
+"App. Design & Configuration__EXPLORE__SAP Build Setup":["Setup SAP Build Process Automation Components"],
+"App. Design & Configuration__REALIZE__Solution Configuration":["Run Handover Session","Create the Custom Business Roles for SAP Fiori","Configure Master Data","Configure Core Finance","Perform Main Configuration","Setup Integration for SAP S/4HANA Cloud and SAP Business Network","Enable Data Protection and Privacy Features","Run Unit Test","Run String Test","Run Solution Walk-Through","Resolve Identified Issues","Document Configured Settings"],
+"App. Design & Configuration__REALIZE__Product Enhancements":["Development of Clean Core Compliant Extensions","Enhancement and Development of User Interface","Custom Development"],
+"App. Design & Configuration__REALIZE__Set up SAP Build in the Quality System":["Prepare System for SAP Build Process Automation"],
+"App. Design & Configuration__REALIZE__Set up SAP Build in Production System":["Deploy SAP Build Process Automation scripts in Production Tenant"],
+"Extensibility & Clean Core Strategy__DISCOVER__Introduction to RISE with SAP":["Review the SAP Cloud Framework","Review the RISE with SAP Entitlement","Learn The Clean Core Principles","Define Clean Core Success Plan"],
+"Extensibility & Clean Core Strategy__DISCOVER__Clean Core Quality Gate 0":["Conduct Clean Core Quality Gate 0"],
+"Extensibility & Clean Core Strategy__PREPARE__Clean Core Quality Gate 1":["Conduct New Implementation Clean Core Quality Gate 1","Review your Clean Core Assessment"],
+"Extensibility & Clean Core Strategy__EXPLORE__Custom Code Deep Dive Analysis":["Define Coding Guidelines for New Custom Development Requests","Analyze Custom Code Volume","Classify Custom Code","Develop Remediation Plan"],
+"Extensibility & Clean Core Strategy__EXPLORE__Extension Planning and Design":["Handover of Requirements for Extensions to Developer","Check for Sample Scenario in SAP Extensibility Explorer","Check for Available Products","Collect Details for Extensions","Detail Design on Key-User Extensibility","Detail Design of Side-by-Side Extensibility","Detail Design of Extension with Classic Extensibility Techniques","Review and Sign off Design of Extension"],
+"Extensibility & Clean Core Strategy__EXPLORE__Clean Core Quality Gate 2":["Conduct New Implementation Clean Core Quality Gate 2","Review your Clean Core Assessment"],
+"Extensibility & Clean Core Strategy__REALIZE__Extension Development in the Development and Quality Systems":["Setup and Develop Key-User Extensions","Setup and Develop Classic Extension in the DEV Landscape","Setup and Develop Side-by-Side Extensions"],
+"Extensibility & Clean Core Strategy__REALIZE__Deploy Extensions to the Production System":["Deploy Key-user Extensions to the PROD Landscape","Development and Setup of Side-by-Side Extension in the PROD Landscape","Deploy Classic Extension to the PROD Landscape"],
+"Extensibility & Clean Core Strategy__REALIZE__Clean Core Quality Gate 3":["Conduct New Implementation Clean Core Quality Gate 3","Review your Clean Core Assessment"],
+"Extensibility & Clean Core Strategy__RUN__Clean Core Quality Gate 5":["Conduct Clean Core Quality Gate 5","Review your Clean Core Assessment"],
+"Integration__PREPARE__Prepare Integration Setup":["Verify Access to Systems for Integration","Select Key Integrations for Fit-to-Standard","Set up Integrations for Fit-to-Standard Workshops"],
+"Integration__EXPLORE__Integration Planning and Design":["Handover of Requirements to Integration Expert","Optimize and Align Integration and Interface List","Review and Customer Sign-off List of Integrations"],
+"Integration__EXPLORE__Integration Review and Redesign":["Current Integrations Impact Analysis","Define Target Integration","Apply Clean Core Principles For Integration"],
+"Integration__REALIZE__Integration Setup in Development and Quality Landscape":["Setup Integrations in Development Landscape","Setup Integrations in Quality Assurance Landscape","Set Up Integration using Cloud Integration Automation Service","Setup Integration for SAP S/4HANA Cloud and SAP Business Network"],
+"Integration__REALIZE__Integration Validation":["Perform Integration Validation"],
+"Integration__REALIZE__Set up Integration in the Production System":["Setup integrations in the Productive Landscape","Set Up Integration in the P-Landscape using Cloud Integration Automation Service"],
+"Data Management__PREPARE__Data Migration Approach and Plan":["Develop the Data Migration Approach and Plan"],
+"Data Management__EXPLORE__Data Migration Planning and Design":["Conduct Data Migration Design"],
+"Data Management__EXPLORE__Data Load Preparation":["Determine the Required Master Data for SAP S/4HANA Cloud","Determine Migration Cockpit Field Structures for S/4HANA Cloud","Extract and Transform Legacy Data","Perform Data Cleansing Activities"],
+"Data Management__REALIZE__Data Migration Execution":["Execute Data Migration Cycle","Run Initial Testing","Resolve inconsistency in the Production System","Perform Functional Post-Migration Activities","Perform Functional Post-Migration Activities: Finance Specific"],
+"Data Management__REALIZE__Data Migration in the Development Tenant":["Execute Data Migration Using Staging Tables in SAP S/4HANA","Execute Migrate Data Directly from an Existing SAP System","Transport Data Migration Project to the Test Tenant"],
+"Data Management__REALIZE__Data Migration in the Test Tenant":["Execute Data Migration Using Staging Tables in SAP S/4HANA","Execute Migrate Data Directly from an Existing SAP System","Conduct Final Data Quality Assessment","Transport Data Migration Project to Production"],
+"Data Management__DEPLOY__Production Cutover":["Execute Cutover Tasks per the Cutover Plan"],
+"Testing__EXPLORE__Test Planning":["Create Test Strategy","Determine Test Scope","Create and Schedule an Overall Test Plan"],
+"Testing__REALIZE__Test Preparation":["Prepare Testing Prerequisites","Set Up Selected Third Party Automated Testing Tools","Defining Test Cases/Test Scripts","Create Test Plan","Establish Readiness for User Acceptance Test"],
+"Testing__REALIZE__Test Execution":["Execute the Test Cases","Defect Management and Re-testing","Test Execution Analysis and Reporting"],
+"Testing__DEPLOY__Dress Rehearsal":["Perform Dress Rehearsal","Validate Cutover Procedures","Document Lessons Learned"],
+"Analytics__PREPARE__Analytics Approach and Plan":["Develop the Analytics Approach and Plan"],
+"Analytics__EXPLORE__Analytics Planning and Design":["Handover of Requirements to Analytics Expert","Review My Fiori Apps Reference Library for Embedded Analytics","Review Scope Items and Requirements for Embedded Analytics","Design Analytics Architecture","Initial Analytics Settings","Determine Details for Customer-Driven Analytics and Extension of Reports","Review and Customer Sign off for Analytics"],
+"Analytics__REALIZE__Analytics Configuration in the Quality System":["Setup and Enable Embedded Analytics","Configure Analytics in the Quality System"],
+"Analytics__REALIZE__Analytics Configuration in the Production System":["Verify Analytics in the Production System"],
+"Org. Change Management__DISCOVER__Organizational Change Management Overview":["Understand the Fundamentals of Organizational Change Management","Comprehend the Approach to Organizational Change Management","Provide Information on Organizational Change Management to Project Stakeholders"],
+"Org. Change Management__PREPARE__Change Concept":["Define Organizational Change Management Roles","Staff Organizational Change Management Resources","Define Organizational Change Management Set-up"],
+"Org. Change Management__PREPARE__Change Plan":["Determine Action Areas for Organizational Change Management","Develop First Version of the Change Plan","Establish Updating Procedure for the Change Plan"],
+"Org. Change Management__PREPARE__Stakeholder Analysis":["Identify Stakeholders","Assess Stakeholders","Derive Stakeholder Engagement Activities"],
+"Org. Change Management__PREPARE__Communication Analysis and Plan":["Analyze Communication Channels","Analyze Communication Needs","Create Communication Plan"],
+"Org. Change Management__EXPLORE__Communication Plan Execution":["Prepare Communication Activities","Deliver Communication Activities","Update Communication Plan"],
+"Org. Change Management__REALIZE__Detailed Change Impact Analysis":["Prepare Change Impact Workshops","Conduct Change Impact Assessment","Manage Change Impacts"],
+"Customer Team Enablement__DISCOVER__Cloud Trial":["Access a Trial Solution"],
+"Customer Team Enablement__PREPARE__Customer Team Self-Enablement":["Request Knowledge Assessment","Create Self-Enablement Plan","Self-Enable on SAP Cloud ALM","Self-Enable on Experience Management","Self-Enable on SAP Signavio","Self-Enable on Selective Data Transition","Self-Enable on SAP Fiori for SAP S/4HANA","Self-Enable on SAP LeanIX","Review Self-enablement Materials","Self-Enable on Extensibility","Self-Enable on Identity and Access Management and Authorization Concept","Self-Enable on SAP Business Technology Platform","Self-Enable on SAP Business Network"],
+"Customer Team Enablement__PREPARE__Enablement Strategy":["Review Enablement Strategy Research and Interviews","Document Enablement Strategy"],
+"Customer Team Enablement__PREPARE__Learning Needs Analysis for Project Team":["Identify Learning Needs for Project Team","Create Learning Curriculum based on SAP Standard Learning","Conduct Business Review"],
+"Customer Team Enablement__EXPLORE__Learning Needs Analysis for Users":["Identify Learning Needs Identification Process","Create Learning Curriculum","Review Enablement Business Review"],
+"Customer Team Enablement__REALIZE__Enablement Content Development":["Create a Content Development Plan","Manage Content Design and Content Development"],
+"Customer Team Enablement__REALIZE__Enablement Delivery":["Plan Learning Logistics","Setup System Landscape and Data","Deliver Enablement","Assess Training Satisfaction"],
+"Customer Team Enablement__RUN__Identify Innovation and Growth Opportunities":["Periodically Update your SAP System","Revise SAP Fiori apps","Initiate a New Improvement and Innovation Project","Perform a Business Scenario and Solution Mapping"],
+"Operations__DISCOVER__Operation and Support Assessment":["Conduct Operation and Support Workshop"],
+"Operations__PREPARE__Operations Planning":["Clarify Operational Requirement","Ensure Operational Readiness"],
+"Operations__EXPLORE__Operations Impact Evaluation and Design":["Evaluate Impact on Operations","Define Customer COE Key Capability","Specify Support and Operation Model"],
+"Operations__REALIZE__Operations Implementation":["Implement Operations Support Process and Tools","Plan Transition and Handover"],
+"Operations__DEPLOY__Operations Readiness":["Operational Readiness","Tracking Goals"],
+"Operations__DEPLOY__Production Hypercare Support":["Provide Hypercare Support"],
+"Operations__DEPLOY__Handover to Support Organization":["Resolve and Close Open Issues","Handover Operations Responsibility"],
+"Operations__RUN__Service Management":["Establish Service Management Framework","Access SAP Support Service"],
+"Operations__RUN__Ongoing System Operations":["Operate the New Solution","Verify User Authorizations / Classification in Production Systems","Review Upcoming Regulatory Changes","Monitor the New System","Perform Technical Assessment of the SAP BTP Solution","Monitor SAP Build Process Automation Jobs","Continuously Optimize IT Operations"],
+"Operations__RUN__Incident and Problem Management":["Manage Incident","Manage Problem"]
+};
+
+/* ══════════════ STATE ══════════════ */
+let PROJS={}, CUR=null;
+let DS={ws:null,ph:null,l2:null,tab:'tasks'};
+let CF={};
+let VIEW='matrix'; // 'matrix' | 'phase'
+let ACTIVE_PH=null;
+
+function save(){try{localStorage.setItem('sap_pm5',JSON.stringify(PROJS));}catch(e){}}
+function load(){try{PROJS=JSON.parse(localStorage.getItem('sap_pm5')||'{}');}catch(e){}}
+load();
+if(Object.keys(PROJS).length>0&&!CUR) CUR=Object.keys(PROJS)[0];
+
+function proj(){return PROJS[CUR];}
+function td(k){return (proj()?.tasks||{})[k]||{st:'ns',pct:0,notes:'',owner:'',due:'',chk:{},del:{},extra:[],l3chk:{},l3owner:{},ai:null,air:null};}
+function stC(s){return {ns:'#94A3B8',ip:'#F59E0B',dn:'#22C55E',bl:'#EF4444',rv:'#8B5CF6'}[s]||'#94A3B8';}
+function stL(s){return {ns:'Not Started',ip:'In Progress',dn:'Completed',bl:'Blocked',rv:'In Review'}[s]||s;}
+function stK(s){return {ns:'s-ns',ip:'s-ip',dn:'s-dn',bl:'s-bl',rv:'s-rv'}[s]||'s-ns';}
+function key(ws,ph,l2){return ws+'||'+ph+'||'+l2;}
+function getl3(ws,ph,l2){return L3M[ws+'__'+ph+'__'+l2]||[];}
+function calcL2Pct(k){
+  // L2 progress = average of all L3 task progress values
+  const {ws,ph,l2}=parseKey(k);
+  const tasks=getl3(ws,ph,l2);
+  if(!tasks.length)return 0;
+  const t=td(k);
+  const total=tasks.reduce((sum,_,i)=>{
+    const d=t.l3data&&t.l3data[i];
+    return sum+(d&&d.pct!=null?d.pct:(t.l3chk&&t.l3chk[i]?100:0));
+  },0);
+  return Math.round(total/tasks.length);
+}
+function calcL2St(k){
+  const pct=calcL2Pct(k);
+  const t=td(k);
+  const {ws,ph,l2}=parseKey(k);
+  const tasks=getl3(ws,ph,l2);
+  const anyBl=tasks.some((_,i)=>(t.l3data&&t.l3data[i]&&t.l3data[i].st)==='bl');
+  if(anyBl)return'bl';
+  if(pct===100)return'dn';
+  if(pct>0)return'ip';
+  return'ns';
+}
+function l2pct(ws,ph,l2){
+  const k=key(ws,ph,l2);
+  const pct=calcL2Pct(k);
+  const t=td(k);
+  return{pct,st:calcL2St(k),ai:t.ai||null};
+}
+function phPct(ph){let s=0,c=0;WS.forEach(ws=>(L2M[ws+'__'+ph]||[]).forEach(l2=>{s+=l2pct(ws,ph,l2).pct;c++;}));return c?Math.round(s/c):0;}
+function toast(m){const e=document.getElementById('toast');e.textContent=m;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),2200);}
+function loading(on,t){document.getElementById('ovl').classList.toggle('show',on);if(t)document.getElementById('spTx').textContent=t;}
+function esc(s){return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;');}
+
+/* ══════════════ RENDER ROOT ══════════════ */
+function render(){
+  if(!CUR||!PROJS[CUR]){
+    document.getElementById('lgnd').style.display='none';
+    document.getElementById('projBadge').textContent='📁 Select Project';
+    document.getElementById('hdrR').innerHTML='';
+    renderPicker();
+  } else {
+    document.getElementById('lgnd').style.display='flex';
+    document.getElementById('projBadge').textContent='📁 '+PROJS[CUR].name;
+    if(VIEW==='phase'&&ACTIVE_PH){
+      document.getElementById('hdrR').innerHTML=`
+        <button class="btn btn-back" onclick="backToMatrix()">← Matrix</button>
+        <button class="btn btn-g" onclick="exportCSV()">⬇ Export</button>`;
+    } else {
+      document.getElementById('hdrR').innerHTML=`
+        <button class="btn btn-s" onclick="showPicker()">⬡ Projects</button>
+        <button class="btn btn-g" onclick="exportCSV()">⬇ Export</button>`;
+    }
+    if(VIEW==='phase'&&ACTIVE_PH) renderPhaseDetail(ACTIVE_PH);
+    else renderMatrix();
+  }
+}
+
+function backToMatrix(){VIEW='matrix';ACTIVE_PH=null;render();}
+
+/* ══════════════ PICKER ══════════════ */
+function renderPicker(){
+  const ids=Object.keys(PROJS);
+  const list=ids.length
+    ?ids.map(id=>`<div class="proj-item" onclick="selProj('${id}')">
+        <span class="pi-ico">📋</span><span class="pi-name">${PROJS[id].name}</span>
+        <span class="pi-date">${new Date(PROJS[id].created).toLocaleDateString('en-GB')}</span>
+        <span class="pi-del" onclick="event.stopPropagation();delProj('${id}')">✕</span>
+      </div>`).join('')
+    :'<div class="empty-msg">No projects yet. Create your first project above.</div>';
+  document.getElementById('main').innerHTML=`<div class="picker-wrap fade">
+    <div class="picker-hdr"><div class="picker-title">SAP Activate Projects</div>
+    <div class="picker-sub">S/4HANA Cloud Private Edition — Governance &amp; Tracking</div></div>
+    <div class="picker-body">
+      <div class="sec-lbl">Create New Project</div>
+      <div class="new-row">
+        <input class="fi" type="text" id="npn" placeholder="e.g. ABC Corp – S/4HANA Cloud" style="flex:1" onkeydown="if(event.key==='Enter')newProj()">
+        <button class="btn btn-p" onclick="newProj()">+ Create</button>
+      </div>
+      ${ids.length?'<div class="sec-lbl">Existing Projects</div>':''}
+      <div class="proj-list">${list}</div>
+    </div></div>`;
+  setTimeout(()=>document.getElementById('npn')?.focus(),100);
+}
+function newProj(){
+  const n=document.getElementById('npn')?.value?.trim();
+  if(!n){toast('⚠ Enter a project name');return;}
+  const id='p'+Date.now();
+  PROJS[id]={id,name:n,created:new Date().toISOString(),tasks:{},delL2:{}};
+  save();CUR=id;toast('✅ Created: '+n);render();
+}
+function selProj(id){CUR=id;render();}
+function delProj(id){
+  if(!confirm('Delete "'+PROJS[id]?.name+'"?'))return;
+  delete PROJS[id];
+  if(CUR===id)CUR=Object.keys(PROJS)[0]||null;
+  save();render();
+}
+function showPicker(){CUR=null;render();}
+
+/* ══════════════ MATRIX ══════════════ */
+function renderMatrix(){
+  const phHdrs=PHASES.map(ph=>`<th class="mxh-ph" style="background:${PH_COLOR[ph]}" onclick="openPhase('${ph}')" title="Click to open ${ph} phase detail">
+    <div class="ph-name-big">${ph}</div>
+    <div class="ph-click-hint">▼ Open detail</div>
+  </th>`).join('');
+  const wsRows=WS.map(ws=>{
+    const cells=PHASES.map(ph=>{
+      const l2s=(L2M[ws+'__'+ph]||[]).filter(l2=>!proj()?.delL2?.[key(ws,ph,l2)]);
+      if(!l2s.length)return`<td class="mx-td empty"></td>`;
+      const chips=l2s.map(l2=>{
+        const p=l2pct(ws,ph,l2);
+        let dc=stC(p.st),nc='';
+        if(p.ai==='diff'){dc='#F59E0B';nc='cy';}
+        if(p.ai==='ok'){dc='#16A34A';nc='cg';}
+        const nm=l2.length>36?l2.slice(0,36)+'…':l2;
+        const tip=L2_TIP[l2]||'';
+        return `<div class="chip" onclick="openDrw('${esc(ws)}','${ph}','${esc(l2)}')">
+          <div class="cdot" style="background:${dc}"></div>
+          <div class="l3-tip-wrap" style="flex:1;min-width:0;overflow:visible">
+            <div class="cname ${nc}" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${nm}</div>
+            ${tip?`<div class="l3-tip-popup" style="top:auto;bottom:calc(100% + 6px);z-index:999"><strong>💡 ${l2}</strong><br><br>${tip}</div>`:''}
+          </div>
+          <div class="cpct">${p.pct}%</div>
+        </div>`;
+      }).join('');
+      return`<td class="mx-td clickable">${chips}</td>`;
+    }).join('');
+    return`<tr><td class="mx-ws">${ws}</td>${cells}</tr>`;
+  }).join('');
+  const phFoot=PHASES.map(ph=>{
+    const pct=phPct(ph);const c=PH_COLOR[ph];const qg=PH_QG[ph];
+    return`<td class="mxf-ph">
+      <div class="ph-pct" style="color:${c}">${pct}%</div>
+      <div class="ph-desc" style="color:${c}">${PH_DESC[ph]}</div>
+      ${qg?`<div class="ph-qg" style="color:${c}">🏁 ${qg}</div>`:''}
+    </td>`;
+  }).join('');
+  document.getElementById('main').innerHTML=`<div class="mx-outer fade">
+    <table class="mx-table">
+      <thead><tr><th class="mxh-ws">Workstream</th>${phHdrs}</tr></thead>
+      <tbody>${wsRows}</tbody>
+      <tfoot><tr class="mx-foot"><td class="mxf-ws">Phase Status</td>${phFoot}</tr></tfoot>
+    </table></div>`;
+}
+
+/* ══════════════ PHASE DETAIL PAGE ══════════════ */
+function openPhase(ph){VIEW='phase';ACTIVE_PH=ph;render();}
+
+function renderPhaseDetail(ph){
+  const color=PH_COLOR[ph];
+  const pct=phPct(ph);
+  const qg=PH_QG[ph]||'';
+
+  // Count totals
+  let totalL2=0,totalL3=0,doneL2=0,doneL3=0;
+  WS.forEach(ws=>{
+    const l2s=L2M[ws+'__'+ph]||[];
+    l2s.forEach(l2=>{
+      totalL2++;
+      const t=td(key(ws,ph,l2));
+      if(t.st==='dn')doneL2++;
+      const tasks=getl3(ws,ph,l2);
+      tasks.forEach((_,i)=>{
+        totalL3++;
+        if(t.l3chk&&t.l3chk[i])doneL3++;
+      });
+    });
+  });
+
+  const wsSections=WS.map(ws=>{
+    const l2s=L2M[ws+'__'+ph]||[];
+    if(!l2s.length)return'';
+    const wsId='ws_'+ws.replace(/[^a-zA-Z0-9]/g,'_')+'_'+ph;
+
+    const l2blocks=l2s.map(l2=>{
+      const k=key(ws,ph,l2);
+      const t=td(k);
+      const l3list=getl3(ws,ph,l2);
+      const l2Id='l2_'+k.replace(/[^a-zA-Z0-9]/g,'_');
+      const tip=L2_TIP[l2]||'';
+
+      // L3 task rows — unified state (l3chk), tooltip, progress panel
+      const l3rows=l3list.map((task,i)=>{
+        const isDone=t.l3chk&&t.l3chk[i];
+        const l3tip=L3_TIP[task]||'';
+        const pnlId='l3p_ph_'+l2Id+'_'+i;
+        const l3d=t.l3data&&t.l3data[i]||{};
+        return`<li class="l3-row">
+          <div class="l3-chk ${isDone?'done':''}" id="l3chk_${l2Id}_${i}" onclick="toggleL3('${esc(k)}',${i})">${isDone?'✓':''}</div>
+          <div class="l3-tip-wrap">
+            <span class="l3-text ${isDone?'done':''}" id="l3txt_${l2Id}_${i}">${task}</span>
+            ${l3tip?`<div class="l3-tip-popup"><strong>💡 Ne yapılmalı?</strong><br>${l3tip}</div>`:'<div class="l3-tip-popup"><strong>💡</strong> Bu adımı tamamlayarak bir sonraki göreve geçin.</div>'}
+          </div>
+          <button class="l3-prog-btn ${l3d.open?'active':''}" onclick="toggleL3Panel('${pnlId}',this)" title="Progress">📊</button>
+          <div class="l3-prog-panel ${l3d.open?'open':''}" id="${pnlId}">
+            ${renderL3Panel(k,i,l3d,pnlId)}
+          </div>
+        </li>`;
+      }).join('');
+
+      // L2 status dot — computed from L3 average
+      const pctVal=calcL2Pct(k);
+      const stVal=calcL2St(k);
+      const dotColor=stC(stVal);
+      const pctId='mpct_'+l2Id;
+
+      return`<div class="l2-block">
+        <div class="l2-header" onclick="toggleL2('${l2Id}')">
+          <div class="l2-dot" style="background:${dotColor}"></div>
+          <div class="l3-tip-wrap" style="flex:1;min-width:0">
+            <div class="l2-name">${l2}</div>
+            ${tip?`<div class="l3-tip-popup" style="top:auto;bottom:calc(100% + 6px)"><strong>💡 Bu görev nedir?</strong><br>${tip}</div>`:''}
+          </div>
+          <span class="l2-pctbadge" id="${pctId}">${pctVal}%</span>
+          <span class="l2-statusbadge ${stK(stVal)}">${stL(stVal)}</span>
+          <span class="l2-toggle" id="tog_${l2Id}">▶</span>
+        </div>
+        <div class="l2-detail" id="${l2Id}">
+          ${tip?`<div class="l2-tooltip"><span class="l2-tooltip-icon">💡</span>${tip}</div>`:''}
+          ${l3rows?`<div class="stt">L3 Sub-Tasks (${l3list.length})</div>
+          <ul class="l3-progress-list">${l3rows}</ul>`:'<div style="font-size:11px;color:var(--tx3);padding:4px 0">No sub-tasks defined.</div>'}
+          <div class="l2-controls">
+            <span class="l2-ctrl-label">Progress (auto)</span>
+            <div style="flex:1;height:5px;background:var(--bd);border-radius:3px;overflow:hidden">
+              <div style="height:100%;width:${pctVal}%;background:${dotColor};border-radius:3px;transition:width .3s"></div>
+            </div>
+            <span class="mini-pv" id="pvd_${l2Id}">${pctVal}%</span>
+            <div class="mini-st-btns">
+              ${['ns','ip','dn','bl'].map(s=>`<button class="mini-st ${s} ${t.st===s?'act':''}" disabled style="opacity:${t.st===s?'1':'0.45'};cursor:default">${{ns:'—',ip:'▶',dn:'✓',bl:'✕'}[s]}</button>`).join('')}
+            </div>
+          </div>
+          <div class="l2-owner-row">
+            <input class="l2-owner-inp" type="text" placeholder="Owner…" value="${esc(t.owner||'')}"
+              id="own_${l2Id}" title="L2 task owner">
+            <input class="l2-owner-inp" type="date" value="${t.due||''}" id="due_${l2Id}" title="Due date">
+            <button class="save-mini" onclick="saveL2('${esc(k)}','${l2Id}')">💾 Save</button>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+
+    // WS level stats
+    const wsL2s=l2s.length;
+    const wsDone=l2s.filter(l2=>td(key(ws,ph,l2)).st==='dn').length;
+
+    return`<div class="ws-section">
+      <div class="ws-header" onclick="toggleWS('${wsId}')">
+        <span class="ws-toggle" id="wstog_${wsId}">▶</span>
+        <span class="ws-header-name">${ws}</span>
+        <span class="ws-header-stats">${wsDone}/${wsL2s} tasks</span>
+      </div>
+      <div class="ws-body" id="${wsId}">${l2blocks}</div>
+    </div>`;
+  }).filter(Boolean).join('');
+
+  document.getElementById('main').innerHTML=`<div class="fade">
+    <div style="border-radius:var(--r);overflow:hidden;box-shadow:var(--sh2);">
+      <div class="ph-hero" style="background:${color}">
+        <div class="ph-hero-left">
+          <div class="ph-hero-name">${ph}</div>
+          <div class="ph-hero-desc">${PH_DESC[ph]}${qg?' · '+qg:''}</div>
+          <div class="ph-hero-stats">
+            <div class="ph-stat"><div class="ph-stat-n">${totalL2}</div><div class="ph-stat-l">L2 Tasks</div></div>
+            <div class="ph-stat"><div class="ph-stat-n">${doneL2}</div><div class="ph-stat-l">Completed</div></div>
+            <div class="ph-stat"><div class="ph-stat-n">${totalL3}</div><div class="ph-stat-l">Sub-tasks</div></div>
+            <div class="ph-stat"><div class="ph-stat-n">${doneL3}</div><div class="ph-stat-l">Checked</div></div>
+          </div>
+        </div>
+        <div class="ph-hero-pct">${pct}%</div>
+      </div>
+      <div class="ph-content">${wsSections||'<div style="padding:20px;color:var(--tx3)">No tasks in this phase.</div>'}</div>
+    </div>
+  </div>`;
+}
+
+/* toggle WS open/close */
+function toggleWS(id){
+  const el=document.getElementById(id);
+  const tog=document.getElementById('wstog_'+id);
+  if(!el)return;
+  el.classList.toggle('open');
+  if(tog)tog.classList.toggle('open');
+}
+
+/* toggle L2 open/close */
+function toggleL2(id){
+  const el=document.getElementById(id);
+  const tog=document.getElementById('tog_'+id);
+  if(!el)return;
+  el.classList.toggle('open');
+  if(tog)tog.classList.toggle('open');
+}
+
+/* ══════════════ L3 TASK ACTIONS (Phase Detail) ══════════════ */
+function toggleL3(k,i){
+  if(!proj())return;
+  const t=ensure(k);
+  if(!t.l3chk)t.l3chk={};
+  t.l3chk[i]=!t.l3chk[i];
+  const done=t.l3chk[i];
+  if(!t.l3data)t.l3data={};
+  if(!t.l3data[i])t.l3data[i]={};
+  if(!t.l3data[i].manuallySet){
+    t.l3data[i].st=done?'dn':'ns';
+    t.l3data[i].pct=done?100:0;
+  }
+  _syncL2(k);
+  save();
+  // In-place DOM update — no page reload
+  const l2Id='l2_'+k.replace(/[^a-zA-Z0-9]/g,'_');
+  const chkEl=document.getElementById('l3chk_'+l2Id+'_'+i);
+  const txtEl=document.getElementById('l3txt_'+l2Id+'_'+i);
+  if(chkEl){chkEl.className='l3-chk'+(done?' done':'');chkEl.textContent=done?'✓':'';}
+  if(txtEl){txtEl.className='l3-text'+(done?' done':'');}
+  _updateL2Badge(k);
+}
+
+function updateL2Pct(k,pctId,v){
+  const t=ensure(k);if(!t)return;
+  t.pct=+v;
+  const el=document.getElementById(pctId);
+  if(el)el.textContent=v+'%';
+  const l2Id='l2_'+k.replace(/[^a-zA-Z0-9]/g,'_');
+  const pvEl=document.getElementById('pvd_'+l2Id);
+  if(pvEl)pvEl.textContent=v+'%';
+  save();
+}
+
+function setL2St(k,l2Id,s){
+  const t=ensure(k);if(!t)return;
+  t.st=s;
+  if(s==='dn')t.pct=100;
+  save();
+  // Only update badge, no page reload
+  _updateL2Badge(k);
+}
+
+function saveL2(k,l2Id){
+  const t=ensure(k);if(!t)return;
+  const ownEl=document.getElementById('own_'+l2Id);
+  const dueEl=document.getElementById('due_'+l2Id);
+  if(ownEl)t.owner=ownEl.value;
+  if(dueEl)t.due=dueEl.value;
+  save();toast('✅ Saved');
+}
+
+function parseKey(k){
+  const parts=k.split('||');
+  return{ws:parts[0],ph:parts[1],l2:parts[2]};
+}
+
+/* ══════════════ L3 TOOLTIP DATA — Türkçe, sade ══════════════ */
+const L3_TIP={
+  // Discover - Project Management
+  "Create an Innovation Strategy and a High-Level Road Map":"SAP yol haritasını oluştur ve yönetim onayına sun.",
+  "Run an Innovation Discovery and Design Workshop":"İş birimleri ve IT ile birlikte yenilik atölyesi düzenle.",
+  "Create a 360-Degree View on Security":"Güvenlik, veri gizliliği ve BTP risklerini tek belgede topla.",
+  "Define the Analytics Architecture":"Embedded analytics ve SAC için hedef mimariyi belirle.",
+  "Establish a Clean Process Framework":"Standart SAP süreçlerini benimsemek için yönetişim kurallarını oluştur.",
+  "Executing a Digital Discovery Assessment":"SAP Readiness Check araçlarıyla mevcut ERP'yi analiz et.",
+  "Generate Digital Discovery Report":"Keşif bulgularını yöneticilere sunacak raporu hazırla.",
+  "Select the Right Cloud Partner":"SAP sertifikasyonu ve deneyime göre uygulama partnerini değerlendir ve seç.",
+  "Execute the Cloud Mindset":"Bulut dönüşüm farkındalığı için ekip eğitim ve atölye aktivitelerini yürüt.",
+  "Access a Trial Solution":"SAP S/4HANA Cloud trial sistemine giriş yap ve temel özellikleri keşfet.",
+  "Discover the Value of SAP S/4HANA Cloud for Your Company":"Organizasyon için SAP S/4HANA'nın iş değerini hesapla.",
+  "Identify the value of SAP S/4HANA on Existing Business Processes":"Mevcut iş süreçlerine SAP'ın katkısını belgele.",
+  "Run a Usage and Data Profiling Analysis":"Mevcut sistem kullanım ve veri profilini analiz et.",
+  "Run the Establish the Business Value of User Experience Workshop":"UX iş değeri atölyesini gerçekleştir.",
+  "Define the Implementation Strategy":"Uygulama stratejisini ve yaklaşımını tanımla.",
+  "Create a Strategic Road Map and Value Case":"Stratejik yol haritası ve değer gerekçesini oluştur.",
+  "Understand the Fundamentals of Organizational Change Management":"OCM temellerini öğren ve ekibe aktar.",
+  "Comprehend the Approach to Organizational Change Management":"OCM yaklaşımını ve metodolojisini kavra.",
+  "Provide Information on Organizational Change Management to Project Stakeholders":"Paydaşları OCM hakkında bilgilendir.",
+  "Perform SAP Readiness Check for SAP S/4HANA":"SAP Readiness Check'i çalıştır ve sonuçları analiz et.",
+  "Conduct SAP Readiness Check - Functional Review Workshop":"Fonksiyonel bulgular için inceleme atölyesi düzenle.",
+  "Conduct SAP Readiness Check - Technical Review Workshop":"Teknik bulgular için inceleme atölyesi düzenle.",
+  "Conduct Operation and Support Workshop":"Mevcut operasyon modelini değerlendiren atölye gerçekleştir.",
+  "Conduct Clean Core Quality Gate 0":"Clean Core QG0 kontrol listesini uygula ve geçişi onayla.",
+  "Review the SAP Cloud Framework":"SAP cloud çerçevesini ve RISE lisans modelini incele.",
+  "Review the RISE with SAP Entitlement":"RISE with SAP paketindeki yetkileri ve hakları doğrula.",
+  "Learn The Clean Core Principles":"Clean Core prensiplerini öğren ve projeye nasıl uygulanacağını planla.",
+  "Define Clean Core Success Plan":"Proje için Clean Core başarı kriterleri ve planı oluştur.",
+  // Prepare - Project Management
+  "Join Embedded Launch Activities in SAP S/4HANA Cloud Private Edition Onboarding Journey":"SAP onboarding portalındaki zorunlu başlangıç aktivitelerini tamamla.",
+  "Confirm Receipt of Pre-Sales Handover Deliverables":"Satış sürecinden tüm çıktıları teslim al ve eksiklikleri işaretle.",
+  "Conduct Handover Meeting with Sales Account Team":"Satış ekibiyle devir teslim toplantısı yap.",
+  "Create Project Charter and Scope Statement":"Proje tüzüğü ve kapsam belgesini hazırla.",
+  "Establish Project Governance":"Proje yönetişim yapısını ve karar alma mekanizmalarını oluştur.",
+  "Establish Solution Standardization Board":"Standartizasyon kurulunu kur ve çalışma usulünü belirle.",
+  "Create Clean Core Runbook in SAP Cloud ALM":"SAP Cloud ALM'de Clean Core runbook'unu oluştur.",
+  "Define Project Communications and Reporting":"İletişim ve raporlama planını belirle.",
+  "Define Project Standards":"Proje standartlarını (belgeler, kalite, süreçler) tanımla.",
+  "Set Up Project Team Logistics and Infrastructure":"Ekip altyapısını, araçlarını ve lojistiği kur.",
+  "Define Standards on Certifications":"Sertifikasyon gereksinimlerini ve standartlarını belirle.",
+  "Create Project Schedule and Budget":"Detaylı proje takvimini ve bütçesini oluştur.",
+  "Assign Resources and Refine Project Tasks in SAP Cloud ALM":"SAP Cloud ALM'de görevleri ata ve hassaslaştır.",
+  "Align Project Schedules":"Tüm taraf takvimlerini hizala ve çakışmaları çöz.",
+  "Onboard Project Team":"Ekibi sistemlere ve araçlara dahil et.",
+  "Conduct Kickoff Workshop":"Resmi proje başlangıç toplantısını gerçekleştir.",
+  "Validate and Complete Value Map":"Değer haritasını doğrula ve tamamla.",
+  "Prepare Value Map":"Değer haritasını hazırla.",
+  "Obtain copy of Value Case or Business Case document from the presales team":"Ön satış iş gerekçe belgesini al.",
+  "Conduct Project Quality Gate for Prepare Phase":"Prepare fazı kalite kapısı kontrolünü yap.",
+  "Assess Project Performance":"Proje performansını değerlendir.",
+  "Obtain Customer Sign-Off for Phase Completion":"Müşteriden faz tamamlama onayı al.",
+  // Prepare - Tech Architecture
+  "Review Overview Documentation":"SAP uygulama kılavuzlarını incele.",
+  "Review Onboarding Documentation":"Onboarding belgelerini gözden geçir.",
+  "Ensure Project Team Members Access to the SAP for Me and SAP Customer Communities":"SAP for Me ve topluluk erişimlerini doğrula.",
+  "Grant Access to Partner for Creating and Managing Cases":"Partner için case yönetimi erişimi ver.",
+  "Ensure Project Team Members Access to the SAP Learning Hub":"SAP Learning Hub erişimini doğrula.",
+  "Ensure Project Team Members Access to the SAP Activate Community":"SAP Activate Community erişimini doğrula.",
+  "Request SAP Cloud ALM Tenant":"SAP Cloud ALM kiracısını talep et.",
+  "Request SAP Analytics Cloud":"SAP Analytics Cloud erişimini talep et.",
+  "SAP Cloud ALM - Initial System Access for SAP Cloud ALM":"SAP Cloud ALM'e giriş yap ve kullanıcıları oluştur.",
+  "SAP Cloud ALM - Setup the RISE with SAP Methodology Dashboard":"RISE metodoloji panosunu yapılandır.",
+  "SAP S/4HANA Cloud Private Edition - Receive and Access Starter System":"Starter sistemi teslim al ve erişimi doğrula.",
+  "SAP S/4HANA Cloud Private Edition - Receive System Handover Notification":"Sistem teslim bildirimini al.",
+  "SAP S/4HANA Cloud Private Edition - Set-up the Sandbox System and Prepare the Shell System":"Sandbox ve Shell sistemi hazırla.",
+  "SAP S/4HANA Cloud Private Edition - Set up Users And Assign Authorizations":"Kullanıcıları oluştur ve yetkileri ata.",
+  "SAP BTP - Access to SAP Business Technology Platform":"BTP'ye giriş yap ve temel gezinmeyi doğrula.",
+  "SAP BTP - Create Users in the SAP Business Technology Platform Cockpit":"BTP cockpit'te kullanıcılar oluştur.",
+  "SAP BTP - Activate SAP Build Entitlements":"SAP Build yetkilerini aktive et.",
+  "SAP BTP - Subscribe to Cloud Integration Automation Service within SAP BTP":"Cloud Integration Automation Service aboneliğini kur.",
+  "SAP BTP - Set Up SAP Start and SAP Mobile Start":"SAP Start ve Mobile Start'ı yapılandır.",
+  "SAP Analytics Cloud - Initial System Access for SAP Analytics Cloud":"SAP Analytics Cloud'a giriş yap ve yönetici hesabını oluştur.",
+  "Check Interoperability":"Mevcut sistemlerle uyumluluk ve entegrasyon senaryolarını değerlendir.",
+  "Review BTP Services":"BTP servislerini ve mimari seçeneklerini gözden geçir.",
+  "Define Clean Core Approach for Extensibility Scenarios":"Her özelleştirme için Clean Core uyumlu yaklaşımı belirle.",
+  "Define the Objects and Tools for Business Data Validation":"İş veri doğrulama araç ve nesnelerini tanımla.",
+  "Role of the Technical Team in a SAP S/4HANA Cloud Private Edition Project":"Teknik ekibin proje rolünü netleştir.",
+  "Perform Initial Business Process Assessment for SAP S/4HANA Cloud":"İş süreçlerinin ilk değerlendirmesini yap.",
+  "Determine Process Scope":"Uygulama süreç kapsamını belirle.",
+  "Prepare and Install a Content Development Tool":"İçerik geliştirme aracını kur.",
+  "Define Project Scope and Objectives":"Proje kapsamı ve hedeflerini tanımla.",
+  "Define Cutover Strategy":"Cutover stratejisini belirle.",
+  "Define Technical Architecture":"Teknik mimariyi tanımla.",
+  "Prepare Interface Register":"Interface kaydını hazırla.",
+  "Run a Legacy Impact Analysis on Interface Inventory and Data Integration":"Mevcut interfacelerin dönüşüm etkisini analiz et.",
+  "Run a first Assessment on Training Requirements":"İlk eğitim ihtiyaç değerlendirmesini yap.",
+  "Determine Business Process Performance Baseline":"Mevcut süreç performans temelini belirle.",
+  "Model As-Is Business Processes":"Mevcut iş süreçlerini modelleştir.",
+  "Run a Technical Security Self Check":"Teknik güvenlik öz değerlendirmesini yap.",
+  "Define Technical System Conversion Approach":"Sistem dönüşüm teknik yaklaşımını tanımla.",
+  "Define Conversion Cycles":"Dönüşüm döngülerini planla.",
+  "Define the Need of Dual Maintenance":"Dual maintenance ihtiyacını değerlendir.",
+  "Define Technical Selective Data Transition Approach":"Seçici veri geçişi teknik yaklaşımını tanımla.",
+  "Define the Landscape Architecture Framework":"Sistem mimarisi çerçevesini oluştur.",
+  "Conduct Data Scoping Analysis":"Veri kapsam analizini gerçekleştir.",
+  "Define Migration Cycle":"Migrasyon döngüsünü belirle.",
+  "Verify Access to Systems for Integration":"Entegrasyon sistemlerine erişimi doğrula.",
+  "Select Key Integrations for Fit-to-Standard":"Fit-to-Standard için kritik entegrasyonları seç.",
+  "Set up Integrations for Fit-to-Standard Workshops":"Atölyeler için entegrasyonları kur.",
+  "Perform Data Volume Management":"Veri hacmi analizi yap ve arşivleme planla.",
+  "Synchronization of Customers/Vendors into Business Partners (CVI)":"Müşteri/tedarikçileri business partner'a senkronize et.",
+  "Reconciliation of Financial Data":"Finansal verileri mutabık et.",
+  "Add-On Compatibility Check":"Add-on uyumluluğunu kontrol et.",
+  "Cleanup Unused Code":"Kullanılmayan custom kodu temizle.",
+  "Close Open Business Documents":"Açık iş belgelerini kapat.",
+  // Explore
+  "Review the SAP S/4HANA Cloud Onboarding Journey":"SAP S/4HANA Cloud onboarding rehberini incele.",
+  "Direct and Manage Project Execution":"Proje yürütmesini yönet ve yönlendir.",
+  "Update Project Management Documents":"Proje yönetim belgelerini güncelle.",
+  "Manage Project Issues, Risks, and Changes":"Sorunları, riskleri ve değişiklikleri kayıt altına al ve yönet.",
+  "Communicate Project Status and Progress":"Proje durumunu paydaşlara düzenli ilet.",
+  "Deliver Program Goal Alignment Survey":"Program hedef hizalama anketini uygula.",
+  "Prepare and validate Value Dashboard":"Değer panosunu hazırla ve doğrula.",
+  "Update and Prioritize Backlog":"Backlog'u güncelle ve önceliklendir.",
+  "Estimate Backlog Items Effort":"Backlog kalemlerinin efor tahminini yap.",
+  "Conduct Release and Sprint Planning Meeting":"Sprint planlama toplantısını gerçekleştir.",
+  "Validate Release and Sprint Plan Against SoW":"Sprint planını SoW ile doğrula.",
+  "Conduct Project Quality Gate for Explore Phase":"Explore fazı kalite kapısı kontrolünü yap.",
+  "Document System Conversion Runbook":"Sistem dönüşüm runbook'unu oluştur.",
+  "Technical Pre-Conversion Activities":"Dönüşüm öncesi teknik aktiviteleri tamamla.",
+  "Functional Pre-Conversion Activities":"Dönüşüm öncesi fonksiyonel aktiviteleri tamamla.",
+  "Functional Pre-Conversion Activities: Finance Specific":"Finans alanı dönüşüm öncesi aktivitelerini tamamla.",
+  "System Conversion Execution":"Sistem dönüşümünü uygula.",
+  "Execute Shell System Conversion":"Shell sistem dönüşümünü gerçekleştir.",
+  "Functional Post-Conversion Activities":"Dönüşüm sonrası fonksiyonel aktiviteleri tamamla.",
+  "Functional Post-Conversion Activities: Finance Specific":"Finans alanı dönüşüm sonrası aktivitelerini tamamla.",
+  "Enable SAP Fiori":"SAP Fiori'yi aktive et ve yapılandır.",
+  "Set up and Configure Data Migration Tools":"Veri migrasyon araçlarını kur ve yapılandır.",
+  "Set Up Dual Maintenance":"Dual maintenance'ı yapılandır.",
+  "Run Initial Testing":"İlk testleri çalıştır.",
+  "Resolve Inconsistencies in the Productive Landscape":"Prodüksiyon sistemindeki tutarsızlıkları gider.",
+  "Fit-to-Standard Workshops Execution":"Fit-to-Standard atölyelerini gerçekleştir.",
+  "Execution of Standard Business Processes - Customer":"Müşteri ile standart süreçleri demostr et.",
+  "Fit-to-Standard Analysis Documentation":"Analiz sonuçlarını belgele.",
+  "Fit-to-Standard Workshop Validation":"Atölye çıktılarını doğrula.",
+  "Design Workshops and Documentation":"Tasarım atölyelerini yürüt ve belgele.",
+  "Review and Customer Sign-off":"Müşteri incelemesi ve onayını al.",
+  "Conduct Fit-to-Standard Workshops":"Fit-to-Standard atölyelerini yönet.",
+  "Document Requirement":"Gereksinimleri standart formatta belgele.",
+  "Document Preset Parameters":"Ön tanımlı parametreleri belgele.",
+  "Document Business Process Target State":"Hedef iş süreci durumunu belgele.",
+  "Document Configuration Values":"Konfigürasyon değerlerini belgele.",
+  "Document Master Data Requirements":"Master data gereksinimlerini belgele.",
+  "Document Analytics Requirements":"Analitik gereksinimlerini belgele.",
+  "Document Extensibility Requirements":"Extensibility gereksinimlerini belgele.",
+  "Document SAP Build Requirements":"SAP Build gereksinimlerini belgele.",
+  "Prioritize Delta Requirements":"Delta gereksinimleri önceliklendir.",
+  "Validate Delta Requirements":"Delta gereksinimleri doğrula.",
+  "Execute Solution Validation Survey":"Çözüm doğrulama anketini uygula.",
+  "Define Coding Guidelines for New Custom Development Requests":"Yeni custom geliştirmeler için kodlama kılavuzları oluştur.",
+  "Analyze Custom Code Volume":"Custom kod hacmini analiz et.",
+  "Classify Custom Code":"Custom kodu etki düzeyine göre sınıflandır.",
+  "Develop Remediation Plan":"Clean Core uyumlu düzeltme planı hazırla.",
+  "Conduct Data Migration Design":"Veri migrasyon tasarımını gerçekleştir.",
+  "Determine the Required Master Data for SAP S/4HANA Cloud":"Gerekli master datayı belirle.",
+  "Determine Migration Cockpit Field Structures for S/4HANA Cloud":"Migrasyon cockpit alan yapılarını tanımla.",
+  "Extract and Transform Legacy Data":"Legacy veriyi çıkar ve dönüştür.",
+  "Perform Data Cleansing Activities":"Veri temizleme aktivitelerini yürüt.",
+  "Handover of Requirements to Integration Expert":"Entegrasyon gereksinimlerini uzmanına devret.",
+  "Optimize and Align Integration and Interface List":"Entegrasyon listesini optimize et ve hizala.",
+  "Review and Customer Sign-off List of Integrations":"Entegrasyon listesini müşteriyle gözden geçir ve onayla.",
+  "Current Integrations Impact Analysis":"Mevcut entegrasyonların S/4HANA etkisini analiz et.",
+  "Define Target Integration":"Hedef entegrasyon mimarisini tanımla.",
+  "Apply Clean Core Principles For Integration":"Entegrasyonlarda Clean Core prensiplerini uygula.",
+  "Handover of Requirements for Extensions to Developer":"Extension gereksinimlerini geliştiriciye devret.",
+  "Check for Sample Scenario in SAP Extensibility Explorer":"SAP Extensibility Explorer'da örnek senaryo ara.",
+  "Check for Available Products":"Mevcut ürün ve çözümleri kontrol et.",
+  "Collect Details for Extensions":"Extension detaylarını topla.",
+  "Detail Design on Key-User Extensibility":"Key-user extensibility tasarımını detaylandır.",
+  "Detail Design of Side-by-Side Extensibility":"Side-by-side extensibility tasarımını detaylandır.",
+  "Detail Design of Extension with Classic Extensibility Techniques":"Klasik extensibility tasarımını detaylandır.",
+  "Review and Sign off Design of Extension":"Extension tasarımını incele ve onayla.",
+  "Handover of Requirements to Analytics Expert":"Analitik gereksinimlerini uzmanına devret.",
+  "Review My Fiori Apps Reference Library for Embedded Analytics":"Embedded analytics için Fiori uygulama kütüphanesini incele.",
+  "Review Scope Items and Requirements for Embedded Analytics":"Embedded analytics kapsam maddelerini gözden geçir.",
+  "Design Analytics Architecture":"Analitik mimarisini tasarla.",
+  "Initial Analytics Settings":"Başlangıç analitik ayarlarını yapılandır.",
+  "Determine Details for Customer-Driven Analytics and Extension of Reports":"Müşteriye özgü raporlar için detayları belirle.",
+  "Review and Customer Sign off for Analytics":"Analitik tasarımını müşteriyle gözden geçir ve onayla.",
+  "Design the Launchpad Layout Workshop Execution":"Launchpad düzeni atölyesini gerçekleştir.",
+  "User Experience / User Interface Design":"UX/UI tasarımını oluştur.",
+  "Authorization Roles and Assignments":"Yetkilendirme rollerini ve atamalarını tasarla.",
+  "Review SAP Build requirements from workshops":"Atölyelerden gelen SAP Build gereksinimlerini gözden geçir.",
+  "Define SAP Build process automation scenarios":"SAP Build otomasyon senaryolarını tanımla.",
+  "Setup SAP Build Process Automation Components":"SAP Build bileşenlerini kur.",
+  "Identify Learning Needs Identification Process":"Öğrenme ihtiyacı belirleme sürecini tanımla.",
+  "Create Learning Curriculum":"Eğitim müfredatı oluştur.",
+  "Review Enablement Business Review":"Enablement iş incelemesini yap.",
+  "Create Test Strategy":"Test stratejisi belgesi hazırla.",
+  "Determine Test Scope":"Test kapsamını belirle.",
+  "Create and Schedule an Overall Test Plan":"Genel test planını oluştur ve zamanla.",
+  "Validate Sizing":"Sistem boyutlandırmasını doğrula.",
+  "Evaluate Impact on Operations":"Yeni sistemin operasyonel etkisini değerlendir.",
+  "Define Customer COE Key Capability":"Müşteri CoE'nin temel yetkinliklerini tanımla.",
+  "Specify Support and Operation Model":"Destek ve operasyon modelini belirle.",
+  "Conduct New Implementation Clean Core Quality Gate 2":"Clean Core QG2 kontrolünü yap.",
+  "Review your Clean Core Assessment":"Clean Core değerlendirmeni gözden geçir.",
+  // Realize
+  "Plan and Execute Agile Sprints":"Agile sprintleri planla ve uygula.",
+  "Enablement Content Development":"Eğitim içeriği geliştirme planını hazırla.",
+  "Create a Content Creation Plan":"İçerik oluşturma planını hazırla.",
+  "Manage Content Development Plan":"İçerik geliştirme planını yönet.",
+  "Prepare Change Impact Workshops":"Değişim etkisi atölyeleri için içerik ve katılımcıları hazırla.",
+  "Conduct Change Impact Assessment":"Değişim etkisi değerlendirmesini gerçekleştir.",
+  "Manage Change Impacts":"Değişim etkilerini yönet ve planı güncelle.",
+  "Execute Data Migration Cycle":"Veri migrasyon döngüsünü çalıştır.",
+  "Resolve inconsistency in the Production System":"Prodüksiyon sistemindeki tutarsızlıkları gider.",
+  "Perform Functional Post-Migration Activities":"Migrasyon sonrası fonksiyonel aktiviteleri tamamla.",
+  "Perform Functional Post-Migration Activities: Finance Specific":"Finans alanı migrasyon sonrası aktivitelerini tamamla.",
+  "Access Quality System and Reset Password":"Kalite sistemine giriş yap ve şifreyi sıfırla.",
+  "Create Users in the Quality System":"Kalite sisteminde kullanıcılar oluştur.",
+  "Transport Fiori Rapid Activation":"Fiori rapid activation'ı transport et.",
+  "Setup Quality System for New Implementation":"Kalite sistemini yeni kurulum için yapılandır.",
+  "Setup Quality System for System Conversion":"Kalite sistemini sistem dönüşümü için yapılandır.",
+  "Setup Quality System for Selective Data Transition":"Kalite sistemini seçici veri geçişi için yapılandır.",
+  "Request the SAP S/4HANA Cloud Production System":"Prodüksiyon sistemini resmi olarak talep et.",
+  "Create a Content Development Plan":"İçerik geliştirme planını oluştur.",
+  "Manage Content Design and Content Development":"İçerik tasarımı ve geliştirme sürecini yönet.",
+  "Plan the Sprint":"Sprint hedeflerini belirle ve planla.",
+  "Execute the Sprint":"Sprint görevlerini uygula.",
+  "Close the Sprint":"Sprintin çıktılarını değerlendir ve kapat.",
+  "Execute the System Conversion of the Development System":"Development sisteminin dönüşümünü gerçekleştir.",
+  "Setup and Enable Analytics":"Analytics'i aktive et ve yapılandır.",
+  "Enable SAP Fiori in the Development System":"Development sisteminde Fiori'yi aktive et.",
+  "Execute Custom Code Remediation":"Custom kod düzeltmesini uygula.",
+  "Implementation of Adjustments and Redesign of Integrations":"Entegrasyonlardaki düzeltmeleri uygula.",
+  "Configure Additional Features":"Ek özellikleri yapılandır.",
+  "Integrate Enhancements for Additional Features":"Ek özellikler için geliştirmeleri entegre et.",
+  "Review and Testing of the Remediated Custom Code for Performance":"Düzeltilen custom kodun performans testini yap.",
+  "Execute the System Conversion of the Quality System":"Kalite sisteminin dönüşümünü gerçekleştir.",
+  "Enable SAP Fiori in the Quality System":"Kalite sisteminde Fiori'yi aktive et.",
+  "Execute Additional Activities in the Converted Quality System":"Dönüştürülen kalite sisteminde ek aktiviteleri tamamla.",
+  "Run Handover Session":"Devir teslim oturumunu gerçekleştir.",
+  "Create the Custom Business Roles for SAP Fiori":"SAP Fiori için custom iş rolleri oluştur.",
+  "Configure Master Data":"Master datayı yapılandır.",
+  "Configure Core Finance":"Temel finans konfigürasyonunu yap.",
+  "Perform Main Configuration":"Ana konfigürasyonu gerçekleştir.",
+  "Setup Integration for SAP S/4HANA Cloud and SAP Business Network":"SAP Business Network entegrasyonunu kur.",
+  "Enable Data Protection and Privacy Features":"Veri koruma ve gizlilik özelliklerini aktive et.",
+  "Run Unit Test":"Unit testleri çalıştır.",
+  "Run String Test":"String testleri çalıştır.",
+  "Run Solution Walk-Through":"Çözüm genel bakışını gerçekleştir.",
+  "Resolve Identified Issues":"Tespit edilen sorunları çöz.",
+  "Document Configured Settings":"Yapılandırılan ayarları belgele.",
+  "Development of Clean Core Compliant Extensions":"Clean Core uyumlu extensionlar geliştir.",
+  "Enhancement and Development of User Interface":"Kullanıcı arayüzünü geliştir.",
+  "Custom Development":"Custom geliştirmeleri tamamla.",
+  "Prepare System for SAP Build Process Automation":"Sistemi SAP Build için hazırla.",
+  "Setup and Develop Key-User Extensions":"Key-user extensionları geliştir ve kur.",
+  "Setup and Develop Classic Extension in the DEV Landscape":"Development ortamında klasik extension geliştir.",
+  "Setup and Develop Side-by-Side Extensions":"Side-by-side extensionları geliştir.",
+  "Execute Data Migration Using Staging Tables in SAP S/4HANA":"Staging tablolarıyla veri migrasyonu yap.",
+  "Execute Migrate Data Directly from an Existing SAP System":"Mevcut SAP sisteminden doğrudan migrasyon yap.",
+  "Transport Data Migration Project to the Test Tenant":"Migrasyon projesini test tenant'a transport et.",
+  "Conduct Sprint Review Meeting":"Sprint değerlendirme toplantısını gerçekleştir.",
+  "Signoff Sprint Results":"Sprint sonuçlarını onayla.",
+  "Conduct Sprint Retrospective":"Sprint retrospektifini yürüt.",
+  "Setup and Enable Embedded Analytics":"Embedded analytics'i aktive et.",
+  "Configure Analytics in the Quality System":"Kalite sisteminde analitik konfigürasyonu yap.",
+  "Setup Integrations in Development Landscape":"Development ortamında entegrasyonları kur.",
+  "Setup Integrations in Quality Assurance Landscape":"Kalite ortamında entegrasyonları kur.",
+  "Set Up Integration using Cloud Integration Automation Service":"CIAS kullanarak entegrasyonu kur.",
+  "Setup Integration for SAP S/4HANA Cloud Private Edition System and SAP Business Network":"SAP Business Network entegrasyonunu kur.",
+  "Access Production System and Reset Password":"Prodüksiyon sistemine giriş yap ve şifreyi sıfırla.",
+  "Set up Production System":"Prodüksiyon sistemini yapılandır.",
+  "Implement User Access and Security":"Kullanıcı erişim ve güvenlik modelini uygula.",
+  "Verify User Authorizations / Classification in Production Systems":"Prodüksiyon sisteminde yetkilendirmeleri doğrula.",
+  "Perform Value Audit":"Değer denetimini gerçekleştir.",
+  "Deploy SAP Build Process Automation scripts in Production Tenant":"SAP Build scriptlerini prodüksiyona deploy et.",
+  "Prepare Testing Prerequisites":"Test ön koşullarını hazırla.",
+  "Set Up Selected Third Party Automated Testing Tools":"Otomatik test araçlarını kur.",
+  "Defining Test Cases/Test Scripts":"Test senaryolarını ve scriptlerini oluştur.",
+  "Create Test Plan":"Test planını oluştur.",
+  "Establish Readiness for User Acceptance Test":"UAT hazırlığını sağla.",
+  "Conduct Final Data Quality Assessment":"Son veri kalitesi değerlendirmesini yap.",
+  "Transport Data Migration Project to Production":"Migrasyon projesini prodüksiyona transport et.",
+  "Perform Integration Validation":"Uçtan uca entegrasyon doğrulamasını yap.",
+  "Execute the Test Cases":"Test senaryolarını çalıştır.",
+  "Defect Management and Re-testing":"Hataları yönet ve re-test yap.",
+  "Test Execution Analysis and Reporting":"Test sonuçlarını analiz et ve raporla.",
+  "Plan Learning Logistics":"Eğitim lojistiğini planla.",
+  "Setup System Landscape and Data":"Eğitim sistemi ve verilerini hazırla.",
+  "Deliver Enablement":"Eğitimi ver.",
+  "Assess Training Satisfaction":"Eğitim memnuniyetini değerlendir.",
+  "Setup integrations in the Productive Landscape":"Prodüksiyon ortamında entegrasyonları kur.",
+  "Set Up Integration in the P-Landscape using Cloud Integration Automation Service":"CIAS ile prodüksiyon entegrasyonunu kur.",
+  "Create Cutover Plan and Documentation":"Cutover planını ve belgelerini hazırla.",
+  "Create the Cutover Plan for System Conversion":"Sistem dönüşümü cutover planını oluştur.",
+  "Verify Analytics in the Production System":"Prodüksiyonda analitik konfigürasyonunu doğrula.",
+  "Deploy Key-user Extensions to the PROD Landscape":"Key-user extensionları prodüksiyona deploy et.",
+  "Development and Setup of Side-by-Side Extension in the PROD Landscape":"Prodüksiyonda side-by-side extension geliştir.",
+  "Deploy Classic Extension to the PROD Landscape":"Klasik extensionı prodüksiyona deploy et.",
+  "Implement Operations Support Process and Tools":"Operasyon destek süreçlerini ve araçlarını uygula.",
+  "Plan Transition and Handover":"Geçiş ve devir teslim planını hazırla.",
+  "Conduct New Implementation Clean Core Quality Gate 3":"Clean Core QG3 kontrolünü yap.",
+  "Conduct Project Quality Gate for Realize Phase":"Realize fazı kalite kapısı kontrolünü yap.",
+  // Deploy
+  "Manage Project Issues, Risks, and Changes":"Sorunları, riskleri ve değişiklikleri yönet.",
+  "Operational Readiness":"Operasyonel hazırlığı doğrula.",
+  "Tracking Goals":"Hedefleri takip et.",
+  "Perform Dress Rehearsal":"Cutover tam simülasyonunu gerçekleştir.",
+  "Validate Cutover Procedures":"Cutover prosedürlerini doğrula.",
+  "Document Lessons Learned":"Öğrenilen dersleri belgele.",
+  "Execute the System Conversion of the Dress Rehearsal System":"Dress rehearsal sistem dönüşümünü gerçekleştir.",
+  "Execute Cutover Tasks per the Cutover Plan":"Cutover planındaki tüm görevleri sırasıyla uygula.",
+  "Execute the System Conversion of the Production System (Cutover)":"Prodüksiyon sistemi dönüşümünü cutover kapsamında gerçekleştir.",
+  "Set the Production System to Live":"Prodüksiyon sistemini canlıya al.",
+  "Validate Production System":"Prodüksiyon sistemini doğrula.",
+  "Confirm Go-Live Readiness":"Canlıya geçiş hazırlığını onayla.",
+  "Provide Hypercare Support":"Canlı sonrası yoğun destek ver.",
+  "Resolve and Close Open Issues":"Açık sorunları çöz ve kapat.",
+  "Handover Operations Responsibility":"Operasyon sorumluluğunu devret.",
+  "Conduct Project Quality Gate for Deploy Phase":"Deploy fazı kalite kapısı kontrolünü yap.",
+  // Run
+  "Establish Governance Model":"Yönetişim modelini ve iyileştirme sürecini uygula.",
+  "Manage Change Request":"Değişiklik taleplerini yönet.",
+  "Define Continuous Improvement Process":"Sürekli iyileştirme sürecini tanımla.",
+  "Perform Benchmarking Assessment for Value Realization Comparison":"Değer gerçekleşmesi için kıyaslama değerlendirmesi yap.",
+  "Establish and implement a value audit strategy":"Değer denetim stratejisini oluştur ve uygula.",
+  "Establish and implement a benchmarking strategy":"Kıyaslama stratejisini oluştur ve uygula.",
+  "Run the User Experience Business Benefits Workshop":"UX iş faydaları atölyesini gerçekleştir.",
+  "Assess Solution Performance":"Çözüm performansını değerlendir.",
+  "Establish Service Management Framework":"Servis yönetimi çerçevesini oluştur.",
+  "Access SAP Support Service":"SAP destek servislerine erişim sağla.",
+  "Operate the New Solution":"Yeni sistemi işlet ve yönet.",
+  "Review Upcoming Regulatory Changes":"Yaklaşan düzenleyici değişiklikleri takip et.",
+  "Monitor the New System":"Sistemi izle ve performansı takip et.",
+  "Perform Technical Assessment of the SAP BTP Solution":"SAP BTP çözümünün teknik değerlendirmesini yap.",
+  "Monitor SAP Build Process Automation Jobs":"SAP Build otomasyon işlerini izle.",
+  "Continuously Optimize IT Operations":"IT operasyonlarını sürekli optimize et.",
+  "Manage Incident":"Olayları tanımla ve yönet.",
+  "Manage Problem":"Kök neden analizini yap ve problemleri çöz.",
+  "Periodically Update your SAP System":"SAP sistemini periyodik olarak güncelle.",
+  "Revise SAP Fiori apps":"SAP Fiori uygulamalarını gözden geçir.",
+  "Initiate a New Improvement and Innovation Project":"Yeni iyileştirme veya inovasyon projesi başlat.",
+  "Perform a Business Scenario and Solution Mapping":"İş senaryolarını çözümle eşleştir.",
+  "Conduct Clean Core Quality Gate 5":"Clean Core QG5 kontrolünü yap.",
+  // Customer Team Enablement
+  "Access a Trial Solution":"SAP S/4HANA Cloud trial sistemine giriş yap.",
+  "Request Knowledge Assessment":"Bilgi değerlendirmesi talep et.",
+  "Create Self-Enablement Plan":"Self-enablement planını oluştur.",
+  "Self-Enable on SAP Cloud ALM":"SAP Cloud ALM'de kendi kendini eğit.",
+  "Self-Enable on Experience Management":"Experience Management'ta kendi kendini eğit.",
+  "Self-Enable on SAP Signavio":"SAP Signavio'da kendi kendini eğit.",
+  "Self-Enable on Selective Data Transition":"Seçici veri geçişinde kendi kendini eğit.",
+  "Self-Enable on SAP Fiori for SAP S/4HANA":"SAP Fiori'de kendi kendini eğit.",
+  "Self-Enable on SAP LeanIX":"SAP LeanIX'te kendi kendini eğit.",
+  "Review Self-enablement Materials":"Self-enablement materyallerini incele.",
+  "Self-Enable on Extensibility":"Extensibility konusunda kendi kendini eğit.",
+  "Self-Enable on Identity and Access Management and Authorization Concept":"IAM ve yetkilendirme konusunda kendi kendini eğit.",
+  "Self-Enable on SAP Business Technology Platform":"SAP BTP'de kendi kendini eğit.",
+  "Self-Enable on SAP Business Network":"SAP Business Network'te kendi kendini eğit.",
+  "Review Enablement Strategy Research and Interviews":"Enablement stratejisi araştırmasını incele.",
+  "Document Enablement Strategy":"Enablement stratejisini belgele.",
+  "Identify Learning Needs for Project Team":"Proje ekibinin öğrenme ihtiyaçlarını belirle.",
+  "Create Learning Curriculum based on SAP Standard Learning":"SAP standart içeriklerine dayalı müfredat oluştur.",
+  "Conduct Business Review":"İş incelemesini gerçekleştir.",
+  // Data Management
+  "Develop the Data Migration Approach and Plan":"Migrasyon stratejisi ve planını oluştur.",
+  "Conduct Data Migration Design":"Kaynak-hedef veri eşleştirmesini tasarla.",
+  "Execute Data Migration Cycle":"Migrasyon programlarını çalıştır ve doğrula.",
+  "Run Initial Testing":"İlk testleri çalıştır.",
+  "Conduct Final Data Quality Assessment":"Son veri kalitesi değerlendirmesini yap.",
+  "Execute Cutover Tasks per the Cutover Plan":"Cutover planındaki görevleri uygula.",
+  // OCM
+  "Identify Stakeholders":"Tüm paydaşları tanımla.",
+  "Assess Stakeholders":"Paydaşların değişime hazırlığını değerlendir.",
+  "Derive Stakeholder Engagement Activities":"Paydaş katılım aktivitelerini belirle.",
+  "Define Organizational Change Management Roles":"OCM rollerini tanımla.",
+  "Staff Organizational Change Management Resources":"OCM kaynaklarını görevlendir.",
+  "Define Organizational Change Management Set-up":"OCM yapılanmasını belirle.",
+  "Determine Action Areas for Organizational Change Management":"OCM aksiyon alanlarını belirle.",
+  "Develop First Version of the Change Plan":"İlk değişim planını oluştur.",
+  "Establish Updating Procedure for the Change Plan":"Değişim planı güncelleme prosedürünü belirle.",
+  "Analyze Communication Channels":"İletişim kanallarını analiz et.",
+  "Analyze Communication Needs":"İletişim ihtiyaçlarını analiz et.",
+  "Create Communication Plan":"İletişim planını oluştur.",
+  "Prepare Communication Activities":"İletişim materyallerini hazırla.",
+  "Deliver Communication Activities":"İletişim aktivitelerini uygula.",
+  "Update Communication Plan":"İletişim planını güncelle.",
+  // Testing
+  "Prepare Testing Prerequisites":"Test ön koşullarını hazırla.",
+  "Set Up Selected Third Party Automated Testing Tools":"Otomatik test araçlarını kur.",
+  "Defining Test Cases/Test Scripts":"Test senaryolarını oluştur.",
+  "Establish Readiness for User Acceptance Test":"UAT hazırlığını tamamla.",
+  // Analytics
+  "Develop the Analytics Approach and Plan":"Analitik strateji ve planını hazırla.",
+  "Design Analytics Architecture":"Analitik mimarisini tasarla.",
+  "Setup and Enable Embedded Analytics":"Embedded analytics'i aktive et.",
+  "Configure Analytics in the Quality System":"Kalite sisteminde analitik konfigürasyonu yap.",
+  // Operations
+  "Clarify Operational Requirement":"Canlı operasyon gereksinimlerini netleştir.",
+  "Ensure Operational Readiness":"Operasyonel hazırlığı sağla.",
+  "Evaluate Impact on Operations":"Yeni sistemin operasyona etkisini değerlendir.",
+  "Specify Support and Operation Model":"Destek ve operasyon modelini belirle.",
+  "Implement Operations Support Process and Tools":"Operasyon destek süreçlerini uygula.",
+  "Plan Transition and Handover":"Geçiş ve devir teslim planını hazırla.",
+  "Operational Readiness":"Operasyonel hazırlık durumunu doğrula.",
+  "Tracking Goals":"Operasyonel hedefleri takip et.",
+  "Resolve and Close Open Issues":"Açık sorunları çöz ve kapat.",
+  "Handover Operations Responsibility":"Operasyon sorumluluğunu destek ekibine devret.",
+  "Establish Service Management Framework":"Servis yönetimi çerçevesini kur.",
+  "Access SAP Support Service":"SAP destek servislerine erişim sağla.",
+  "Operate the New Solution":"Yeni sistemi işlet.",
+  "Verify User Authorizations / Classification in Production Systems":"Prodüksiyonda yetkilendirmeleri doğrula.",
+  "Review Upcoming Regulatory Changes":"Düzenleyici değişiklikleri takip et.",
+  "Monitor the New System":"Sistem performansını izle.",
+  "Perform Technical Assessment of the SAP BTP Solution":"BTP çözümünün teknik değerlendirmesini yap.",
+  "Monitor SAP Build Process Automation Jobs":"SAP Build işlerini izle.",
+  "Continuously Optimize IT Operations":"IT operasyonlarını sürekli iyileştir.",
+  "Manage Incident":"Olayları yönet.",
+  "Manage Problem":"Problemleri ve kök nedenleri yönet.",
+};
+
+/* ══════════════ L3 PANEL HELPERS ══════════════ */
+function renderL3Panel(k,i,l3d,pnlId){
+  const pct=l3d.pct!=null?l3d.pct:0;
+  const st=l3d.st||'ns';
+  const owner=l3d.owner||'';
+  const due=l3d.due||'';
+  const stLbl={ns:'Not Started',ip:'In Progress',dn:'Done',bl:'Blocked'};
+  return`<div class="l3-prog-row">
+    <span class="l3-prog-lbl">Status</span>
+    <div class="l3-st-row">
+      ${['ns','ip','dn','bl'].map(s=>`<button class="l3-stb ${s} ${st===s?'act':''}" onclick="setL3St('${esc(k)}',${i},'${s}','${pnlId}')">${{ns:'—',ip:'▶',dn:'✓',bl:'✕'}[s]} ${stLbl[s]}</button>`).join('')}
+    </div>
+  </div>
+  <div class="l3-prog-row">
+    <span class="l3-prog-lbl">Progress</span>
+    <input type="range" min="0" max="100" value="${pct}" class="l3-mini-sl" oninput="updL3Pct('${esc(k)}',${i},this.value,'${pnlId}')">
+    <span class="l3-mini-pv" id="l3pv_${pnlId}">${pct}%</span>
+  </div>
+  <div class="l3-prog-row">
+    <span class="l3-prog-lbl">Owner</span>
+    <input class="l3-inp" type="text" placeholder="Owner adı…" value="${esc(owner)}" id="l3own_${pnlId}">
+    <input class="l3-inp" type="date" value="${due}" id="l3due_${pnlId}" style="max-width:120px">
+    <button class="l3-save" onclick="saveL3('${esc(k)}',${i},'${pnlId}')">💾 Save</button>
+  </div>`;
+}
+
+function toggleL3Panel(pnlId,btn){
+  const el=document.getElementById(pnlId);
+  if(!el)return;
+  el.classList.toggle('open');
+  btn.classList.toggle('active');
+}
+
+function setL3St(k,i,s,pnlId){
+  const t=ensure(k);if(!t)return;
+  if(!t.l3data)t.l3data={};
+  if(!t.l3data[i])t.l3data[i]={};
+  t.l3data[i].st=s;
+  t.l3data[i].manuallySet=true;  // flag: user has manually set this
+  if(s==='dn'){t.l3data[i].pct=100;if(!t.l3chk)t.l3chk={};t.l3chk[i]=true;}
+  else if(s==='ns'){t.l3data[i].pct=0;if(t.l3chk)t.l3chk[i]=false;}
+  _syncL2(k);
+  save();
+  const el=document.getElementById(pnlId);
+  if(el)el.innerHTML=renderL3Panel(k,i,t.l3data[i],pnlId);
+  _updateL2Badge(k);
+}
+
+function updL3Pct(k,i,v,pnlId){
+  const t=ensure(k);if(!t)return;
+  if(!t.l3data)t.l3data={};
+  if(!t.l3data[i])t.l3data[i]={};
+  t.l3data[i].pct=+v;
+  t.l3data[i].manuallySet=true;  // flag: user has manually set this
+  if(+v===100){t.l3data[i].st='dn';if(!t.l3chk)t.l3chk={};t.l3chk[i]=true;}
+  else if(+v===0){t.l3data[i].st='ns';if(t.l3chk)t.l3chk[i]=false;}
+  else{t.l3data[i].st='ip';}
+  _syncL2(k);
+  save();
+  const pvEl=document.getElementById('l3pv_'+pnlId);
+  if(pvEl)pvEl.textContent=v+'%';
+  _updateL2Badge(k);
+}
+
+function saveL3(k,i,pnlId){
+  const t=ensure(k);if(!t)return;
+  if(!t.l3data)t.l3data={};
+  if(!t.l3data[i])t.l3data[i]={};
+  const ownEl=document.getElementById('l3own_'+pnlId);
+  const dueEl=document.getElementById('l3due_'+pnlId);
+  if(ownEl)t.l3data[i].owner=ownEl.value;
+  if(dueEl)t.l3data[i].due=dueEl.value;
+  save();toast('✅ Sub-task saved');
+}
+
+// Sync L2 pct/st from L3 average — writes into task store
+function _syncL2(k){
+  const t=ensure(k);if(!t)return;
+  t.pct=calcL2Pct(k);
+  t.st=calcL2St(k);
+}
+
+// Update L2 badge elements in-place (badge + drawer header) without re-render
+function _updateL2Badge(k){
+  const pct=calcL2Pct(k);
+  const st=calcL2St(k);
+  const l2Id='l2_'+k.replace(/[^a-zA-Z0-9]/g,'_');
+  // phase detail badge
+  const bdg=document.getElementById('mpct_'+l2Id);
+  if(bdg)bdg.textContent=pct+'%';
+  // drawer header % if open
+  const drwPctEl=document.querySelector('.drw.open .drw-meta [data-pct]');
+  if(drwPctEl)drwPctEl.textContent=pct+'%';
+}
+
+/* ══════════════ DRAWER (from matrix) ══════════════ */
+function openDrw(ws,ph,l2){
+  DS={ws,ph,l2,tab:'tasks'};
+  if(!CF[key(ws,ph,l2)])CF[key(ws,ph,l2)]={};
+  renderDrw();
+  document.getElementById('drwBg').classList.add('show');
+  document.getElementById('drw').classList.add('open');
+}
+function closeDrawer(){
+  document.getElementById('drwBg').classList.remove('show');
+  document.getElementById('drw').classList.remove('open');
+  if(VIEW==='matrix')renderMatrix();
+  else renderPhaseDetail(ACTIVE_PH);
+}
+function renderDrw(){
+  const {ws,ph,l2}=DS;const k=key(ws,ph,l2);const t=td(k);const c=PH_COLOR[ph];
+  document.getElementById('drwHdr').innerHTML=`
+    <div class="drw-title">${l2}<span class="drw-close" onclick="closeDrawer()">✕</span></div>
+    <div class="drw-meta">
+      <span style="background:${c};color:#fff;padding:2px 9px;border-radius:12px;font-size:10px;font-weight:700">${ph}</span>
+      <span class="txs txm">${ws}</span>
+      <span class="sb ${stK(t.st)}">${stL(t.st)}</span>
+      <span style="font-size:10px;font-family:var(--mo);color:var(--tx3)">${t.pct}%</span>
+      ${t.ai==='diff'?'<span class="sb s-df">🟡 Differences</span>':''}
+      ${t.ai==='ok'?'<span class="sb s-ap">🟢 Approved</span>':''}
+    </div>`;
+  document.getElementById('drwTabs').innerHTML=[
+    {id:'tasks',lbl:'📋 Tasks'},{id:'progress',lbl:'📊 Progress'},
+    {id:'template',lbl:'📎 Template'},{id:'ai',lbl:'🤖 AI Compare'}
+  ].map(tb=>`<div class="tab ${DS.tab===tb.id?'act':''}" onclick="switchTab('${tb.id}')">${tb.lbl}</div>`).join('');
+  renderDrwBody();
+}
+function switchTab(t){DS.tab=t;renderDrw();}
+function renderDrwBody(){
+  const {ws,ph,l2,tab}=DS;const k=key(ws,ph,l2);const t=td(k);
+  const body=document.getElementById('drwBody');
+  if(tab==='tasks')body.innerHTML=renderTasks(ws,ph,l2,k,t);
+  else if(tab==='progress')body.innerHTML=renderProgress(k,t);
+  else if(tab==='template')body.innerHTML=renderTemplate(k);
+  else if(tab==='ai')body.innerHTML=renderAI(k,l2,t);
+}
+
+function renderTasks(ws,ph,l2,k,t){
+  const base=getl3(ws,ph,l2);const extra=t.extra||[];const all=[...base,...extra];
+  const del=t.del||{};
+  const chk=t.l3chk||{};
+  const active=all.filter((_,i)=>!del[i]);
+  const doneCnt=active.filter((_,i)=>{const ri=all.indexOf(active[i]);return chk[ri];}).length;
+  const tip=L2_TIP[l2]||'';
+  const safeK=k.replace(/[^a-zA-Z0-9]/g,'_');
+  const pct=calcL2Pct(k);
+  const st=calcL2St(k);
+  const items=all.map((tx,i)=>{
+    const isDel=del[i];const isDone=chk[i];
+    const l3tip=L3_TIP[tx]||'';
+    const pnlId='l3p_drw_'+safeK+'_'+i;
+    const l3d=t.l3data&&t.l3data[i]||{};
+    if(isDel)return`<li class="l3-item">
+      <span class="rm-btn" onclick="restoreT('${esc(k)}',${i})" title="Restore">↩</span>
+      <span class="task-txt del">${tx}</span></li>`;
+    return`<li class="l3-item" style="flex-wrap:wrap">
+      <div class="chk ${isDone?'dn':''}" id="chk_${safeK}_${i}" onclick="toggleChk('${esc(k)}',${i})">${isDone?'✓':''}</div>
+      <div class="l3-tip-wrap" style="flex:1;min-width:0">
+        <span class="task-txt ${isDone?'done':''}" id="txt_${safeK}_${i}">${tx}</span>
+        ${l3tip?`<div class="l3-tip-popup" style="top:auto;bottom:calc(100% + 6px)"><strong>💡 Ne yapılmalı?</strong><br>${l3tip}</div>`:`<div class="l3-tip-popup" style="top:auto;bottom:calc(100% + 6px)"><strong>💡</strong> Bu adımı tamamlayarak bir sonraki göreve geçin.</div>`}
+      </div>
+      <button class="l3-prog-btn ${l3d.open?'active':''}" onclick="toggleL3Panel('${pnlId}',this)" title="Progress">📊</button>
+      <span class="rm-btn" onclick="removeT('${esc(k)}',${i})" title="Remove">✕</span>
+      <div class="l3-prog-panel ${l3d.open?'open':''}" id="${pnlId}" style="width:100%;margin-left:0;margin-top:4px">
+        ${renderL3Panel(k,i,l3d,pnlId)}
+      </div>
+    </li>`;
+  }).join('');
+  const delCount=Object.keys(del).length;
+  return`${tip?`<div class="l2-tooltip" style="margin-bottom:12px"><span class="l2-tooltip-icon">💡</span>${tip}</div>`:''}
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+      <div class="stt" style="margin:0">L3 Sub-Tasks (${doneCnt}/${active.length} checked)</div>
+      <span style="margin-left:auto;font-size:11px;font-family:var(--mo);font-weight:700;color:${PH_COLOR[ph]||'#1D4ED8'}"
+        id="drw_pct_${safeK}">${pct}%</span>
+      <span class="sb ${stK(st)}" id="drw_st_${safeK}">${stL(st)}</span>
+    </div>
+    <ul class="l3-list">${items||'<li style="color:var(--tx3);font-size:12px;padding:8px 0">No sub-tasks defined.</li>'}</ul>
+    ${delCount?`<div style="margin-top:8px;font-size:10px;color:var(--tx3);border-top:1px solid var(--bd);padding-top:8px">${delCount} removed task(s) — click ↩ to restore.</div>`:''}
+    <div class="add-row mt3">
+      <input class="fi" type="text" id="nt_${k.replace(/[\|]/g,'_')}" placeholder="Add custom task…" style="flex:1"
+        onkeydown="if(event.key==='Enter')addT('${esc(k)}')">
+      <button class="btn btn-p" onclick="addT('${esc(k)}')">+ Add</button>
+    </div>`;
+}
+
+function renderProgress(k,t){
+  const pct=calcL2Pct(k);
+  const st=calcL2St(k);
+  const ss=[['ns','sbn-ns'],['ip','sbn-ip'],['dn','sbn-dn'],['bl','sbn-bl'],['rv','sbn-rv']];
+  // progress bar visual
+  const barColor=st==='dn'?'#22C55E':st==='ip'?'#F59E0B':st==='bl'?'#EF4444':'#CBD5E1';
+  return`
+    <div style="background:var(--sf2);border:1px solid var(--bd);border-radius:var(--rs);padding:12px 14px;margin-bottom:14px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <span class="stt" style="margin:0">Overall L2 Progress</span>
+        <span style="font-size:18px;font-weight:800;font-family:var(--mo);color:${barColor}">${pct}%</span>
+      </div>
+      <div style="height:7px;background:var(--bd);border-radius:4px;overflow:hidden">
+        <div style="height:100%;width:${pct}%;background:${barColor};border-radius:4px;transition:width .3s"></div>
+      </div>
+      <div style="margin-top:6px;font-size:10px;color:var(--tx3)">Computed automatically from L3 sub-task progress averages</div>
+    </div>
+    <div class="stt">L2 Status</div>
+    <div class="stbns">${ss.map(([s,c])=>`<button class="sbn ${c} ${st===s?'act':''}" disabled style="opacity:${st===s?'1':'0.4'};cursor:default">${stL(s)}</button>`).join('')}</div>
+    <div style="font-size:10px;color:var(--tx3);margin-bottom:14px">Status auto-computed from L3 tasks — set status per sub-task in the Tasks tab</div>
+    <div class="ff"><label class="fl">Owner</label><input class="fi" type="text" value="${t.owner||''}" placeholder="Name" oninput="setF('${esc(k)}','owner',this.value)"></div>
+    <div class="ff"><label class="fl">Due Date</label><input class="fi" type="date" value="${t.due||''}" oninput="setF('${esc(k)}','due',this.value)"></div>
+    <div class="ff"><label class="fl">Notes</label><textarea class="fta" placeholder="Notes…" oninput="setF('${esc(k)}','notes',this.value)">${t.notes||''}</textarea></div>
+    <button class="btn btn-p btn-full" onclick="saveProg('${esc(k)}')">💾 Save</button>`;
+}
+
+function renderTemplate(k){
+  // L3-level templates: each sub-task can have its own reference template
+  const {ws,ph,l2}=parseKey(k);
+  const l3tasks=getl3(ws,ph,l2);
+  const t=td(k);
+
+  if(!l3tasks.length){
+    return`<div style="color:var(--tx3);font-size:12px;padding:16px 0">No sub-tasks defined for this L2 task.</div>`;
+  }
+
+  const rows=l3tasks.map((task,i)=>{
+    const tplKey=k+'||'+i;
+    const tpl=CF[tplKey]?.tpl;
+    const l3d=t.l3data&&t.l3data[i]||{};
+    const st=l3d.st||'ns';
+    const safeKey=(k+'__'+i).replace(/[^a-zA-Z0-9]/g,'_');
+    const stDot={ns:'#94A3B8',ip:'#F59E0B',dn:'#22C55E',bl:'#EF4444'}[st]||'#94A3B8';
+
+    return`<div style="border:1px solid var(--bd);border-radius:var(--rs);margin-bottom:8px;overflow:hidden">
+      <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--sf2);border-bottom:${tpl?'1px solid var(--bd)':'none'}">
+        <div style="width:7px;height:7px;border-radius:50%;background:${stDot};flex-shrink:0"></div>
+        <span style="font-size:11px;font-weight:600;flex:1;color:var(--tx)">${task}</span>
+        ${tpl
+          ?`<span style="font-size:10px;color:#16A34A;font-weight:600">📎 Template loaded</span>`
+          :`<span style="font-size:10px;color:var(--tx3)">No template</span>`
+        }
+      </div>
+      ${tpl
+        ?`<div style="padding:8px 12px;display:flex;align-items:center;gap:8px">
+            <div style="font-size:11px;color:var(--tx2);flex:1">
+              <strong>${tpl.name}</strong>
+              <span style="color:var(--tx3);font-size:10px;margin-left:6px">${Object.keys(tpl.data).length} sheet(s)</span>
+            </div>
+            <button class="btn btn-d" style="font-size:10px;padding:3px 8px" onclick="previewL3Tpl('${esc(k)}',${i})">👁 Preview</button>
+            <button class="btn btn-danger" style="font-size:10px;padding:3px 8px" onclick="clearL3Tpl('${esc(k)}',${i})">✕ Remove</button>
+          </div>`
+        :`<div style="padding:8px 12px">
+            <div class="upz" style="padding:12px;margin:0" onclick="trigU('l3tpl_${safeKey}')">
+              <div class="upz-ico" style="font-size:18px">📋</div>
+              <div class="upz-name">Upload reference template for this sub-task</div>
+              <div class="upz-sub">.xlsx / .xls / .csv / .pdf / .docx</div>
+            </div>
+            <input type="file" id="l3tpl_${safeKey}" accept=".xlsx,.xls,.csv,.pdf,.doc,.docx" class="hidden"
+              onchange="upL3Tpl(this,'${esc(k)}',${i})">
+          </div>`
+      }
+    </div>`;
+  }).join('');
+
+  const loadedCount=l3tasks.filter((_,i)=>CF[k+'||'+i]?.tpl).length;
+
+  return`
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+      <div>
+        <div style="font-size:12px;font-weight:700;color:var(--tx)">Sub-Task Templates</div>
+        <div style="font-size:10px;color:var(--tx3);margin-top:1px">Upload a reference template for each L3 sub-task. Used as baseline for AI QA comparison.</div>
+      </div>
+      <span style="margin-left:auto;font-size:11px;font-family:var(--mo);font-weight:700;color:${loadedCount>0?'#16A34A':'var(--tx3)'}">
+        ${loadedCount}/${l3tasks.length} loaded
+      </span>
+    </div>
+    ${rows}
+    ${loadedCount>0?`
+    <div style="margin-top:12px;padding:10px 12px;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:var(--rs);font-size:11px;color:#14532D">
+      ✅ ${loadedCount} template(s) loaded. Go to <strong>AI Compare</strong> tab to run QA analysis against a submitted deliverable.
+    </div>`:`
+    <div style="margin-top:12px;padding:10px 12px;background:#FEF3C7;border:1px solid #FDE68A;border-radius:var(--rs);font-size:11px;color:#92400E">
+      💡 Upload reference templates above. Once loaded, use <strong>AI Compare</strong> to compare against customer deliverables.
+    </div>`}`;
+}
+
+/* L3 template actions */
+async function upL3Tpl(inp,k,i){
+  const f=inp.files[0];if(!f)return;
+  const tplKey=k+'||'+i;
+  try{
+    // Store file info (name + size) — for non-spreadsheet files we store metadata only
+    const isSheet=/\.(xlsx|xls|csv)$/i.test(f.name);
+    let data=null;
+    if(isSheet) data=await readXL(f);
+    if(!CF[tplKey])CF[tplKey]={};
+    CF[tplKey].tpl={name:f.name,size:f.size,type:f.type,data,isSheet};
+    toast('✅ '+f.name+' loaded');
+    renderDrwBody();
+  }catch(e){toast('❌ Could not load file: '+e.message);}
+}
+
+function clearL3Tpl(k,i){
+  const tplKey=k+'||'+i;
+  if(CF[tplKey])delete CF[tplKey].tpl;
+  renderDrwBody();
+}
+
+function previewL3Tpl(k,i){
+  const tplKey=k+'||'+i;
+  const tpl=CF[tplKey]?.tpl;
+  if(!tpl)return;
+  if(!tpl.isSheet||!tpl.data){
+    toast('ℹ Preview not available for this file type');return;
+  }
+  // Show first sheet in a simple modal
+  const firstSheet=Object.keys(tpl.data)[0];
+  const rows=tpl.data[firstSheet].slice(0,20);
+  const html=rows.map(r=>`<tr>${r.map(c=>`<td style="padding:4px 8px;border:1px solid #e2e8f0;font-size:10px;white-space:nowrap;max-width:180px;overflow:hidden;text-overflow:ellipsis">${c}</td>`).join('')}</tr>`).join('');
+  const modal=document.createElement('div');
+  modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:800;display:flex;align-items:center;justify-content:center;padding:20px';
+  modal.innerHTML=`<div style="background:#fff;border-radius:10px;box-shadow:0 8px 40px rgba(0,0,0,.3);max-width:90vw;max-height:80vh;overflow:auto;padding:20px">
+    <div style="display:flex;align-items:center;margin-bottom:12px">
+      <strong style="font-size:13px">${tpl.name}</strong>
+      <span style="font-size:10px;color:#94a3b8;margin-left:8px">Sheet: ${firstSheet} (first 20 rows)</span>
+      <button onclick="this.closest('div[style*=fixed]').remove()" style="margin-left:auto;border:none;background:#f1f5f9;border-radius:4px;padding:4px 10px;cursor:pointer;font-size:12px">✕ Close</button>
+    </div>
+    <div style="overflow:auto"><table style="border-collapse:collapse">${html}</table></div>
+  </div>`;
+  modal.onclick=e=>{if(e.target===modal)modal.remove();};
+  document.body.appendChild(modal);
+}
+
+function renderAI(k,l2,t){
+  const {ws,ph}=DS;
+  const l3tasks=getl3(ws,ph,l2);
+  const fk=k.replace(/[\|]/g,'_');
+
+  // Check which L3s have templates loaded
+  const l3WithTpl=l3tasks.map((_,i)=>({i,task:l3tasks[i],tpl:CF[k+'||'+i]?.tpl})).filter(x=>x.tpl);
+  const cust=CF[k]?.cust;
+
+  const tplSummary=l3WithTpl.length>0
+    ?`<div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:var(--rs);padding:10px 12px;margin-bottom:10px">
+        <div style="font-size:11px;font-weight:700;color:#14532D;margin-bottom:6px">📎 ${l3WithTpl.length} Sub-task template(s) loaded:</div>
+        ${l3WithTpl.map(x=>`<div style="font-size:10px;color:#15803D;padding:2px 0">• <strong>L3 ${x.i+1}:</strong> ${x.task.slice(0,50)}${x.task.length>50?'…':''} → ${x.tpl.name}</div>`).join('')}
+        <div style="font-size:10px;color:#16A34A;margin-top:5px">Go to <strong>Template</strong> tab to manage templates.</div>
+      </div>`
+    :`<div style="background:var(--sf2);border:1px solid var(--bd);border-radius:var(--rs);padding:9px 11px;margin-bottom:9px;font-size:11px;color:var(--tx3)">
+       ⚠ No sub-task templates loaded. Go to <strong>Template</strong> tab to upload reference templates for each sub-task first.</div>`;
+
+  const custSec=`<div class="stt mt2">📨 Customer Submitted Deliverable</div>
+    <div class="upz ${cust?'ld':''}" onclick="trigU('cust_${fk}')">
+      <div class="upz-ico">${cust?'✅':'📁'}</div>
+      <div class="upz-name">${cust?cust.name:'Upload customer deliverable'}</div>
+      <div class="upz-sub">.xlsx / .xls / .csv — the customer filled version</div>
+    </div>
+    <input type="file" id="cust_${fk}" accept=".xlsx,.xls,.csv" class="hidden" onchange="upFile(this,'${k}','cust')">
+    ${cust?`<div style="font-size:10px;color:var(--tx3);margin-bottom:4px;text-align:right;cursor:pointer" onclick="clearF('${k}','cust')">✕ Remove</div>`:''}`;
+
+  const canRun=l3WithTpl.length>0&&cust;
+  const btn=canRun
+    ?`<button class="btn btn-g btn-full mt2" onclick="runAI('${esc(k)}','${esc(l2)}')">🤖 Run QA Analysis (${l3WithTpl.length} templates)</button>`
+    :`<div style="text-align:center;font-size:11px;color:var(--tx3);padding:8px">${l3WithTpl.length===0?'Load sub-task templates first (Template tab).':!cust?'Upload the customer deliverable to run analysis.':''}</div>`;
+
+  let res='';
+  if(t.air){
+    const bn=t.ai==='ok'
+      ?`<div class="bn-g"><span class="bn-ico">🟢</span><div><div class="bn-txt">Approved — marked green on dashboard</div></div></div>`
+      :`<div class="bn-y"><span class="bn-ico">🟡</span><div class="bn-txt" style="color:#92400E">Differences found<div class="bn-sub">Review below, approve when satisfied.</div></div>
+         <button class="btn btn-ok" style="margin-left:auto" onclick="approveT('${esc(k)}')">✅ Approve</button></div>`;
+    res=`<div class="mt3">${bn}<div class="row" style="margin-bottom:10px">
+      <div class="stt" style="margin:0">🤖 QA Analysis Report</div>
+      <button class="btn btn-d" style="margin-left:auto" onclick="dlRep('${esc(k)}','${esc(l2)}')">⬇ Download</button>
+    </div>${t.air}</div>`;
+  }
+  return`${tplSummary}${custSec}${btn}${res}`;
+}
+
+/* ══════════════ TASK ACTIONS ══════════════ */
+function ensure(k){
+  if(!proj())return null;
+  if(!proj().tasks)proj().tasks={};
+  if(!proj().tasks[k])proj().tasks[k]={st:'ns',pct:0,notes:'',owner:'',due:'',chk:{},del:{},extra:[],l3chk:{},l3owner:{},l3data:{},ai:null,air:null};
+  // migrate old chk → l3chk
+  const t=proj().tasks[k];
+  if(t.chk&&Object.keys(t.chk).length&&(!t.l3chk||!Object.keys(t.l3chk).length)){t.l3chk=t.chk;}
+  return t;
+}
+function toggleChk(k,i){
+  const t=ensure(k);if(!t)return;
+  if(!t.l3chk)t.l3chk={};
+  t.l3chk[i]=!t.l3chk[i];
+  const done=t.l3chk[i];
+  // Only sync pct/st in l3data if panel hasn't been touched — don't override manual progress entries
+  if(!t.l3data)t.l3data={};
+  if(!t.l3data[i])t.l3data[i]={};
+  // Only auto-set if user hasn't manually entered a progress value
+  const hasManualProgress = t.l3data[i].manuallySet;
+  if(!hasManualProgress){
+    t.l3data[i].pct = done ? 100 : 0;
+    t.l3data[i].st  = done ? 'dn' : 'ns';
+  }
+  _syncL2(k);
+  save();
+  // In-place DOM update — no page reload, no scroll jump
+  const safeK=k.replace(/[^a-zA-Z0-9]/g,'_');
+  const chkEl=document.getElementById('chk_'+safeK+'_'+i);
+  const txtEl=document.getElementById('txt_'+safeK+'_'+i);
+  if(chkEl){chkEl.className='chk'+(done?' dn':'');chkEl.textContent=done?'✓':'';}
+  if(txtEl){txtEl.className='task-txt'+(done?' done':'');}
+  _updateL2Badge(k);
+  const pct=calcL2Pct(k);const st=calcL2St(k);
+  const hPctEl=document.getElementById('drw_pct_'+safeK);
+  if(hPctEl)hPctEl.textContent=pct+'%';
+  const hStEl=document.getElementById('drw_st_'+safeK);
+  if(hStEl){hStEl.className='sb '+stK(st);hStEl.textContent=stL(st);}
+}
+
+function closeDrawer(){
+  document.getElementById('drwBg').classList.remove('show');
+  document.getElementById('drw').classList.remove('open');
+  // Refresh matrix/phase in background without scroll jump
+  if(VIEW==='matrix') renderMatrix();
+  else renderPhaseDetail(ACTIVE_PH);
+}
+function removeT(k,i){const t=ensure(k);if(!t)return;if(!t.del)t.del={};t.del[i]=true;save();renderDrwBody();}
+function restoreT(k,i){const t=ensure(k);if(!t)return;if(t.del)delete t.del[i];save();renderDrwBody();}
+function addT(k){
+  const fk=k.replace(/[\|]/g,'_');
+  const inp=document.getElementById('nt_'+fk);
+  const txt=inp?.value?.trim();
+  if(!txt){toast('⚠ Enter task description');return;}
+  const t=ensure(k);if(!t)return;
+  if(!t.extra)t.extra=[];
+  t.extra.push(txt);
+  save();inp.value='';renderDrwBody();toast('✅ Task added');
+}
+function setSt(k,s){const t=ensure(k);if(!t)return;t.st=s;save();renderDrw();}
+function slPct(k,v){
+  const t=ensure(k);if(!t)return;t.pct=+v;
+  const el=document.getElementById('pv_'+k.replace(/[\|]/g,'_'));
+  if(el)el.textContent=v+'%';
+  save();
+}
+function setF(k,f,v){const t=ensure(k);if(!t)return;t[f]=v;}
+function saveProg(k){save();toast('✅ Saved');renderDrw();}
+function approveT(k){const t=ensure(k);if(!t)return;t.ai='ok';t.st='dn';t.pct=100;save();toast('🟢 Approved!');renderDrw();}
+
+/* FILE UPLOAD */
+function trigU(id){document.getElementById(id)?.click();}
+async function upFile(inp,k,type){
+  const f=inp.files[0];if(!f)return;
+  try{
+    const d=await readXL(f);
+    if(!CF[k])CF[k]={};
+    CF[k][type]={name:f.name,data:d};
+    toast('✅ '+f.name+' loaded');renderDrwBody();
+  }catch(e){toast('❌ Could not read file');}
+}
+function clearF(k,type){if(CF[k])delete CF[k][type];renderDrwBody();}
+function readXL(f){
+  return new Promise((res,rej)=>{
+    const r=new FileReader();
+    r.onload=e=>{try{
+      const wb=XLSX.read(e.target.result,{type:'binary'});
+      const o={};wb.SheetNames.forEach(s=>{o[s]=XLSX.utils.sheet_to_json(wb.Sheets[s],{header:1,defval:'',raw:false});});
+      res(o);
+    }catch(err){rej(err);}};
+    r.onerror=rej;r.readAsBinaryString(f);
+  });
+}
+function x2txt(d){
+  return Object.entries(d).map(([s,rows])=>'=== Sheet: '+s+' ===\n'+rows.slice(0,80).map(r=>r.join(' | ')).join('\n')).join('\n\n');
+}
+
+/* AI QA */
+async function runAI(k,l2Name){
+  const cust=CF[k]?.cust;
+  if(!cust){toast('⚠ Upload customer deliverable first');return;}
+  const {ws,ph}=DS;
+  const l3tasks=getl3(ws,ph,l2Name);
+  const l3WithTpl=l3tasks.map((task,i)=>({task,tpl:CF[k+'||'+i]?.tpl})).filter(x=>x.tpl&&x.tpl.isSheet&&x.tpl.data);
+  if(!l3WithTpl.length){toast('⚠ No spreadsheet templates loaded (Template tab)');return;}
+
+  loading(true,'Running QA analysis… (~20 sec)');
+  try{
+    const tplContext=l3WithTpl.map(x=>'--- Sub-task: '+x.task+' ---\n'+x2txt(x.tpl.data)).join('\n\n');
+    const resp=await fetch('https://lhrgjxspcrsnrzcxdtby.supabase.co/functions/v1/ai-qa',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxocmdqeHNwY3JzbnJ6Y3hkdGJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUxNjgwODQsImV4cCI6MjA5MDc0NDA4NH0.l5lY52yty3w-ipvoujhx9rEugX9hckHgAA6Z5X6VCSM'
+      },
+      body:JSON.stringify({
+        l2Name,
+        phase:ph,
+        workstream:ws,
+        l3tasks,
+        templateContext:tplContext,
+        customerFileText:x2txt(cust.data)
+      })
+    });
+    const data=await resp.json();
+    const txt=data.content?.find(b=>b.type==='text')?.text||'';
+    let parsed;
+    try{parsed=JSON.parse(txt.replace(/```json|```/g,'').trim());}
+    catch(e){parsed={summary:txt,overall_score:0,critical_gaps:[],overdue_risks:[],missing_items:[],differences:[],positives:[],recommendations:[]};}
+    const t=ensure(k);if(!t)return;
+    t.air=buildReport(parsed);t.ai='diff';
+    save();loading(false);renderDrw();
+  }catch(e){loading(false);toast('❌ AI error: '+e.message);}
+}
+function buildReport(r){
+  const sc=r.overall_score||0;const sc2=sc>=80?'#16A34A':sc>=60?'#D97706':'#DC2626';
+  function sec(items,hc,bc,em,ttl){
+    if(!items?.length)return'';
+    return'<div class="qa-sec"><div class="qa-hdr '+hc+'">'+em+' '+ttl+' ('+items.length+')</div>'+items.map(i=>'<div class="qa-it" style="border-left-color:'+bc+'">'+i+'</div>').join('')+'</div>';
+  }
+  return'<div class="score-row"><div class="score-num" style="color:'+sc2+'">'+sc+'%</div><div><div class="score-lbl">QA Compliance Score</div><div class="score-txt">'+r.summary+'</div></div></div>'+
+    sec(r.critical_gaps,'qa-cr','#DC2626','🔴','Critical Gaps')+sec(r.overdue_risks,'qa-od','#D97706','⏰','Overdue / At-Risk')+
+    sec(r.missing_items,'qa-ms','#1D4ED8','📋','Missing Items')+sec(r.differences,'qa-df','#92400E','⚠️','Content Differences')+
+    sec(r.positives,'qa-ok','#16A34A','✅','Positives')+sec(r.recommendations,'qa-ok','#16A34A','💡','Recommendations');
+}
+function dlRep(k,l2Name){
+  const t=td(k);if(!t.air)return;
+  const {ws,ph}=DS;const pn=proj()?.name||'Project';
+  const html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>QA Report</title><style>body{font-family:Arial,sans-serif;max-width:840px;margin:36px auto;color:#1a1a1a}h1{color:#1D4ED8}.hdr{padding:6px 10px;border-radius:5px;font-size:13px;font-weight:700;margin-bottom:8px}.qa-cr{background:#FEE2E2;color:#DC2626}.qa-od{background:#FEF3C7;color:#D97706}.qa-ms{background:#DBEAFE;color:#1D4ED8}.qa-df{background:#FEF9C3;color:#92400E}.qa-ok{background:#DCFCE7;color:#16A34A}.it{padding:7px 10px;border-left:3px solid;background:#F8F9FC;margin:3px 0;font-size:12px}.sr{display:flex;gap:14px;background:#F8F9FC;padding:14px;border-radius:8px;margin-bottom:20px}.sn{font-size:34px;font-weight:800}</style></head><body><h1>SAP Activate QA Report</h1><p><b>Project:</b> '+pn+' | <b>Phase:</b> '+ph+' | <b>WS:</b> '+ws+'<br><b>Task:</b> '+l2Name+' | <b>Date:</b> '+new Date().toLocaleDateString('en-GB')+'</p>'+t.air.replace(/class="score-row"/g,'class="sr"').replace(/class="score-num"/g,'class="sn"').replace(/class="qa-sec"/g,'').replace(/class="qa-hdr /g,'class="hdr ').replace(/class="qa-it"/g,'class="it"')+'</body></html>';
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([html],{type:'text/html'}));
+  a.download='QA_'+l2Name.replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_]/g,'').slice(0,40)+'.html';
+  a.click();toast('📥 Downloaded');
+}
+
+/* EXPORT */
+function exportCSV(){
+  if(!proj())return;
+  const rows=[['Phase','Workstream','L2 Task','Status','%','Owner','Due','Notes']];
+  WS.forEach(ws=>PHASES.forEach(ph=>(L2M[ws+'__'+ph]||[]).forEach(l2=>{
+    const t=td(key(ws,ph,l2));
+    rows.push([ph,ws,l2,stL(t.st),t.pct+'%',t.owner||'',t.due||'',t.notes||'']);
+  })));
+  const csv=rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));
+  a.download='SAP_Report_'+proj().name.replace(/\s+/g,'_')+'.csv';
+  a.click();toast('📥 Exported');
+}
+
+render();
+</script>
+</body>
+</html>
